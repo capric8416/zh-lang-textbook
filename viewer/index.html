@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>语文课本阅读器</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body data-state="empty">
+
+<div class="backdrop" id="backdrop" hidden></div>
+
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-head">
+    <div class="brand">
+      <span class="brand-mark">文</span>
+      <span class="brand-text">
+        <strong id="bookTitle">语文课本</strong>
+        <small id="bookMeta">未载入</small>
+      </span>
+    </div>
+    <button class="icon-btn" id="collapseBtn" title="收起目录（[）" aria-label="收起目录">‹</button>
+  </div>
+
+  <div class="sidebar-tools">
+    <input type="search" id="search" placeholder="搜索课文 / 园地…" autocomplete="off">
+  </div>
+
+  <nav class="toc" id="toc" aria-label="目录"></nav>
+
+  <div class="resizer" id="resizer" title="拖动改变宽度，双击复位"></div>
+
+  <div class="sidebar-foot">
+    <label class="file-btn">
+      <input type="file" id="fileInput" accept=".json,application/json" hidden>
+      重新载入 struct.json
+    </label>
+  </div>
+</aside>
+
+<button class="rail" id="railBtn" title="展开目录（[）" aria-label="展开目录">
+  <span>目</span><span>录</span>
+</button>
+
+<main class="main" id="main">
+  <header class="topbar">
+    <button class="icon-btn only-narrow" id="menuBtn" aria-label="打开目录">☰</button>
+    <div class="crumb" id="crumb"></div>
+    <div class="controls">
+      <button class="chip" id="pinyinBtn" aria-pressed="true">拼音</button>
+      <button class="chip" id="fontBtn" title="切换字体">楷体</button>
+      <div class="stepper">
+        <button class="icon-btn" id="smaller" aria-label="缩小字号">A−</button>
+        <button class="icon-btn" id="bigger" aria-label="放大字号">A+</button>
+      </div>
+    </div>
+  </header>
+
+  <section class="dropzone" id="dropzone">
+    <div class="dropzone-inner">
+      <div class="dz-icon">📖</div>
+      <h1>语文课本阅读器</h1>
+      <p>把 <code>struct.json</code> 拖到这里，或者</p>
+      <label class="file-btn primary">
+        <input type="file" id="fileInput2" accept=".json,application/json" hidden>
+        选择文件
+      </label>
+      <p class="hint">
+        由 <code>uv run zh-textbook --pages 1-130 --struct -o out/struct.json</code> 生成。<br>
+        文件只在本机浏览器里解析，不会上传到任何地方。
+      </p>
+      <p class="error" id="error" hidden></p>
+    </div>
+  </section>
+
+  <article class="reader" id="reader" hidden></article>
+
+  <nav class="pager" id="pager" hidden>
+    <button class="pager-btn" id="prevBtn">‹ 上一篇</button>
+    <button class="pager-btn" id="nextBtn">下一篇 ›</button>
+  </nav>
+</main>
+
+<!-- 注音修正弹窗 -->
+<div class="pop-backdrop" id="popBackdrop" hidden></div>
+<div class="popover" id="popover" hidden role="dialog" aria-label="修改注音">
+  <div class="pop-head">
+    <strong id="popTitle">修改注音</strong>
+    <span class="pop-hint">用数字声调：<code>bi4</code> · <code>lu:3</code> 或 <code>lv3</code> = lǚ · <code>5</code> 或留空 = 轻声</span>
+  </div>
+  <div class="pop-body" id="popBody"></div>
+  <div class="pop-foot">
+    <span class="pop-err" id="popErr"></span>
+    <button class="chip" id="popCancel">取消</button>
+    <button class="chip primary" id="popOk">提交</button>
+  </div>
+</div>
+
+<!-- 修正状态栏 -->
+<div class="fixbar" id="fixbar" hidden>
+  <span class="fix-count" id="fixCount">已修正 0 处</span>
+  <button class="chip" id="fixList">明细</button>
+  <button class="chip" id="fixUndo">撤销上一处</button>
+  <button class="chip" id="fixReset">全部还原</button>
+  <button class="chip primary" id="fixDownload">下载 struct.json</button>
+</div>
+<div class="fixlog" id="fixlog" hidden></div>
+
+<script src="app.js"></script>
+</body>
+</html>
