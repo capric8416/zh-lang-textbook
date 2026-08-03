@@ -12,6 +12,7 @@ dependencies = [
 
 [project.scripts]
 zh-textbook = "zh_textbook_parser.cli:main"
+zh-polyphone = "zh_textbook_parser.polyphone:main"
 
 [build-system]
 requires = ["hatchling"]

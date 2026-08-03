@@ -12,11 +12,29 @@ uv run zh-textbook --pages 6-8                    # 按 PDF 页序（1 基）
 uv run zh-textbook --pages 1-130 -o out/all.json          # 全书：41 篇课文 + 8 个园地 + 3 张附录表
 uv run zh-textbook --pages 1-130 --struct -o out/struct.json  # 简化结构，逐字注音
 uv run zh-textbook --pages 1-130 --full -o out/pages.json     # 按页输出全部版面单元
+uv run zh-polyphone out/struct.json -o out/polyphone.json     # 多音字、读音分组及组词
 ```
 
 默认输出**课文**、**语文园地**、**附录**三部分，并且**一篇课文/一个园地是一个完整单元**：
 跨页的会合并成一条。页眉、页脚、右边栏、课后仍然照常识别，但只用于把它们从
 课文区里剔除，不写进结果。`--full` 改成按页输出，并带上这些版面单元。
+
+### 多音字表
+
+对任意 `--struct` 生成的 JSON，可重复生成多音字表：
+
+```bash
+uv run zh-polyphone out/zh-lang-grade2b-textbook-struct.json \
+  -o out/zh-lang-grade2b-textbook-polyphone.json
+```
+
+每个多音字内部把全部读音分为 `本册出现`、`常用` 和 `不常用`：本册出现的
+读音进入第一组；其余读音有组词的进入常用组，无组词的进入不常用组。每个字
+的三个读音分组都按候选 `组词数量` 从多到少排列。每个读音都带组词，参数
+`--words-per-reading` 默认为 `3`，可传其他正整数限制每个读音的组词数；传 `0`
+表示组词数量不设上限。候选来自本册、pypinyin 短语表和 jieba 常用词表，统一
+按照 jieba 的日常书面语词频从高到低选择，同频时优先短词。词典中的罕见读音
+如果没有可用词条，`组词` 会保留为空数组。
 
 ## 输出结构
 
@@ -140,6 +158,11 @@ uv run zh-textbook --pages 1-130 --full -o out/pages.json     # 按页输出全�
 - **阅读区**：拼音以 `<ruby>` 注在字上方，古诗按句居中、课文按句分行；
   拼音开关、楷体/宋体/黑体切换、字号加减，偏好和上次读到哪篇都记在 localStorage。
 - **附录**：识字表/写字表按字卡排布，词语表按词卡排布，都带拼音。
+- **多音字专题**：先加载 `struct.json`，再从侧栏加载 `zh-polyphone` 生成的
+  `polyphone.json`。阅读器会进入专题校正模式，只保留含多音字的句子、园地栏目和
+  附录单字行，弱化普通字并高亮多音字；点击高亮字可从该字的 `本册出现 / 常用 /
+  不常用` 全部候选读音中直接选择，修改会写回当前课文数据。“返回全文”会保留
+  已完成的修改和撤销记录，只退出专题视图。
 - **注音修正**：正文里点一个字、或框选一段（最多 24 字）会弹出编辑框，
   输入用**数字声调**（`bi4` → bì，`lu:3` / `lv3` → lǚ，`5` 或留空 = 轻声），
   提交时自动转成带调拼音；格式不对会当场提示，`Enter` 提交、`Esc` 取消。

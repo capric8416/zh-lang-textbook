@@ -35,6 +35,11 @@
       <input type="file" id="fileInput" accept=".json,application/json" hidden>
       重新载入 struct.json
     </label>
+    <label class="file-btn topic-file-btn">
+      <input type="file" id="polyphoneInput" accept=".json,application/json" hidden>
+      加载多音字表
+    </label>
+    <button class="file-btn topic-exit" id="exitTopic" hidden>返回全文</button>
   </div>
 </aside>
 
@@ -67,6 +72,7 @@
       </label>
       <p class="hint">
         由 <code>uv run zh-textbook --pages 1-130 --struct -o out/struct.json</code> 生成。<br>
+        载入课文后，可再加载 <code>polyphone.json</code> 进入多音字专题校正。<br>
         文件只在本机浏览器里解析，不会上传到任何地方。
       </p>
       <p class="error" id="error" hidden></p>
@@ -86,7 +92,7 @@
 <div class="popover" id="popover" hidden role="dialog" aria-label="修改注音">
   <div class="pop-head">
     <strong id="popTitle">修改注音</strong>
-    <span class="pop-hint">用数字声调：<code>bi4</code> · <code>lu:3</code> 或 <code>lv3</code> = lǚ · <code>5</code> 或留空 = 轻声</span>
+    <span class="pop-hint" id="popHint">用数字声调：<code>bi4</code> · <code>lu:3</code> 或 <code>lv3</code> = lǚ · <code>5</code> 或留空 = 轻声</span>
   </div>
   <div class="pop-body" id="popBody"></div>
   <div class="pop-foot">

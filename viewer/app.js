@@ -1,8 +1,9 @@
-/* 语文课本阅读器：读 struct.json，渲染成带拼音的阅读页 */
+/* 语文课本阅读器：阅读 struct.json，并用 polyphone.json 专题校正多音字 */
 (function () {
   "use strict";
 
   var STORE_KEY = "zh-textbook:data";
+  var POLY_KEY = "zh-textbook:polyphone";
   var PREF_KEY = "zh-textbook:prefs";
   var FIX_KEY = "zh-textbook:fixes";
 
@@ -25,10 +26,15 @@
     bookTitle: document.getElementById("bookTitle"),
     bookMeta: document.getElementById("bookMeta"),
     pinyinBtn: document.getElementById("pinyinBtn"),
-    fontBtn: document.getElementById("fontBtn")
+    fontBtn: document.getElementById("fontBtn"),
+    polyphoneInput: document.getElementById("polyphoneInput"),
+    exitTopic: document.getElementById("exitTopic")
   };
 
   var root = null;     // 载入的 struct.json 原对象（下载用）
+  var polyRoot = null; // 多音字表原对象
+  var polyphones = {}; // 字 → [{ py, group, words }]
+  var mode = "reading";
   var fixes = [];      // 修正记录，用于计数 / 撤销 / 明细
   var items = [];      // 目录条目（含渲染所需数据）
   var current = -1;
@@ -66,8 +72,21 @@
     reader.onload = function () {
       try {
         var data = JSON.parse(reader.result);
-        useData(data);
-        try { localStorage.setItem(STORE_KEY, reader.result); } catch (e) { /* 太大就不存 */ }
+        if (isPolyphoneData(data)) {
+          if (!root) {
+            showError("请先加载 struct.json 课文，再加载多音字表。");
+            return;
+          }
+          usePolyphoneData(data);
+          try { localStorage.setItem(POLY_KEY, reader.result); } catch (e) { /* 太大就不存 */ }
+        } else {
+          useData(data);
+          try {
+            localStorage.setItem(STORE_KEY, reader.result);
+            localStorage.removeItem(POLY_KEY);
+            localStorage.removeItem(FIX_KEY);
+          } catch (e) { /* 太大就不存 */ }
+        }
       } catch (err) {
         showError("解析失败：" + err.message);
       }
@@ -81,6 +100,14 @@
     el.error.hidden = false;
   }
 
+  function isPolyphoneData(data) {
+    return !!(data && Array.isArray(data["多音字"]) &&
+      data["多音字"].some(function (row) {
+        return row && row["字"] &&
+          (Array.isArray(row["本册出现"]) || Array.isArray(row["常用"]) || Array.isArray(row["不常用"]));
+      }));
+  }
+
   function useData(data) {
     if (!data || (!data["课文"] && !data["园地"] && !data["附录"])) {
       showError("这不像 struct.json —— 需要 课文 / 园地 / 附录 三块。");
@@ -92,6 +119,11 @@
     }
     el.error.hidden = true;
     root = data;
+    polyRoot = null;
+    polyphones = {};
+    mode = "reading";
+    el.body.dataset.mode = mode;
+    el.exitTopic.hidden = true;
     fixes = [];
     renderFixbar();
     items = buildItems(data);
@@ -101,9 +133,90 @@
       " · 附录 " + count(items, "附录");
     buildToc("");
     el.body.dataset.state = "loaded";
+    el.search.placeholder = "搜索课文 / 园地…";
     el.reader.hidden = false;
     el.pager.hidden = false;
     show(prefs.last < items.length ? prefs.last : 0);
+  }
+
+  function usePolyphoneData(data) {
+    if (!root) {
+      showError("请先加载 struct.json 课文，再加载多音字表。");
+      return;
+    }
+    if (!isPolyphoneData(data)) {
+      showError("这不像 polyphone.json —— 需要逐字的 本册出现 / 常用 / 不常用 三组读音。");
+      return;
+    }
+    var map = {};
+    data["多音字"].forEach(function (row) {
+      var ch = row["字"];
+      if (!ch) return;
+      var readings = [];
+      ["本册出现", "常用", "不常用"].forEach(function (group) {
+        (row[group] || []).forEach(function (entry) {
+          if (!entry || !entry["拼音"]) return;
+          if (readings.some(function (x) { return x.py === entry["拼音"]; })) return;
+          readings.push({
+            py: entry["拼音"],
+            group: group,
+            words: entry["组词"] || []
+          });
+        });
+      });
+      if (readings.length) map[ch] = readings;
+    });
+    if (!Object.keys(map).length) {
+      showError("多音字表里没有可用的读音。");
+      return;
+    }
+    var previousMap = polyphones;
+    polyphones = map;
+    var topicItems = buildItems(root).filter(function (item) {
+      item.topicCount = topicHitCount(item);
+      return item.topicCount > 0;
+    });
+    if (!topicItems.length) {
+      polyphones = previousMap;
+      showError("课文中没有找到多音字表里的汉字。");
+      return;
+    }
+    polyRoot = data;
+    mode = "polyphone";
+    el.body.dataset.mode = mode;
+    el.exitTopic.hidden = false;
+    el.error.hidden = true;
+    items = topicItems;
+    el.bookTitle.textContent = "多音字专题校正";
+    el.bookMeta.textContent = Object.keys(polyphones).length + " 个多音字 · " +
+      items.reduce(function (sum, item) { return sum + item.topicCount; }, 0) + " 处待核对";
+    el.search.value = "";
+    el.search.placeholder = "搜索课文 / 多音字…";
+    buildToc("");
+    el.body.dataset.state = "loaded";
+    el.search.value = "";
+    el.reader.hidden = false;
+    el.pager.hidden = false;
+    show(0);
+  }
+
+  function leavePolyphoneMode() {
+    if (!root) return;
+    polyRoot = null;
+    polyphones = {};
+    mode = "reading";
+    el.body.dataset.mode = mode;
+    el.exitTopic.hidden = true;
+    try { localStorage.removeItem(POLY_KEY); } catch (e) { /* 忽略 */ }
+    items = buildItems(root);
+    el.bookTitle.textContent = root["文件"] || "语文课本";
+    el.bookMeta.textContent = items.length + " 篇 · 课文 " +
+      count(items, "课文") + " · 园地 " + count(items, "园地") +
+      " · 附录 " + count(items, "附录");
+    el.search.value = "";
+    el.search.placeholder = "搜索课文 / 园地…";
+    buildToc("");
+    show(0);
   }
 
   function count(list, kind) {
@@ -150,6 +263,31 @@
       return pa - pb;
     });
     return out;
+  }
+
+  function countPolyphones(text) {
+    var total = 0;
+    String(text || "").split("").forEach(function (ch) {
+      if (polyphones[ch]) total++;
+    });
+    return total;
+  }
+
+  function topicHitCount(item) {
+    if (item.kind === "课文") return countPolyphones(item.data["全文"]);
+    if (item.kind === "园地") {
+      return (item.data["栏目"] || []).reduce(function (sum, sec) {
+        return sum + countPolyphones(sec["全文"]);
+      }, 0);
+    }
+    if (item.kind === "附录") {
+      return item.rows.reduce(function (sum, row) {
+        return sum + (row["字"] || []).reduce(function (n, ch) {
+          return n + (polyphones[ch] ? 1 : 0);
+        }, 0);
+      }, 0);
+    }
+    return 0;
   }
 
   /* ---------------- 目录 ---------------- */
@@ -200,8 +338,8 @@
         title.textContent = entry.item.title;
         btn.appendChild(title);
 
-        var label = entry.item.tag ||
-          (entry.item.kind === "课文" ? null : entry.item.kind);
+        var label = mode === "polyphone" ? entry.item.topicCount + " 处" :
+          (entry.item.tag || (entry.item.kind === "课文" ? null : entry.item.kind));
         if (label) {
           var tag = document.createElement("span");
           tag.className = "toc-tag";
@@ -221,6 +359,13 @@
   function matches(item, q) {
     if (item.title.indexOf(q) >= 0) return true;
     if (item.num && item.num.indexOf(q) === 0) return true;
+    if (mode === "polyphone" && q.length === 1 && polyphones[q]) {
+      if (item.kind === "课文") return (item.data["全文"] || "").indexOf(q) >= 0;
+      if (item.kind === "园地") return (item.data["栏目"] || []).some(function (sec) {
+        return (sec["全文"] || "").indexOf(q) >= 0;
+      });
+      return item.rows.some(function (row) { return (row["字"] || []).indexOf(q) >= 0; });
+    }
     if (q.length < 2) return false;
     var d = item.data;
     if (!d) return false;
@@ -368,6 +513,151 @@
     return box;
   }
 
+  function renderTopicText(text, pinyin, poem, ctx) {
+    var box = document.createElement("div");
+    box.className = "topic-text";
+    box.dataset.editable = "1";
+    box._ctx = ctx;
+    var chars = pair(text || "", pinyin);
+    splitLines(chars.map(function (c, i) { c.i = i; return c; }), poem)
+      .filter(function (line) {
+        return line.some(function (c) { return !!polyphones[c.ch]; });
+      })
+      .forEach(function (line) {
+        var p = document.createElement("p");
+        p.className = "topic-line";
+        line.forEach(function (c) {
+          var span = document.createElement("span");
+          span.className = "ch";
+          span.dataset.i = c.i;
+          if (polyphones[c.ch]) {
+            span.classList.add("polyphone");
+            span.title = "点击选择“" + c.ch + "”的读音";
+            if (ctx.isFixed && ctx.isFixed(c.i)) span.classList.add("fixed");
+            var ruby = document.createElement("ruby");
+            ruby.appendChild(document.createTextNode(c.ch));
+            var rt = document.createElement("rt");
+            rt.textContent = c.py || "?";
+            ruby.appendChild(rt);
+            span.appendChild(ruby);
+          } else {
+            span.appendChild(document.createTextNode(c.ch));
+          }
+          p.appendChild(span);
+        });
+        box.appendChild(p);
+      });
+    return box;
+  }
+
+  function topicSummary(count) {
+    var p = document.createElement("p");
+    p.className = "topic-summary";
+    p.textContent = "已省略不含多音字的正文，仅显示需要核对的 " + count +
+      " 处。点击高亮字选择正确读音。";
+    return p;
+  }
+
+  function renderTopicDoc(item) {
+    var frag = document.createDocumentFragment();
+    var d = item.data;
+    frag.appendChild(head(item, {
+      eyebrow: "多音字专题",
+      meta: [item.topicCount + " 处待核对"]
+    }));
+    frag.appendChild(topicSummary(item.topicCount));
+
+    if (item.kind === "课文") {
+      var key = "课文:" + item.title;
+      frag.appendChild(renderTopicText(d["全文"], d["拼音"], !!d["年代"], {
+        key: key,
+        path: ["课文", (root["课文"] || []).indexOf(d)],
+        label: item.title,
+        charAt: function (i) { return (d["全文"] || "").charAt(i); },
+        getTokens: function () { return String(d["拼音"] || "").split(" "); },
+        setTokens: function (arr) { d["拼音"] = arr.join(" "); },
+        isFixed: isFixed(key)
+      }));
+      return frag;
+    }
+
+    (d["栏目"] || []).forEach(function (sec) {
+      var hits = countPolyphones(sec["全文"]);
+      if (!hits) return;
+      var section = document.createElement("section");
+      section.className = "sec";
+      var title = document.createElement("div");
+      title.className = "sec-title";
+      title.textContent = (sec["名称"] || "（未命名栏目）") + " · " + hits + " 处";
+      section.appendChild(title);
+      var key = "园地:" + item.title + "/" + (sec["名称"] || "");
+      section.appendChild(renderTopicText(sec["全文"], sec["拼音"], false, {
+        key: key,
+        path: ["园地", (root["园地"] || []).indexOf(d), "栏目", (d["栏目"] || []).indexOf(sec)],
+        label: item.title + " · " + (sec["名称"] || ""),
+        charAt: function (i) { return (sec["全文"] || "").charAt(i); },
+        getTokens: function () { return String(sec["拼音"] || "").split(" "); },
+        setTokens: function (arr) { sec["拼音"] = arr.join(" "); },
+        isFixed: isFixed(key)
+      }));
+      frag.appendChild(section);
+    });
+    return frag;
+  }
+
+  function renderTopicRow(row, table) {
+    var ctx = rowCtx(row, table);
+    var box = document.createElement("div");
+    box.className = "row topic-row";
+    box._ctx = ctx;
+    var label = document.createElement("div");
+    label.className = "row-label";
+    label.textContent = row["序号"] || "·";
+    box.appendChild(label);
+    var cards = document.createElement("div");
+    cards.className = "cards";
+    (row["字"] || []).forEach(function (ch, i) {
+      if (!polyphones[ch]) return;
+      var card = document.createElement("div");
+      card.className = "card polyphone" + (ctx.isFixed(i) ? " fixed" : "");
+      card.dataset.i = i;
+      card.title = "点击选择“" + ch + "”的读音";
+      var py = document.createElement("div");
+      py.className = "py";
+      py.textContent = (row["拼音"] || [])[i] || "?";
+      var zi = document.createElement("div");
+      zi.className = "zi";
+      zi.textContent = ch;
+      card.appendChild(py);
+      card.appendChild(zi);
+      cards.appendChild(card);
+    });
+    box.appendChild(cards);
+    return box;
+  }
+
+  function renderTopicTable(item) {
+    var frag = document.createDocumentFragment();
+    frag.appendChild(head(item, {
+      eyebrow: "多音字专题 · 附录单字",
+      meta: [item.topicCount + " 处待核对"]
+    }));
+    frag.appendChild(topicSummary(item.topicCount));
+    var rows = document.createElement("div");
+    rows.className = "topic-rows";
+    item.rows.forEach(function (row) {
+      if ((row["字"] || []).some(function (ch) { return !!polyphones[ch]; })) {
+        rows.appendChild(renderTopicRow(row, item.title));
+      }
+    });
+    frag.appendChild(rows);
+    return frag;
+  }
+
+  function renderTopicItem(item) {
+    return item.kind === "附录" ? renderTopicTable(item) : renderTopicDoc(item);
+  }
+
   /* ---------------- 页面渲染 ---------------- */
 
   function show(index) {
@@ -375,7 +665,8 @@
     current = index;
     var item = items[index];
     el.reader.textContent = "";
-    el.reader.appendChild(item.kind === "附录" ? renderTable(item) : renderDoc(item));
+    el.reader.appendChild(mode === "polyphone" ? renderTopicItem(item) :
+      (item.kind === "附录" ? renderTable(item) : renderDoc(item)));
     el.crumb.textContent = crumbOf(item);
     el.prev.disabled = index === 0;
     el.next.disabled = index === items.length - 1;
@@ -390,6 +681,7 @@
 
   function crumbOf(item) {
     var bits = [];
+    if (mode === "polyphone") bits.push("多音字专题");
     if (item.unit) bits.push("第 " + item.unit + " 单元");
     if (item.kind !== "课文") bits.push(item.kind);
     if (item.pages.length) {
@@ -589,8 +881,10 @@
     box: document.getElementById("popover"),
     backdrop: document.getElementById("popBackdrop"),
     title: document.getElementById("popTitle"),
+    hint: document.getElementById("popHint"),
     body: document.getElementById("popBody"),
-    err: document.getElementById("popErr")
+    err: document.getElementById("popErr"),
+    ok: document.getElementById("popOk")
   };
   var editing = null;   // { ctx, indices }
 
@@ -636,6 +930,8 @@
       (indices.length > 1 ? "（" + indices.length + " 处）" : "");
     pop.err.textContent = "";
     pop.body.textContent = "";
+    pop.hint.hidden = false;
+    pop.ok.hidden = false;
 
     var tokens = ctx.getTokens();
     indices.forEach(function (i) {
@@ -659,6 +955,66 @@
     place(rect);
     var first = pop.body.querySelector("input");
     if (first) { first.focus(); first.select(); }
+  }
+
+  function openChoiceEditor(ctx, index, rect) {
+    var ch = ctx.charAt(index);
+    var readings = polyphones[ch] || [];
+    if (!readings.length) return;
+    editing = { ctx: ctx, indices: [index], choice: true };
+    pop.title.textContent = "选择读音 · " + ch + " · " + ctx.label;
+    pop.err.textContent = "";
+    pop.hint.hidden = true;
+    pop.ok.hidden = true;
+    pop.body.textContent = "";
+    var list = document.createElement("div");
+    list.className = "choice-list";
+    var currentPy = ctx.getTokens()[index] || "";
+    readings.forEach(function (reading) {
+      var button = document.createElement("button");
+      button.type = "button";
+      button.className = "choice-btn";
+      if (reading.py === currentPy) button.setAttribute("aria-current", "true");
+      var py = document.createElement("span");
+      py.className = "choice-py";
+      py.textContent = reading.py;
+      var group = document.createElement("span");
+      group.className = "choice-group";
+      group.textContent = reading.group;
+      var words = document.createElement("span");
+      words.className = "choice-words";
+      words.textContent = reading.words.length ? reading.words.join(" · ") : "暂无组词";
+      button.appendChild(py);
+      button.appendChild(group);
+      button.appendChild(words);
+      button.addEventListener("click", function () {
+        applyChoice(ctx, index, reading.py);
+      });
+      list.appendChild(button);
+    });
+    pop.body.appendChild(list);
+    pop.box.hidden = false;
+    pop.backdrop.hidden = false;
+    place(rect);
+    var active = list.querySelector('[aria-current="true"]') || list.querySelector("button");
+    if (active) active.focus();
+  }
+
+  function applyChoice(ctx, index, py) {
+    var tokens = ctx.getTokens();
+    var from = tokens[index] == null ? "" : tokens[index];
+    if (from !== py) {
+      tokens[index] = py;
+      fixes.push({
+        key: ctx.key, path: ctx.path, label: ctx.label,
+        i: index, ch: ctx.charAt(index), from: from, to: py
+      });
+      ctx.setTokens(tokens);
+      persist();
+      renderFixbar();
+    }
+    closeEditor();
+    if (from !== py) refresh();
   }
 
   function place(rect) {
@@ -782,9 +1138,21 @@
     if (card) {
       var row = card.closest(".row");
       if (row && row._ctx) {
-        openEditor(row._ctx, [Number(card.dataset.i)], card.getBoundingClientRect());
+        if (mode === "polyphone") {
+          openChoiceEditor(row._ctx, Number(card.dataset.i), card.getBoundingClientRect());
+        } else {
+          openEditor(row._ctx, [Number(card.dataset.i)], card.getBoundingClientRect());
+        }
         return;
       }
+    }
+    if (mode === "polyphone") {
+      var topicCell = target.closest ? target.closest(".ch.polyphone") : null;
+      var topicBox = topicCell && topicCell.closest ? topicCell.closest("[data-editable]") : null;
+      if (topicCell && topicBox && topicBox._ctx) {
+        openChoiceEditor(topicBox._ctx, Number(topicCell.dataset.i), topicCell.getBoundingClientRect());
+      }
+      return;
     }
     setTimeout(function () {
       var sel = window.getSelection();
@@ -888,6 +1256,7 @@
   document.getElementById("collapseBtn").addEventListener("click", function () { toggleSidebar(false); });
   document.getElementById("railBtn").addEventListener("click", function () { toggleSidebar(true); });
   document.getElementById("menuBtn").addEventListener("click", function () { toggleSidebar(true); });
+  el.exitTopic.addEventListener("click", leavePolyphoneMode);
   el.backdrop.addEventListener("click", function () { toggleSidebar(false); });
 
   el.pinyinBtn.addEventListener("click", function () {
@@ -929,11 +1298,12 @@
     else if (e.key === "p") { prefs.pinyin = prefs.pinyin === "on" ? "off" : "on"; applyPrefs(); }
   });
 
-  ["fileInput", "fileInput2"].forEach(function (id) {
+  ["fileInput", "fileInput2", "polyphoneInput"].forEach(function (id) {
     var input = document.getElementById(id);
     if (input) {
       input.addEventListener("change", function () {
         if (input.files && input.files[0]) readFile(input.files[0]);
+        input.value = "";
       });
     }
   });
@@ -963,6 +1333,8 @@
     var cached = localStorage.getItem(STORE_KEY);
     if (cached) {
       useData(JSON.parse(cached));
+      var cachedPolyphone = localStorage.getItem(POLY_KEY);
+      if (cachedPolyphone && root) usePolyphoneData(JSON.parse(cachedPolyphone));
       var log = localStorage.getItem(FIX_KEY);
       if (log && root) {
         fixes = JSON.parse(log) || [];
