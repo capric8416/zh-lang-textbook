@@ -1,0 +1,4 @@
+interface:
+  display_name: "整理多音字表"
+  short_description: "将多音字 JSON 统一整理为语境、例子和快速判断表格"
+  default_prompt: "使用 $organize-polyphone-table 将 out/*polyphone.json 整理并校验为统一的多音字表。"

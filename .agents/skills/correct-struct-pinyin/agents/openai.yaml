@@ -1,0 +1,4 @@
+interface:
+  display_name: "校正结构化课文注音"
+  short_description: "根据多音字表校正 struct.json 并生成状态报告"
+  default_prompt: "使用 $correct-struct-pinyin 读取 out/*polyphone.json，校正对应 struct.json 的注音并生成 Markdown 状态报告。"
