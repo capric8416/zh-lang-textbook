@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import re
 
-from .blocks import Line, normalize
+from .blocks import Char, Line, normalize, round_box, union
 from .semantics import (
     SECTION_FONT,
     is_wrapped,
@@ -82,7 +82,57 @@ def is_garden_page(body: list[Line]) -> bool:
     )
 
 
-def _items(lines: list[Line], rules, written: set[str]) -> list[dict]:
+def _merge_matching_segments(segments: list[dict]) -> list[dict]:
+    """把被连线切开的三组匹配题还原为同一横行。
+
+    这类题每组由两个矢量线两侧的文本段组成，三组排在同一基线上。窄空格
+    保留组内连线关系，全角空格分开三组，同时避免查看器把它们拆成六行。
+    """
+    if len(segments) < 4 or len(segments) % 2:
+        return segments
+    pairs = [segments[i : i + 2] for i in range(0, len(segments), 2)]
+    if not all(any("（" in item["文本"] for item in pair) for pair in pairs):
+        return segments
+
+    chunks: list[str] = []
+    annotations: list[dict] = []
+    offset = 0
+    for pair_index, pair in enumerate(pairs):
+        if pair_index:
+            chunks.append("　")
+            offset += 1
+        for item_index, item in enumerate(pair):
+            if item_index:
+                chunks.append("\u2005")
+                offset += 1
+            original = item["文本"]
+            cleaned = original.replace(" ", "")
+            cleaned_chars = list(cleaned)
+            for note in item["注音"]:
+                note = dict(note)
+                if "序" in note:
+                    local = len(original[: note["序"]].replace(" ", ""))
+                    note["序"] = offset + local
+                    if (
+                        0 < local < len(cleaned_chars) - 1
+                        and cleaned_chars[local - 1] == "（"
+                        and cleaned_chars[local + 1] == "）"
+                    ):
+                        # PDF 用一个不可见汉字承载括号上方的提示音；查看器里
+                        # 改成定宽空白，既隐藏占位字，又能继续显示 ruby 注音。
+                        cleaned_chars[local] = "\u2007"
+                annotations.append(note)
+            cleaned = "".join(cleaned_chars)
+            chunks.append(cleaned)
+            offset += len(cleaned)
+    text = "".join(chunks)
+    box = tuple(segments[0]["bbox"])
+    for item in segments[1:]:
+        box = union(box, tuple(item["bbox"]))
+    return [{"文本": text, "注音": annotations, "bbox": round_box(box)}]
+
+
+def _items(lines: list[Line], rules, grid: list[Char]) -> list[dict]:
     """行 → 条目：按版面空隙切段，整行排满又没写完的并入下一行。
 
     田字格里的字不参与拼接（它们和说明文字常常排在同一行）。
@@ -91,26 +141,48 @@ def _items(lines: list[Line], rules, written: set[str]) -> list[dict]:
     out: list[dict] = []
     prev_line: Line | None = None
     for ln in lines:
-        segs = ln.segments(rules)
+        segs = _merge_matching_segments(
+            [item for item in ln.segments(rules) if not _only_grid(item, grid)]
+        )
         if not segs:
             continue
         if (
             out
             and prev_line is not None
-            and not _only_grid(segs[0]["文本"], written)
+            and "　" not in out[-1]["文本"]
             and is_wrapped(prev_line, out[-1]["文本"], ln, right)
         ):
             merge_item(out[-1], segs[0])
             segs = segs[1:]
         out.extend(segs)
         prev_line = ln
-    return [item for item in out if not _only_grid(item["文本"], written)]
+    return out
 
 
-def _only_grid(text: str, written: set[str]) -> bool:
-    """这段是不是只有田字格里的字（黑字 + 描红字）。"""
-    plain = text.replace(" ", "")
-    return bool(plain) and len(plain) <= 4 and all(c in written for c in plain)
+def _only_grid(item: dict, grid: list[Char]) -> bool:
+    """这段是否真的位于田字格内，而不只是恰好用了会写字。"""
+    plain = item["文本"].replace(" ", "")
+    if not plain or len(plain) > 4 or any(not _is_cjk(c) for c in plain):
+        return False
+    x0, y0, x1, y1 = item["bbox"]
+    return all(
+        any(
+            char.char == value
+            and x0 - 1 <= char.cx <= x1 + 1
+            and y0 - 1 <= (char.bbox[1] + char.bbox[3]) / 2 <= y1 + 1
+            for char in grid
+        )
+        for value in plain
+    )
+
+
+def _remove_item_spaces(item: dict) -> None:
+    """删除版面字距，并同步移动逐字注音的位置。"""
+    original = item["文本"]
+    for note in item["注音"]:
+        if "序" in note:
+            note["序"] = len(original[: note["序"]].replace(" ", ""))
+    item["文本"] = original.replace(" ", "")
 
 
 def _section(name: str | None, lines: list[Line], rules) -> dict:
@@ -145,13 +217,12 @@ def _section(name: str | None, lines: list[Line], rules) -> dict:
     picked = bool(selection and selection["作者"] and selection["正文"])
 
     # 田字格的字自成一段，剔掉它们，同一行上的说明文字要留着
-    written = set(write)
-    items = _items(leftover if picked else rest, rules, written)
+    items = _items(leftover if picked else rest, rules, grid)
     if name in CONTENT_ONLY_SECTIONS:
         # 日积月累常为逐字疏排；分栏已由 _items 切成独立条目，条目内部的
         # 空格只是 PDF 字距，不是换行或词语间隔。
         for item in items:
-            item["文本"] = item["文本"].replace(" ", "")
+            _remove_item_spaces(item)
     section = {
         "名称": name,
         "生字": recognize,
@@ -230,7 +301,8 @@ def merge_gardens(pages: list[dict]) -> list[dict]:
                 continuation = [dict(item) for item in section["条目"]]
                 if prev["名称"] == "和大人一起读":
                     for item in continuation:
-                        item["文本"] = item["文本"].replace(" ", "")
+                        item["注音"] = [dict(note) for note in item["注音"]]
+                        _remove_item_spaces(item)
                 if prev.get("选文"):
                     # 选文正文由上一页的「选文」保存；续页必须排在它后面，
                     # 不能并入标题之前的普通条目。

@@ -111,23 +111,46 @@ def _lesson_text(lesson: dict) -> tuple[str, str]:
 
 
 def _section_text(section: dict) -> tuple[str, str]:
-    known: dict[str, str] = {z["字"]: z["拼音"] for z in section.get("生字", [])}
-    parts = [item["文本"] for item in section["条目"]]
-    for item in section["条目"]:
-        known.update({z["字"]: z["拼音"] for z in item["注音"]})
+    source_notes = list(section.get("生字", []))
+    parts: list[tuple[str, list[dict]]] = [
+        (item["文本"], item["注音"]) for item in section["条目"]
+    ]
     picked = section.get("选文")
     if picked:
         head = "".join(x for x in (picked["标题"], picked["作者"]) if x)
-        parts.append(head)
-        parts += [u["文本"] for u in picked["正文"]]
-        for u in picked["正文"]:
-            known.update({z["字"]: z["拼音"] for z in u["注音"]})
+        parts.append((head, []))
+        parts += [(unit["文本"], unit["注音"]) for unit in picked["正文"]]
     continuation = section.get("续排", [])
-    parts += [item["文本"] for item in continuation]
-    for item in continuation:
-        known.update({z["字"]: z["拼音"] for z in item["注音"]})
-    text = " ".join(p for p in parts if p)
-    by_index = {i: known[c] for i, c in enumerate(text) if c in known}
+    parts += [(item["文本"], item["注音"]) for item in continuation]
+    parts = [(part, notes) for part, notes in parts if part]
+    text = " ".join(part for part, _ in parts)
+
+    # 通常同一栏目里同一个字沿用同一份原书注音。匹配题是例外：PDF 用同一个
+    # 占位字承载 fēng/chǎo/mù 等不同提示音，必须按出现位置覆盖。
+    all_notes = source_notes + [note for _, notes in parts for note in notes]
+    variants: dict[str, set[str]] = {}
+    global_known: dict[str, str] = {}
+    for note in all_notes:
+        global_known[note["字"]] = note["拼音"]
+        variants.setdefault(note["字"], set()).add(note["拼音"])
+    conflicts = {char for char, readings in variants.items() if len(readings) > 1}
+    by_index = {
+        i: global_known[c]
+        for i, c in enumerate(text)
+        if c in global_known and c not in conflicts
+    }
+
+    offset = 0
+    for part, notes in parts:
+        cursor = -1
+        for note in notes:
+            index = note.get("序")
+            if index is None:
+                index = part.find(note["字"], cursor + 1)
+            if index >= 0 and note["字"] in conflicts:
+                by_index[offset + index] = note["拼音"]
+                cursor = index
+        offset += len(part) + 1  # 各条目之间的一个空格
     return text, annotate(text, by_index)
 
 

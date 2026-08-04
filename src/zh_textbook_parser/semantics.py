@@ -221,8 +221,13 @@ def is_wrapped(prev_line: Line, prev_text: str, line: Line, right_edge: float) -
 
 
 def merge_item(prev_item: dict, item: dict) -> None:
+    offset = len(prev_item["文本"])
     prev_item["文本"] += item["文本"]
-    prev_item["注音"] += item["注音"]
+    for note in item["注音"]:
+        note = dict(note)
+        if "序" in note:
+            note["序"] += offset
+        prev_item["注音"].append(note)
     prev_item["bbox"] = round_box(union(tuple(prev_item["bbox"]), tuple(item["bbox"])))
 
 
@@ -269,7 +274,11 @@ def _continues_previous_line(previous: Line, line: Line) -> bool:
 
 
 def recognize_strip_groups(lines: list[Line]) -> list[list[int]]:
-    """返回真正的会认字条行组；连续多行视为同一组。"""
+    """返回真正的会认字条行组；连续多行视为同一组。
+
+    插图旁的窄栏正文偶尔会让一整行汉字看起来像疏排字条。候选组只要和
+    前一行或后一行存在续排关系，就仍属于正文，不能据此截断课文。
+    """
     raw = [i for i, line in enumerate(lines) if _is_recognize_strip(line)]
     groups: list[list[int]] = []
     for index in raw:
@@ -281,8 +290,14 @@ def recognize_strip_groups(lines: list[Line]) -> list[list[int]]:
         group
         for group in groups
         if not (
-            group[0] > 0
-            and _continues_previous_line(lines[group[0] - 1], lines[group[0]])
+            (
+                group[0] > 0
+                and _continues_previous_line(lines[group[0] - 1], lines[group[0]])
+            )
+            or (
+                group[-1] + 1 < len(lines)
+                and _continues_previous_line(lines[group[-1]], lines[group[-1] + 1])
+            )
         )
     ]
 

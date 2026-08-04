@@ -173,7 +173,7 @@ class Line:
             out.append(
                 {
                     "文本": text,
-                    "注音": line.pinyin_items(),
+                    "注音": line.pinyin_items(text),
                     "bbox": round_box(line.bbox),
                 }
             )
@@ -182,10 +182,20 @@ class Line:
     def visible_chars(self) -> list[Char]:
         return [c for c in self.chars if c.char not in _SPACES]
 
-    def pinyin_items(self) -> list[dict]:
-        return [
-            {"字": c.char, "拼音": c.pinyin} for c in self.visible_chars() if c.pinyin
-        ]
+    def pinyin_items(self, text: str | None = None) -> list[dict]:
+        """返回逐字注音；给出最终文本时同时记录字符位置。"""
+        out: list[dict] = []
+        cursor = -1
+        for char in self.visible_chars():
+            index = text.find(char.char, cursor + 1) if text is not None else -1
+            if index >= 0:
+                cursor = index
+            if char.pinyin:
+                item = {"字": char.char, "拼音": char.pinyin}
+                if index >= 0:
+                    item["序"] = index
+                out.append(item)
+        return out
 
 
 def _split_span(s: Span) -> list[Char]:
