@@ -5,7 +5,7 @@ from __future__ import annotations
 import re
 
 from . import attribution
-from .blocks import Char, Line, round_box, union
+from .blocks import Char, Line, Span, round_box, union
 
 # 句子切分标点：切开后标点跟在前一句尾部（顿号不切，避免把并列词拆碎）
 SPLIT_PUNCT = "。！？；，…"
@@ -19,6 +19,7 @@ EX_MARK = "\t"  # 课后练习题的题号位（原文用制表符占位，前�
 BULLET = "◇"
 SECTION_FONT = "FZHTK"  # 栏目标签用的黑体
 INDENT_TOLERANCE = 4.0  # 段首缩进判定（pt）
+READING_CORNER = "快乐读书吧"
 
 
 def _is_latin_number(line: Line) -> bool:
@@ -128,6 +129,75 @@ def _char_stream(lines: list[Line]) -> tuple[list[tuple[Char, int]], bool]:
     return stream, first_indent
 
 
+def is_reading_corner_page(body: list[Line]) -> bool:
+    """页面是否为带独立主标题的「快乐读书吧」导读页。"""
+    label = next((ln for ln in body if ln.text() == READING_CORNER), None)
+    return bool(
+        label
+        and any(ln.y0 > label.y1 and ln.max_size >= 20 for ln in body)
+    )
+
+
+def _half_line(line: Line, midpoint: float, left: bool) -> Line | None:
+    """按页面中线取一侧文字，保留每个字的原注音。"""
+    chars = [c for c in line.visible_chars() if (c.cx < midpoint) == left]
+    if not chars:
+        return None
+    spans = [Span(c.char, c.bbox, c.size, c.font) for c in chars]
+    return Line(spans, chars)
+
+
+def extract_reading_corner(body: list[Line], width: float) -> dict | None:
+    """抽取「快乐读书吧」内嵌书页，按左栏再右栏恢复阅读顺序。"""
+    label = next((ln for ln in body if ln.text() == READING_CORNER), None)
+    if label is None:
+        return None
+
+    title = max(
+        (ln for ln in body if ln.y0 > label.y1),
+        key=lambda ln: ln.max_size,
+        default=None,
+    )
+    if title is None:
+        return None
+
+    book_starts = [
+        ln.y0
+        for ln in body
+        if ln.y0 > title.y1 and ln.max_size >= 20 and ln.text() != title.text()
+    ]
+    if book_starts:
+        book_y = min(book_starts)
+        intro = [ln for ln in body if title.y1 < ln.y0 < book_y]
+        book = [ln for ln in body if ln.y0 >= book_y]
+        midpoint = width / 2
+        left = [part for ln in book if (part := _half_line(ln, midpoint, True))]
+        right = [part for ln in book if (part := _half_line(ln, midpoint, False))]
+        content_lines = intro + left + right
+    else:
+        candidates = [ln for ln in body if ln.y0 > title.y1]
+        main_size = dominant_size(candidates)
+        content_lines = [ln for ln in candidates if abs(ln.size - main_size) < 0.6]
+    stream, first_indent = _char_stream(content_lines)
+
+    return {
+        "课号": None,
+        "栏目": READING_CORNER,
+        "课题": None,
+        "标题": re.sub(r"\s+", "", title.text()),
+        "标题注释号": None,
+        "作者": None,
+        "年代": None,
+        "国别": None,
+        "译者": None,
+        "出处": None,
+        "作者出处": None,
+        "注释": [],
+        "正文": _chars_to_clauses(stream),
+        "首行缩进": first_indent,
+    }
+
+
 WRAP_MIN_CHARS = 8  # 只有够长的整行才可能是折行
 
 
@@ -167,9 +237,54 @@ def _is_exercise_line(line: Line) -> bool:
 
 
 def _is_recognize_strip(line: Line) -> bool:
-    """会认字条：一整行汉字且每个字都带注音。"""
-    hanzi = [c for c in line.visible_chars() if _is_cjk(c.char)]
-    return len(hanzi) >= 4 and all(c.pinyin for c in hanzi)
+    """会认字条：逐字注音、纯汉字，并且字间明显疏排。
+
+    一二年级课文的标题和正文也可能逐字注音，不能只凭「每个汉字都有
+    拼音」判断。会认字条里的字彼此独立，间距约为字号的一半；正文的
+    连续排版则紧得多。课号、标点或注释号也都说明这不是会认字条。
+    """
+    chars = line.visible_chars()
+    if len(chars) < 4 or any(not _is_cjk(c.char) for c in chars):
+        return False
+    if not all(c.pinyin for c in chars):
+        return False
+
+    ordered = sorted(chars, key=lambda c: c.bbox[0])
+    gaps = [
+        right.bbox[0] - left.bbox[2]
+        for left, right in zip(ordered, ordered[1:])
+    ]
+    min_size = min(c.size for c in ordered)
+    return bool(gaps) and min(gaps) >= min_size * 0.35
+
+
+def _continues_previous_line(previous: Line, line: Line) -> bool:
+    """疏排行是否仍是绕图正文，而不是新起的会认字条。"""
+    return (
+        abs(line.size - previous.size) < 0.6
+        and 0 <= line.y0 - previous.y1 < line.size * 1.5
+        and not _ends_sentence(previous)
+        and line.x0 <= previous.x0
+    )
+
+
+def recognize_strip_groups(lines: list[Line]) -> list[list[int]]:
+    """返回真正的会认字条行组；连续多行视为同一组。"""
+    raw = [i for i, line in enumerate(lines) if _is_recognize_strip(line)]
+    groups: list[list[int]] = []
+    for index in raw:
+        if groups and index == groups[-1][-1] + 1:
+            groups[-1].append(index)
+        else:
+            groups.append([index])
+    return [
+        group
+        for group in groups
+        if not (
+            group[0] > 0
+            and _continues_previous_line(lines[group[0] - 1], lines[group[0]])
+        )
+    ]
 
 
 def _grid_chars(lines: list[Line]) -> list[Char]:
@@ -195,9 +310,9 @@ def _grid_chars(lines: list[Line]) -> list[Char]:
 def split_after_class(body: list[Line]) -> tuple[list[Line], list[Line]]:
     """按最靠上的课后标志（练习题 / 会认字条 / 田字格）把正文区一分为二。"""
     grid_y = [c.bbox[1] for c in _grid_chars(body)]
-    marks = [
-        ln.y0 for ln in body if _is_exercise_line(ln) or _is_recognize_strip(ln)
-    ] + grid_y
+    strip_groups = recognize_strip_groups(body)
+    strip_y = [body[strip_groups[-1][0]].y0] if strip_groups else []
+    marks = [ln.y0 for ln in body if _is_exercise_line(ln)] + strip_y + grid_y
     if not marks:
         return body, []
     cut = min(marks)

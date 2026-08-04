@@ -593,6 +593,8 @@ body[data-mode="polyphone"] .doc-head { margin-bottom: 24px; }
 .choice-py { color: var(--accent); font-size: 16px; font-weight: 700; }
 .choice-group { color: var(--ink-faint); font-size: 11px; }
 .choice-words { color: var(--ink-soft); font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.choice-context, .choice-rule { grid-column: 1 / -1; color: var(--ink-soft); font-size: 12px; line-height: 1.5; text-align: left; }
+.choice-rule { color: var(--ink-faint); }
 
 .pop-backdrop { position: fixed; inset: 0; z-index: 20; }
 

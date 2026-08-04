@@ -19,9 +19,11 @@ from .merge import merge_lessons
 from .regions import footer_json, header_json, split_regions
 from .semantics import (
     dominant_size,
+    extract_reading_corner,
     lesson_dominant,
     extract_after_class,
     extract_lesson,
+    is_reading_corner_page,
     split_after_class,
 )
 
@@ -46,7 +48,10 @@ def parse_page(
     lesson = after = garden = appendix = None
     if page_no is not None:
         body = regions.body
-        if appendix_title(body) or prefer == "附录":
+        if is_reading_corner_page(body):
+            lesson = extract_reading_corner(body, width)
+            body = []
+        elif appendix_title(body) or prefer == "附录":
             appendix = parse_appendix(body)
             body = []
         elif prefer == "园地" or is_garden_page(body):
@@ -54,7 +59,13 @@ def parse_page(
             cut = selection_label_y(body)
             upper = [ln for ln in body if cut is None or ln.y0 < cut - 1]
             body = [ln for ln in body if cut is not None and ln.y0 >= cut - 1]
-            garden = parse_garden(upper, page_rules(page)) if upper else None
+            garden = (
+                parse_garden(
+                    upper, page_rules(page), continuation=prefer == "园地"
+                )
+                if upper
+                else None
+            )
         if body:
             lesson_lines, after_lines = split_after_class(body)
             lesson, rest = extract_lesson(
@@ -137,6 +148,8 @@ def _inherit(lesson: dict, state: dict) -> None:
     if lesson["课号"] is not None:
         state["课号"] = lesson["课号"]
         state["课题"] = lesson["课题"]
+        return
+    if lesson.get("栏目") == "快乐读书吧":
         return
     if lesson["标题"] and state.get("课题") is None:
         return  # 新起的栏目页，不属于上一课

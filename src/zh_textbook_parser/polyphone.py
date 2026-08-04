@@ -26,6 +26,56 @@ from pypinyin.phrases_dict import phrases_dict
 jieba.setLogLevel(logging.ERROR)
 
 
+# 结构助词不能只靠词例说明，单独给出适合小学生使用的语法判断规则。
+READING_GUIDANCE: dict[tuple[str, str], tuple[str, list[str], str]] = {
+    ("的", "de"): (
+        "修饰名词，表示所属、性质或说明对象时作结构助词。",
+        ["我的书", "美丽的花", "写的文章"],
+        "放在名词前作修饰语时，通常读轻声 de。",
+    ),
+    ("的", "dí"): (
+        "表示确实、实在，主要用于“的确”。",
+        ["的确", "的的确确", "的确如此"],
+        "能换成“确实”时，读 dí。",
+    ),
+    ("的", "dì"): (
+        "表示目标、箭靶或命中的对象。",
+        ["目的", "有的放矢", "一语中的"],
+        "表示目标或命中目标时，读 dì。",
+    ),
+    ("的", "dī"): (
+        "用于出租车相关的口语词。",
+        ["的士", "打的", "的哥"],
+        "表示出租车时，读 dī。",
+    ),
+    ("地", "de"): (
+        "放在动词或形容词前，标明动作的方式、状态。",
+        ["高兴地说", "慢慢地走", "认真地学习"],
+        "位于动作前，能回答“怎样做”时，通常读轻声 de。",
+    ),
+    ("地", "dì"): (
+        "表示土地、地点、地面或空间。",
+        ["土地", "地方", "地面"],
+        "表示实际地点或土地时，读 dì。",
+    ),
+    ("得", "de"): (
+        "放在动词或形容词后作补语标志，也用于“觉得、显得”等词。",
+        ["跑得快", "写得好", "觉得"],
+        "位于动作后，补充程度或结果时，通常读轻声 de。",
+    ),
+    ("得", "dé"): (
+        "表示获得、取得或得到。",
+        ["得到", "获得", "得分"],
+        "能换成“获得”时，通常读 dé。",
+    ),
+    ("得", "děi"): (
+        "表示必须、需要或对情况的估计。",
+        ["我得走了", "非得完成", "得三天"],
+        "能换成“必须”或“需要”时，读 děi。",
+    ),
+}
+
+
 def _is_han(ch: str) -> bool:
     return len(ch) == 1 and "一" <= ch <= "鿿"
 
@@ -170,6 +220,30 @@ def _dictionary_words(
     return result
 
 
+def _guidance(
+    ch: str, py: str, group: str, examples: list[str]
+) -> tuple[str, list[str], str]:
+    """把词例整理成“语境、例子、快速判断”，特殊语法字优先使用人工规则。"""
+    special = READING_GUIDANCE.get((ch, py))
+    if special:
+        return special
+
+    if examples:
+        words = "、".join(examples)
+        context = (
+            f"本册在“{words}”等词语中使用这个读音。"
+            if group == "本册出现"
+            else f"常见于“{words}”等固定词语或人名、地名中。"
+        )
+        return context, examples, f"看到“{words}”等词语时，读 {py}；其他搭配结合词义判断。"
+
+    return (
+        "罕见、古语或词典保留读音，本册没有可用词例。",
+        [],
+        f"本册通常不读 {py}；遇到生僻词时查词典确认。",
+    )
+
+
 def build(data: dict, words_per_reading: int = 3) -> dict:
     """构建可直接 JSON 序列化的多音字文档。"""
     chars = _all_chars(data)
@@ -199,22 +273,27 @@ def build(data: dict, words_per_reading: int = 3) -> dict:
         for py in all_readings[ch]:
             all_examples = word_examples.get((ch, py), [])
             examples = all_examples[:words_per_reading] if words_per_reading else all_examples
-            entry = {
-                "拼音": py,
-                "组词数量": len(all_examples),
-                "组词": examples,
-            }
             if py in appeared:
                 group = "本册出现"
             elif all_examples:
                 group = "常用"
             else:
                 group = "不常用"
+            context, selected_examples, quick_rule = _guidance(ch, py, group, examples)
+            entry = {
+                "读音": py,
+                "语境": context,
+                "例子": selected_examples,
+                "快速判断": quick_rule,
+                "_候选词数量": len(all_examples),
+            }
             groups[group].append(entry)
 
         # Python 排序稳定；数量相同时保留读音在词典中的原始顺序。
         for entries in groups.values():
-            entries.sort(key=lambda entry: entry["组词数量"], reverse=True)
+            entries.sort(key=lambda entry: entry["_候选词数量"], reverse=True)
+            for entry in entries:
+                del entry["_候选词数量"]
         rows.append({"字": ch, **groups})
 
     reading_count = sum(
@@ -226,8 +305,9 @@ def build(data: dict, words_per_reading: int = 3) -> dict:
     return {
         "说明": (
             "收录源文件中出现、且 pypinyin 单字词典提供两个或以上读音的汉字；"
-            "按 struct.json 的逐字注音区分读音是否在本册出现。组词优先取本册，"
-            "不足时从 pypinyin 词语词典补充。"
+            "按 struct.json 的逐字注音区分读音是否在本册出现。每个读音整理为"
+            "语境、例子和快速判断；特殊语法字使用人工规则，其余根据本册及词典"
+            "词例生成，罕见读音明确提示查词典确认。"
         ),
         "多音字数量": len(rows),
         "读音数量": reading_count,

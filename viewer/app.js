@@ -34,7 +34,7 @@
 
   var root = null;     // 载入的 struct.json 原对象（下载用）
   var polyRoot = null; // 多音字表原对象
-  var polyphones = {}; // 字 → [{ py, group, words }]，多音字表全量
+  var polyphones = {}; // 字 → [{ py, group, words, context, quickRule }]，多音字表全量
   var topic = {};      // 实际标记为待核对的字，受“只核对常用”开关过滤
   var mode = "reading";
   var fixes = [];      // 修正记录，用于计数 / 撤销 / 明细
@@ -158,12 +158,15 @@
       var readings = [];
       ["本册出现", "常用", "不常用"].forEach(function (group) {
         (row[group] || []).forEach(function (entry) {
-          if (!entry || !entry["拼音"]) return;
-          if (readings.some(function (x) { return x.py === entry["拼音"]; })) return;
+          var pronunciation = entry && (entry["读音"] || entry["拼音"]);
+          if (!pronunciation) return;
+          if (readings.some(function (x) { return x.py === pronunciation; })) return;
           readings.push({
-            py: entry["拼音"],
+            py: pronunciation,
             group: group,
-            words: entry["组词"] || []
+            words: entry["例子"] || entry["组词"] || [],
+            context: entry["语境"] || "",
+            quickRule: entry["快速判断"] || ""
           });
         });
       });
@@ -506,6 +509,14 @@
     for (var i = 0; i < chars.length; i++) {
       var c = chars[i];
       if (c.ch === " ") {                       // 园地条目之间的空格 = 换行
+        // 练习中的全角括号会用空格留出填写位置，如“忄（ ）”。
+        // 这个空格属于当前条目，不能被当作园地条目的分隔符。
+        var prev = i > 0 ? chars[i - 1].ch : "";
+        var next = i + 1 < chars.length ? chars[i + 1].ch : "";
+        if (prev === "（" && next === "）") {
+          buf.push(c);
+          continue;
+        }
         if (buf.length) { lines.push(buf); buf = []; }
         continue;
       }
@@ -1021,10 +1032,20 @@
       group.textContent = reading.group;
       var words = document.createElement("span");
       words.className = "choice-words";
-      words.textContent = reading.words.length ? reading.words.join(" · ") : "暂无组词";
+      words.textContent = reading.words.length ? reading.words.join(" · ") : "暂无例子";
+      var context = document.createElement("span");
+      context.className = "choice-context";
+      context.textContent = reading.context;
+      context.hidden = !reading.context;
+      var quickRule = document.createElement("span");
+      quickRule.className = "choice-rule";
+      quickRule.textContent = reading.quickRule ? "判断：" + reading.quickRule : "";
+      quickRule.hidden = !reading.quickRule;
       button.appendChild(py);
       button.appendChild(group);
       button.appendChild(words);
+      button.appendChild(context);
+      button.appendChild(quickRule);
       button.addEventListener("click", function () {
         applyChoice(ctx, index, reading.py);
       });

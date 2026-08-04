@@ -18,15 +18,16 @@ from .semantics import (
     merge_item,
     _grid_chars,
     _is_cjk,
-    _is_recognize_strip,
     dominant_size,
     extract_lesson,
+    recognize_strip_groups,
 )
 
 # 必须整行就是标题：识字表里「语文园地一 亭 咨 询 …」这种行不算
 TITLE_RE = re.compile(r"^语文园地[一二三四五六七八九十]+$")
 # 黑体小标题里，「我爱阅读」是整篇选文，按课文处理，不算园地栏目
 SELECTION_LABELS = ("我爱阅读",)
+CONTENT_ONLY_SECTIONS = ("日积月累",)
 
 
 def _dedupe(text: str) -> str:
@@ -116,8 +117,11 @@ def _section(name: str | None, lines: list[Line], rules) -> dict:
     """一个栏目块：生字条、田字格、其余条目，外加可能的整首选文。"""
     used: set[int] = set()
     recognize: list[dict] = []
-    for ln in lines:
-        if _is_recognize_strip(ln):
+    strip_indexes = {
+        index for group in recognize_strip_groups(lines) for index in group
+    }
+    for i, ln in enumerate(lines):
+        if name not in CONTENT_ONLY_SECTIONS and i in strip_indexes:
             recognize.extend(
                 {"字": c.char, "拼音": c.pinyin}
                 for c in ln.visible_chars()
@@ -143,6 +147,11 @@ def _section(name: str | None, lines: list[Line], rules) -> dict:
     # 田字格的字自成一段，剔掉它们，同一行上的说明文字要留着
     written = set(write)
     items = _items(leftover if picked else rest, rules, written)
+    if name in CONTENT_ONLY_SECTIONS:
+        # 日积月累常为逐字疏排；分栏已由 _items 切成独立条目，条目内部的
+        # 空格只是 PDF 字距，不是换行或词语间隔。
+        for item in items:
+            item["文本"] = item["文本"].replace(" ", "")
     section = {
         "名称": name,
         "生字": recognize,
@@ -163,7 +172,7 @@ def _section(name: str | None, lines: list[Line], rules) -> dict:
     return section
 
 
-def parse_garden(body: list[Line], rules) -> dict | None:
+def parse_garden(body: list[Line], rules, continuation: bool = False) -> dict | None:
     """把一页园地拆成 {标题, 栏目[]}。"""
     if not body:
         return None
@@ -177,6 +186,8 @@ def parse_garden(body: list[Line], rules) -> dict | None:
 
     marks = [i for i, ln in enumerate(lines) if is_section_label(ln)]
     if not marks and title is None:
+        if continuation:
+            return {"标题": None, "栏目": [_section(None, lines, rules)]}
         return None
 
     sections: list[dict] = []
@@ -216,7 +227,16 @@ def merge_gardens(pages: list[dict]) -> list[dict]:
             if section["名称"] is None and current["栏目"]:
                 # 跨页续排：并回上一个栏目
                 prev = current["栏目"][-1]
-                prev["条目"] += section["条目"]
+                continuation = [dict(item) for item in section["条目"]]
+                if prev["名称"] == "和大人一起读":
+                    for item in continuation:
+                        item["文本"] = item["文本"].replace(" ", "")
+                if prev.get("选文"):
+                    # 选文正文由上一页的「选文」保存；续页必须排在它后面，
+                    # 不能并入标题之前的普通条目。
+                    prev.setdefault("续排", []).extend(continuation)
+                else:
+                    prev["条目"] += continuation
                 prev["生字"] += section["生字"]
                 prev["会写"] += section["会写"]
                 continue

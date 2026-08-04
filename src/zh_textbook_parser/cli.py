@@ -81,7 +81,8 @@ def main(argv: list[str] | None = None) -> int:
     elif args.pages:
         indexes = parse_spec(args.pages)
     else:
-        indexes = printed_to_index(args.pdf, {1, 2, 3})
+        with fitz.open(args.pdf) as doc:
+            indexes = list(range(len(doc)))
 
     data = parse_pages(args.pdf, indexes, full=args.full)
     if args.struct:

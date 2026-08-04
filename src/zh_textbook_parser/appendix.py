@@ -15,11 +15,49 @@ import re
 
 from .blocks import Line, round_box
 
-TITLE_RE = re.compile(r"^(识字表|写字表|词语表)$")
+RADICAL_TABLE = "常用偏旁名称表"
+TITLE_RE = re.compile(rf"^(识字表|写字表|词语表|{RADICAL_TABLE})$")
 LABEL_RE = re.compile(r"^(\d{1,2}|语文园地[一二三四五六七八九十]+)")
 NOTE_RE = re.compile(r"^[①-⑳]")
 GROUP_FONT = "FZS3K"  # 「阅读」「识字」这种分组标签用的字体
 TITLE_MIN_SIZE = 20
+
+RADICAL_BY_NAME = {
+    "立刀旁": "刂",
+    "京字头": "亠",
+    "两点水": "冫",
+    "力字旁": "力",
+    "又字旁": "又",
+    "大字头": "大",
+    "双人旁": "彳",
+    "食字旁": "饣",
+    "广字头": "广",
+    "竖心旁": "忄",
+    "尸字头": "尸",
+    "弓字旁": "弓",
+    "子字旁": "子",
+    "王字旁": "王",
+    "车字旁": "车",
+    "牛字旁": "牜",
+    "反文旁": "攵",
+    "爪字头": "爫",
+    "火字旁": "火",
+    "户字头": "户",
+    "示字旁": "礻",
+    "心字底": "心",
+    "目字旁": "目",
+    "皿字底": "皿",
+    "金字旁": "钅",
+    "病字头": "疒",
+    "衣字旁": "衤",
+    "页字旁": "页",
+    "虫字旁": "虫",
+    "舌字旁": "舌",
+    "米字旁": "米",
+    "走字底": "走",
+    "足字旁": "足",
+    "雨字头": "雨",
+}
 
 
 def _clean(text: str) -> str:
@@ -65,8 +103,40 @@ def _row(label: str | None, chars: list, text: str) -> dict:
     }
 
 
+def _radical_rows(body: list[Line]) -> list[dict]:
+    """按左栏再右栏提取「偏旁 / 名称 / 例字」三列。"""
+    left: list[dict] = []
+    right: list[dict] = []
+    for line in body:
+        spans = [s for s in line.spans if s.text.strip()]
+        for i, span in enumerate(spans):
+            name = _clean(span.text)
+            radical = RADICAL_BY_NAME.get(name)
+            if radical is None or i + 1 >= len(spans):
+                continue
+            example = _clean(spans[i + 1].text)
+            if not example or example in RADICAL_BY_NAME:
+                continue
+            row = {
+                "标签": radical,
+                "字": [],
+                "文本": "",
+                "内容": [radical, name, example],
+            }
+            (left if span.bbox[0] < 260 else right).append(row)
+    return left + right
+
+
 def parse_appendix(body: list[Line]) -> dict | None:
     """把一页附录拆成 {名称, 分组[], 注释[]}。"""
+    if appendix_title(body) == RADICAL_TABLE:
+        rows = _radical_rows(body)
+        return {
+            "名称": RADICAL_TABLE,
+            "分组": [{"名称": None, "行": rows}],
+            "注释": [],
+        }
+
     title = None
     groups: list[dict] = []
     notes: list[dict] = []
@@ -100,6 +170,8 @@ def parse_appendix(body: list[Line]) -> dict | None:
 
 def _content(name: str | None, row: dict) -> list:
     """按表的种类把一行整理成最终内容。"""
+    if name == RADICAL_TABLE:
+        return row["内容"]
     if name == "识字表":
         return row["字"]
     if name == "词语表":
@@ -137,7 +209,7 @@ def merge_appendices(pages: list[dict]) -> list[dict]:
             group["行"] = [
                 {"标签": r["标签"], "内容": _content(unit["名称"], r)}
                 for r in group["行"]
-                if r["字"]
+                if r.get("字") or r.get("内容")
             ]
         unit["条数"] = sum(len(g["行"]) for g in unit["分组"])
     return units

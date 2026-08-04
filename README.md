@@ -1,6 +1,6 @@
 # zh-textbook-parser
 
-小学语文课本 PDF（人教版·二年级下册）排版块解析 → 语义单元 JSON。
+语文课本 PDF 排版块解析 → 语义单元 JSON。
 
 ## 用法
 
@@ -9,8 +9,8 @@ uv sync
 
 uv run zh-textbook --printed 1-3                  # 按课本印刷页码，默认前 3 页
 uv run zh-textbook --pages 6-8                    # 按 PDF 页序（1 基）
-uv run zh-textbook --pages 1-130 -o out/all.json          # 全书：41 篇课文 + 8 个园地 + 3 张附录表
-uv run zh-textbook --pages 1-130 --struct -o out/struct.json  # 简化结构，逐字注音
+uv run zh-textbook -o out/all.json          # 全书：41 篇课文 + 8 个园地 + 3 张附录表
+uv run zh-textbook --struct -o out/struct.json  # 简化结构，逐字注音
 uv run zh-textbook --pages 1-130 --full -o out/pages.json     # 按页输出全部版面单元
 uv run zh-polyphone out/struct.json -o out/polyphone.json     # 多音字、读音分组及组词
 ```
@@ -29,8 +29,9 @@ uv run zh-polyphone out/zh-lang-grade2b-textbook-struct.json \
 ```
 
 每个多音字内部把全部读音分为 `本册出现`、`常用` 和 `不常用`：本册出现的
-读音进入第一组；其余读音有组词的进入常用组，无组词的进入不常用组。每个字
-的三个读音分组都按候选 `组词数量` 从多到少排列。每个读音都带组词，参数
+读音进入第一组；其余读音有词例的进入常用组，无词例的进入不常用组。每个读音
+统一包含 `读音 / 语境 / 例子 / 快速判断` 四个字段。特殊语法字使用人工规则，
+其余根据本册和词典词例生成；没有可靠词例的罕见读音会明确提示查词典确认。参数
 `--words-per-reading` 默认为 `3`，可传其他正整数限制每个读音的组词数；传 `0`
 表示组词数量不设上限。候选来自本册、pypinyin 短语表和 jieba 常用词表，统一
 按照 jieba 的日常书面语词频从高到低选择，同频时优先短词。词典中的罕见读音
@@ -134,12 +135,17 @@ uv run zh-polyphone out/zh-lang-grade2b-textbook-struct.json \
 ```
 
 注音规则：`拼音.split(" ")` 与 `全文` **逐字一一对应**（标点保留原样，空白对应空串）。
-读音三级来源：
+一年级下册、二年级上册等带有课本原注音的内容逐字采用原读音；仅对没有原注音
+的汉字使用规则补全。只有经过多音字表逐项结合上下文审核的固定短语，才允许显式
+修正已有注音。
 
-1. 课本标注过的生字 —— 以课本为准（多音字最可靠的依据）；
-2. `struct.py` 里的 `PHRASE_FIX` —— 古诗文里 pypinyin 词典没收、单字默认又不对的词
+读音四级来源：
+
+1. `struct.py` 里的 `REVIEWED_PHRASE_FIX` —— 经多音字表逐项审核确认的固定语境；
+2. 课本标注过的生字 —— 以课本为准（多音字最可靠的原始依据）；
+3. `struct.py` 里的 `PHRASE_FIX` —— 古诗文里 pypinyin 词典没收、单字默认又不对的词
    （似剪刀 sì、一行白鹭 háng、子鼠 zǐ、万颗子 zǐ、管子 zǐ）；
-3. 其余先用 jieba 分词，再逐词送 pypinyin —— pypinyin 自带的简单切分会把
+4. 其余先用 jieba 分词，再逐词送 pypinyin —— pypinyin 自带的简单切分会把
    「去年长颈鹿」切出「年长」而读成 `zhǎng`，分词后是 `cháng jǐng lù`。
 
 用课本自己的 572 处注音回测过：pypinyin 单干错 16 处（2.8%），加 jieba 分词 17 处，

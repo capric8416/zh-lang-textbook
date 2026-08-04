@@ -1,8 +1,7 @@
 """简化结构 struct.json：目录 + 课文 + 园地 + 附录，正文逐字注音。
 
-课本只给生字注音，这里把整篇补全：课本标注过的字用课本的读音（多音字以它
-为准），其余用 pypinyin 按词组推断。拼音串与正文按「字」一一对应，用空格
-分隔，非汉字原样保留。
+课本已有注音的字直接采用原读音（多音字以它为准），没有注音的字用 pypinyin
+按词组推断补全。拼音串与正文按「字」一一对应，用空格分隔，非汉字原样保留。
 """
 
 from __future__ import annotations
@@ -16,6 +15,8 @@ with warnings.catch_warnings():  # jieba 在 3.12 下的正则转义告警
 
 from pypinyin import Style, load_phrases_dict, pinyin
 
+from .appendix import RADICAL_TABLE
+
 jieba.setLogLevel(logging.ERROR)
 
 # 课本里的古诗文，pypinyin 词典没收、单字默认读音又不对的地方
@@ -26,8 +27,21 @@ PHRASE_FIX = {
     "万颗子": [["wàn"], ["kē"], ["zǐ"]],
     "管子": [["guǎn"], ["zǐ"]],
 }
-load_phrases_dict(PHRASE_FIX)
-for _phrase in PHRASE_FIX:
+
+# 经多音字表逐项结合上下文审核后的修正。它们是明确的数据校对结果，最后覆盖
+# 自动推断和 PDF 提取值；不要把未经审核的词库候选加入这里。
+REVIEWED_PHRASE_FIX = {
+    "着急": [["zháo"], ["jí"]],
+    "不要": [["bú"], ["yào"]],
+    "转动": [["zhuàn"], ["dòng"]],
+    "扑棱棱": [["pū"], ["lēng"], ["lēng"]],
+    "结结实实": [["jiē"], ["jiē"], ["shí"], ["shí"]],
+    "高兴地说": [["gāo"], ["xìng"], ["de"], ["shuō"]],
+    "一次": [["yí"], ["cì"]],
+}
+
+load_phrases_dict({**PHRASE_FIX, **REVIEWED_PHRASE_FIX})
+for _phrase in (*PHRASE_FIX, *REVIEWED_PHRASE_FIX):
     jieba.add_word(_phrase)  # 别被分词切散，否则词组读音用不上
 
 
@@ -40,6 +54,7 @@ def annotate(text: str, known: dict[int, str] | None = None) -> str:
 
     返回空格分隔的拼音串，`拼音.split(" ")` 与 `全文` 逐字一一对应：标点保留
     原样，空白对应空串。汉字按整段送进 pypinyin，好让它按词组判多音字。
+    known 中的课本原注音最后覆盖推断结果，因此只补没有原注音的位置。
     """
     if not text:
         return ""
@@ -70,6 +85,14 @@ def annotate(text: str, known: dict[int, str] | None = None) -> str:
     for i, py in (known or {}).items():
         if 0 <= i < len(out):
             out[i] = py
+
+    # 仅应用已经逐项人工批准的完整短语；同一短语出现多次时全部修正。
+    for phrase, values in REVIEWED_PHRASE_FIX.items():
+        start = text.find(phrase)
+        while start >= 0:
+            for offset, value in enumerate(values):
+                out[start + offset] = value[0]
+            start = text.find(phrase, start + 1)
     return " ".join(out)
 
 
@@ -99,6 +122,10 @@ def _section_text(section: dict) -> tuple[str, str]:
         parts += [u["文本"] for u in picked["正文"]]
         for u in picked["正文"]:
             known.update({z["字"]: z["拼音"] for z in u["注音"]})
+    continuation = section.get("续排", [])
+    parts += [item["文本"] for item in continuation]
+    for item in continuation:
+        known.update({z["字"]: z["拼音"] for z in item["注音"]})
     text = " ".join(p for p in parts if p)
     by_index = {i: known[c] for i, c in enumerate(text) if c in known}
     return text, annotate(text, by_index)
@@ -117,7 +144,11 @@ def _appendix_rows(table: dict) -> list[dict]:
                 "拼音": [],
             }
             content = row["内容"]
-            if content and isinstance(content[0], dict):  # 识字表：自带注音
+            if table["名称"] == RADICAL_TABLE:
+                item["序号"] = content[0]
+                item["词"] = content[1:]
+                item["拼音"] = [annotate(value) for value in content[1:]]
+            elif content and isinstance(content[0], dict):  # 识字表：自带注音
                 item["字"] = [c["字"] for c in content]
                 item["拼音"] = [c["拼音"] or annotate(c["字"]) for c in content]
             elif table["名称"] == "词语表":

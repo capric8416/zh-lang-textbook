@@ -60,9 +60,15 @@ def _append_content(out: dict, page: dict) -> None:
     elif _is_open(tail):
         # 上一页最后一句没写完，和本页第一句拼起来，段落也跟着上一句
         head = units[0]
+        head_offset = len(tail["文本"])
         tail["文本"] += head["文本"]
         tail["字数"] = len(tail["文本"])
-        tail["注音"] += head["注音"]
+        tail["注音"] += [
+            {**item, "序": item["序"] + head_offset}
+            if "序" in item
+            else dict(item)
+            for item in head["注音"]
+        ]
         tail["位置"] += _place(head, page)
         if tail["文本"][-1] in SPLIT_PUNCT + CLOSING + "、：":
             tail.pop("跨页续句", None)
