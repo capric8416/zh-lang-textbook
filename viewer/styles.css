@@ -307,6 +307,8 @@ body[data-sidebar="off"] .main { margin-left: 0; }
 .chip:hover { border-color: var(--accent); }
 
 .only-narrow { display: none; }
+.only-topic { display: none; }
+body[data-mode="polyphone"] .only-topic { display: inline-block; }
 
 /* ---------- 拖放 / 空态 ---------- */
 

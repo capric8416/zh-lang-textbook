@@ -28,17 +28,19 @@
     pinyinBtn: document.getElementById("pinyinBtn"),
     fontBtn: document.getElementById("fontBtn"),
     polyphoneInput: document.getElementById("polyphoneInput"),
+    commonBtn: document.getElementById("commonBtn"),
     exitTopic: document.getElementById("exitTopic")
   };
 
   var root = null;     // 载入的 struct.json 原对象（下载用）
   var polyRoot = null; // 多音字表原对象
-  var polyphones = {}; // 字 → [{ py, group, words }]
+  var polyphones = {}; // 字 → [{ py, group, words }]，多音字表全量
+  var topic = {};      // 实际标记为待核对的字，受“只核对常用”开关过滤
   var mode = "reading";
   var fixes = [];      // 修正记录，用于计数 / 撤销 / 明细
   var items = [];      // 目录条目（含渲染所需数据）
   var current = -1;
-  var prefs = { sidebar: "on", pinyin: "on", font: "kai", size: 21, last: 0, width: 268 };
+  var prefs = { sidebar: "on", pinyin: "on", font: "kai", size: 21, last: 0, width: 268 , polyCommon: true };
   var WIDTH_MIN = 180, WIDTH_MAX = 520, WIDTH_DEFAULT = 268;
 
   /* ---------------- 偏好 ---------------- */
@@ -59,6 +61,7 @@
     document.documentElement.style.setProperty("--reading", prefs.size + "px");
     document.documentElement.style.setProperty("--sidebar-w", prefs.width + "px");
     el.pinyinBtn.setAttribute("aria-pressed", prefs.pinyin === "on");
+    if (el.commonBtn) el.commonBtn.setAttribute("aria-pressed", String(!!prefs.polyCommon));
     el.fontBtn.textContent = { kai: "楷体", song: "宋体", hei: "黑体" }[prefs.font];
     el.backdrop.hidden = !(prefs.sidebar === "on" &&
       window.matchMedia("(max-width: 860px)").matches);
@@ -172,12 +175,9 @@
     }
     var previousMap = polyphones;
     polyphones = map;
-    var topicItems = buildItems(root).filter(function (item) {
-      item.topicCount = topicHitCount(item);
-      return item.topicCount > 0;
-    });
-    if (!topicItems.length) {
+    if (!collectTopicItems().length) {
       polyphones = previousMap;
+      rebuildTopic();
       showError("课文中没有找到多音字表里的汉字。");
       return;
     }
@@ -186,18 +186,42 @@
     el.body.dataset.mode = mode;
     el.exitTopic.hidden = false;
     el.error.hidden = true;
-    items = topicItems;
-    el.bookTitle.textContent = "多音字专题校正";
-    el.bookMeta.textContent = Object.keys(polyphones).length + " 个多音字 · " +
-      items.reduce(function (sum, item) { return sum + item.topicCount; }, 0) + " 处待核对";
     el.search.value = "";
     el.search.placeholder = "搜索课文 / 多音字…";
-    buildToc("");
     el.body.dataset.state = "loaded";
-    el.search.value = "";
     el.reader.hidden = false;
     el.pager.hidden = false;
-    show(0);
+    applyTopicMode();
+  }
+
+  // 按当前过滤开关重算待核对集合与目录
+  function collectTopicItems() {
+    rebuildTopic();
+    return buildItems(root).filter(function (item) {
+      item.topicCount = topicHitCount(item);
+      return item.topicCount > 0;
+    });
+  }
+
+  function applyTopicMode(preferTitle) {
+    var list = collectTopicItems();
+    if (!list.length) return false;
+    items = list;
+    var marked = Object.keys(topic).length;
+    var all = Object.keys(polyphones).length;
+    el.bookTitle.textContent = "多音字专题校正";
+    el.bookMeta.textContent = (prefs.polyCommon ? marked + " / " + all : String(all)) +
+      " 个多音字 · " +
+      items.reduce(function (sum, item) { return sum + item.topicCount; }, 0) + " 处待核对";
+    buildToc(el.search.value);
+    var index = 0;
+    if (preferTitle) {
+      for (var i = 0; i < items.length; i++) {
+        if (items[i].title === preferTitle) { index = i; break; }
+      }
+    }
+    show(index);
+    return true;
   }
 
   function leavePolyphoneMode() {
@@ -265,10 +289,24 @@
     return out;
   }
 
+  // 本册出现 + 常用 = 这个字在小学阶段真正可能读错的读音。
+  // 只剩一个时，另一些读音全是生僻音，没有核对价值。
+  function usefulReadings(readings) {
+    return (readings || []).filter(function (r) { return r.group !== "不常用"; });
+  }
+
+  function rebuildTopic() {
+    topic = {};
+    Object.keys(polyphones).forEach(function (ch) {
+      var readings = polyphones[ch];
+      if (!prefs.polyCommon || usefulReadings(readings).length >= 2) topic[ch] = readings;
+    });
+  }
+
   function countPolyphones(text) {
     var total = 0;
     String(text || "").split("").forEach(function (ch) {
-      if (polyphones[ch]) total++;
+      if (topic[ch]) total++;
     });
     return total;
   }
@@ -283,7 +321,7 @@
     if (item.kind === "附录") {
       return item.rows.reduce(function (sum, row) {
         return sum + (row["字"] || []).reduce(function (n, ch) {
-          return n + (polyphones[ch] ? 1 : 0);
+          return n + (topic[ch] ? 1 : 0);
         }, 0);
       }, 0);
     }
@@ -359,7 +397,7 @@
   function matches(item, q) {
     if (item.title.indexOf(q) >= 0) return true;
     if (item.num && item.num.indexOf(q) === 0) return true;
-    if (mode === "polyphone" && q.length === 1 && polyphones[q]) {
+    if (mode === "polyphone" && q.length === 1 && topic[q]) {
       if (item.kind === "课文") return (item.data["全文"] || "").indexOf(q) >= 0;
       if (item.kind === "园地") return (item.data["栏目"] || []).some(function (sec) {
         return (sec["全文"] || "").indexOf(q) >= 0;
@@ -521,7 +559,7 @@
     var chars = pair(text || "", pinyin);
     splitLines(chars.map(function (c, i) { c.i = i; return c; }), poem)
       .filter(function (line) {
-        return line.some(function (c) { return !!polyphones[c.ch]; });
+        return line.some(function (c) { return !!topic[c.ch]; });
       })
       .forEach(function (line) {
         var p = document.createElement("p");
@@ -530,7 +568,7 @@
           var span = document.createElement("span");
           span.className = "ch";
           span.dataset.i = c.i;
-          if (polyphones[c.ch]) {
+          if (topic[c.ch]) {
             span.classList.add("polyphone");
             span.title = "点击选择“" + c.ch + "”的读音";
             if (ctx.isFixed && ctx.isFixed(c.i)) span.classList.add("fixed");
@@ -617,7 +655,7 @@
     var cards = document.createElement("div");
     cards.className = "cards";
     (row["字"] || []).forEach(function (ch, i) {
-      if (!polyphones[ch]) return;
+      if (!topic[ch]) return;
       var card = document.createElement("div");
       card.className = "card polyphone" + (ctx.isFixed(i) ? " fixed" : "");
       card.dataset.i = i;
@@ -646,7 +684,7 @@
     var rows = document.createElement("div");
     rows.className = "topic-rows";
     item.rows.forEach(function (row) {
-      if ((row["字"] || []).some(function (ch) { return !!polyphones[ch]; })) {
+      if ((row["字"] || []).some(function (ch) { return !!topic[ch]; })) {
         rows.appendChild(renderTopicRow(row, item.title));
       }
     });
@@ -1258,6 +1296,20 @@
   document.getElementById("menuBtn").addEventListener("click", function () { toggleSidebar(true); });
   el.exitTopic.addEventListener("click", leavePolyphoneMode);
   el.backdrop.addEventListener("click", function () { toggleSidebar(false); });
+
+  if (el.commonBtn) {
+    el.commonBtn.addEventListener("click", function () {
+      if (mode !== "polyphone") return;
+      var keep = items[current] ? items[current].title : null;
+      prefs.polyCommon = !prefs.polyCommon;
+      if (!applyTopicMode(keep)) {           // 过滤后没有要核对的了，退回上一档
+        prefs.polyCommon = !prefs.polyCommon;
+        applyTopicMode(keep);
+        showError("按“只核对常用”过滤后没有需要核对的字了。");
+      }
+      applyPrefs();
+    });
+  }
 
   el.pinyinBtn.addEventListener("click", function () {
     prefs.pinyin = prefs.pinyin === "on" ? "off" : "on";
