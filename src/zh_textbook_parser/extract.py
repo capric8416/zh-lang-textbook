@@ -7,6 +7,7 @@ from pathlib import Path
 
 import fitz
 
+from . import attribution
 from .blocks import page_images, page_lines, page_rules, round_box
 from .appendix import appendix_title, merge_appendices, parse_appendix
 from .garden import (
@@ -44,10 +45,12 @@ def parse_page(
     footer = footer_json(regions.footer)
     page_no = footer["页码"] if footer else None
 
-    # 封面、版权页、目录没有印刷页码，不做课文/课后抽取
+    # 封面、版权页、目录没有印刷页码，不做课文/课后抽取。少数跨页选文的
+    # 起始页恰好没有页码，但有明确栏目标签，仍需解析并由 parse_pages 推断页码。
     lesson = after = garden = appendix = None
-    if page_no is not None:
-        body = regions.body
+    body = regions.body
+    labelled_unnumbered = page_no is None and selection_label_y(body) is not None
+    if page_no is not None or labelled_unnumbered:
         if is_reading_corner_page(body):
             lesson = extract_reading_corner(body, width)
             body = []
@@ -71,10 +74,62 @@ def parse_page(
             lesson, rest = extract_lesson(
                 lesson_lines, lesson_dominant(lesson_lines, body)
             )
+            if (
+                lesson
+                and after_lines
+                and lesson["课号"] is None
+                and (
+                    not lesson["正文"]
+                    or (
+                        lesson["标题"] is None
+                        and min(
+                            unit["bbox"][1]
+                            for unit in lesson["正文"]
+                            if "bbox" in unit
+                        )
+                        >= min(line.y0 for line in after_lines)
+                    )
+                )
+            ):
+                # 课后识字/书写页在田字格上方也可能有一行大字。它没有课号、
+                # 也没有正文，不能独立成篇（如一上《金木水火土》后的第 10 页）。
+                lesson = None
+                rest = lesson_lines
             after = extract_after_class(
                 sorted(after_lines + rest, key=lambda ln: (round(ln.y0), ln.x0)),
                 page_rules(page),
             )
+            if (
+                lesson
+                and after
+                and lesson["课号"] is None
+                and lesson["标题"] is None
+                and lesson["正文"]
+                and all(
+                    not any(mark in unit["文本"] for mark in "。！？")
+                    for unit in lesson["正文"]
+                )
+            ):
+                # 整页都是课后练习时，大字号示例词可能被误作无标题续文。
+                lesson = None
+            if lesson and after:
+                after_notes = [
+                    item
+                    for item in after.get("其他", [])
+                    if item.get("文本", "")[:1] in "①②③④⑤⑥⑦⑧⑨⑩"
+                ]
+                got, mark = attribution.from_notes(after_notes)
+                if got:
+                    for key, value in got.items():
+                        if lesson.get(key) is None:
+                            lesson[key] = value
+                    lesson["作者出处"] = lesson["作者出处"] or (
+                        f"注释{mark}" if mark else "注释"
+                    )
+                    known_notes = {item["文本"] for item in lesson["注释"]}
+                    lesson["注释"].extend(
+                        item for item in after_notes if item["文本"] not in known_notes
+                    )
 
     if appendix:
         kind = "附录页"
@@ -178,9 +233,22 @@ def parse_pages(pdf_path: str, indexes: list[int], full: bool = False) -> dict:
         unit = None  # 单元角标只在每单元第一页出现，往后顺延
         for i in wanted:
             page = parse_page(doc, i, full)
-            plain = page["课文"] and not page["课文"]["标题"] and not page["课文"]["课号"]
+            if (
+                page["页码"] is None
+                and pages
+                and isinstance(pages[-1].get("页码"), int)
+            ):
+                page["页码"] = pages[-1]["页码"] + 1
+            unlabelled = (
+                page["课文"]
+                and not page["课文"]["课号"]
+                and not page["课文"]["栏目"]
+                and not page["课文"]["课题"]
+            )
+            plain = unlabelled and not page["课文"]["标题"]
             if prev in ("园地", "附录") and not page["园地"] and not page["附录"]:
-                if plain or not page["课文"]:
+                continuation = unlabelled if prev == "园地" else plain
+                if continuation or not page["课文"]:
                     page = parse_page(doc, i, full, prefer=prev)
             if page["附录"]:
                 prev = "附录"

@@ -1,0 +1,3778 @@
+{
+  "文件": "zh-lang-grade1a-textbook.pdf",
+  "目录": [
+    {
+      "类型": "课文",
+      "单元": null,
+      "课号": null,
+      "标题": "我是中国人",
+      "页码": [
+        2,
+        3
+      ]
+    },
+    {
+      "类型": "课文",
+      "单元": null,
+      "课号": null,
+      "标题": "我爱我们的祖国",
+      "页码": [
+        4,
+        5
+      ]
+    },
+    {
+      "类型": "课文",
+      "单元": null,
+      "课号": null,
+      "标题": "我是小学生",
+      "页码": [
+        6
+      ]
+    },
+    {
+      "类型": "课文",
+      "单元": null,
+      "课号": null,
+      "标题": "我爱学语文",
+      "页码": [
+        7
+      ]
+    },
+    {
+      "类型": "课文",
+      "单元": 1,
+      "课号": "1",
+      "标题": "天地人",
+      "页码": [
+        8
+      ]
+    },
+    {
+      "类型": "课文",
+      "单元": 1,
+      "课号": "2",
+      "标题": "金木水火土",
+      "页码": [
+        9
+      ]
+    },
+    {
+      "类型": "课文",
+      "单元": 1,
+      "课号": "3",
+      "标题": "口耳目手足",
+      "页码": [
+        11,
+        12
+      ]
+    },
+    {
+      "类型": "课文",
+      "单元": 1,
+      "课号": "4",
+      "标题": "日月山川",
+      "页码": [
+        13
+      ]
+    },
+    {
+      "类型": "课文",
+      "单元": 1,
+      "课号": null,
+      "标题": "我说你做",
+      "页码": [
+        17
+      ]
+    },
+    {
+      "类型": "课文",
+      "单元": 1,
+      "课号": null,
+      "标题": "剪窗花",
+      "页码": [
+        18
+      ]
+    },
+    {
+      "类型": "课文",
+      "单元": 1,
+      "课号": null,
+      "标题": "读书真快乐",
+      "页码": [
+        19
+      ]
+    },
+    {
+      "类型": "课文",
+      "单元": 2,
+      "课号": "1",
+      "标题": "aoe",
+      "页码": [
+        20,
+        23
+      ]
+    },
+    {
+      "类型": "课文",
+      "单元": 2,
+      "课号": "3",
+      "标题": "baba",
+      "页码": [
+        24
+      ]
+    },
+    {
+      "类型": "课文",
+      "单元": 2,
+      "课号": "3",
+      "标题": "bbppmmff",
+      "页码": [
+        25
+      ]
+    },
+    {
+      "类型": "课文",
+      "单元": 2,
+      "课号": "4",
+      "标题": "ddttnnll",
+      "页码": [
+        26,
+        27
+      ]
+    },
+    {
+      "类型": "课文",
+      "单元": 2,
+      "课号": "4",
+      "标题": "小白兔和小灰兔",
+      "页码": [
+        30,
+        31
+      ]
+    },
+    {
+      "类型": "课文",
+      "单元": 3,
+      "课号": "5",
+      "标题": "guāguā",
+      "页码": [
+        32,
+        33
+      ]
+    },
+    {
+      "类型": "课文",
+      "单元": 3,
+      "课号": "6",
+      "标题": "jjqqxx",
+      "页码": [
+        34,
+        35
+      ]
+    },
+    {
+      "类型": "课文",
+      "单元": 3,
+      "课号": "7",
+      "标题": "zizicicisisi",
+      "页码": [
+        36,
+        37
+      ]
+    },
+    {
+      "类型": "课文",
+      "单元": 3,
+      "课号": "8",
+      "标题": "zhizhichichishishiriri",
+      "页码": [
+        38,
+        39
+      ]
+    },
+    {
+      "类型": "课文",
+      "单元": 3,
+      "课号": "8",
+      "标题": "yiyiwuwuyuyuüyuyu",
+      "页码": [
+        40,
+        41
+      ]
+    },
+    {
+      "类型": "课文",
+      "单元": 3,
+      "课号": "8",
+      "标题": "谁会飞",
+      "页码": [
+        44
+      ]
+    },
+    {
+      "类型": "课文",
+      "单元": 4,
+      "课号": "10",
+      "标题": "āiáiǎiàiēiéiěièiuīuíuǐuì",
+      "页码": [
+        45,
+        46
+      ]
+    },
+    {
+      "类型": "课文",
+      "单元": 4,
+      "课号": "11",
+      "标题": "āoáoǎoàoōuóuǒuòuiūiúiǔiù",
+      "页码": [
+        47,
+        48
+      ]
+    },
+    {
+      "类型": "课文",
+      "单元": 4,
+      "课号": "12",
+      "标题": "yeyeyueyue",
+      "页码": [
+        49,
+        50
+      ]
+    },
+    {
+      "类型": "课文",
+      "单元": 4,
+      "课号": "13",
+      "标题": "yuanyuanyinyinyunyun",
+      "页码": [
+        51
+      ]
+    },
+    {
+      "类型": "课文",
+      "单元": 4,
+      "课号": "13",
+      "标题": "lúnchuánlúnchuán",
+      "页码": [
+        52,
+        53
+      ]
+    },
+    {
+      "类型": "课文",
+      "单元": 4,
+      "课号": "14",
+      "标题": "yingying",
+      "页码": [
+        54,
+        55
+      ]
+    },
+    {
+      "类型": "课文",
+      "单元": 4,
+      "课号": "14",
+      "标题": "小鸟念书",
+      "页码": [
+        59
+      ]
+    },
+    {
+      "类型": "课文",
+      "单元": 5,
+      "课号": "1",
+      "标题": "秋天",
+      "页码": [
+        60
+      ]
+    },
+    {
+      "类型": "课文",
+      "单元": 5,
+      "课号": "2",
+      "标题": "江南",
+      "页码": [
+        62
+      ]
+    },
+    {
+      "类型": "课文",
+      "单元": 5,
+      "课号": "3",
+      "标题": "雪地里的小画家",
+      "页码": [
+        64
+      ]
+    },
+    {
+      "类型": "课文",
+      "单元": 5,
+      "课号": "4",
+      "标题": "四季",
+      "页码": [
+        66,
+        67
+      ]
+    },
+    {
+      "类型": "课文",
+      "单元": 5,
+      "课号": null,
+      "标题": "交朋友",
+      "页码": [
+        70
+      ]
+    },
+    {
+      "类型": "课文",
+      "单元": 5,
+      "课号": null,
+      "标题": "拔萝卜",
+      "页码": [
+        71,
+        72
+      ]
+    },
+    {
+      "类型": "课文",
+      "单元": 6,
+      "课号": "5",
+      "标题": "对韵歌",
+      "页码": [
+        73
+      ]
+    },
+    {
+      "类型": "课文",
+      "单元": 6,
+      "课号": "6",
+      "标题": "日月明",
+      "页码": [
+        74
+      ]
+    },
+    {
+      "类型": "课文",
+      "单元": 6,
+      "课号": "7",
+      "标题": "小书包",
+      "页码": [
+        76
+      ]
+    },
+    {
+      "类型": "课文",
+      "单元": 6,
+      "课号": "8",
+      "标题": "升国旗",
+      "页码": [
+        78,
+        79
+      ]
+    },
+    {
+      "类型": "课文",
+      "单元": 6,
+      "课号": null,
+      "标题": "小松鼠找花生",
+      "页码": [
+        83
+      ]
+    },
+    {
+      "类型": "课文",
+      "单元": 7,
+      "课号": "5",
+      "标题": "小小的船",
+      "页码": [
+        84
+      ]
+    },
+    {
+      "类型": "课文",
+      "单元": 7,
+      "课号": "6",
+      "标题": "影子",
+      "页码": [
+        86
+      ]
+    },
+    {
+      "类型": "课文",
+      "单元": 7,
+      "课号": "7",
+      "标题": "两件宝",
+      "页码": [
+        88,
+        89
+      ]
+    },
+    {
+      "类型": "课文",
+      "单元": 7,
+      "课号": null,
+      "标题": "猴子捞月亮",
+      "页码": [
+        93,
+        94
+      ]
+    },
+    {
+      "类型": "课文",
+      "单元": 8,
+      "课号": "8",
+      "标题": "比尾巴",
+      "页码": [
+        95,
+        96
+      ]
+    },
+    {
+      "类型": "课文",
+      "单元": 8,
+      "课号": "9",
+      "标题": "乌鸦喝水",
+      "页码": [
+        97,
+        98
+      ]
+    },
+    {
+      "类型": "课文",
+      "单元": 8,
+      "课号": "10",
+      "标题": "雨点儿",
+      "页码": [
+        99
+      ]
+    },
+    {
+      "类型": "课文",
+      "单元": 8,
+      "课号": null,
+      "标题": "我会想办法",
+      "页码": [
+        103
+      ]
+    },
+    {
+      "类型": "课文",
+      "单元": 8,
+      "课号": null,
+      "标题": "春节童谣",
+      "页码": [
+        104
+      ]
+    },
+    {
+      "类型": "园地",
+      "单元": 1,
+      "标题": "语文园地一",
+      "页码": [
+        15,
+        16
+      ]
+    },
+    {
+      "类型": "园地",
+      "单元": 2,
+      "标题": "语文园地二",
+      "页码": [
+        28,
+        29
+      ]
+    },
+    {
+      "类型": "园地",
+      "单元": 3,
+      "标题": "语文园地三",
+      "页码": [
+        42,
+        43
+      ]
+    },
+    {
+      "类型": "园地",
+      "单元": 4,
+      "标题": "语文园地四",
+      "页码": [
+        56,
+        57,
+        58
+      ]
+    },
+    {
+      "类型": "园地",
+      "单元": 5,
+      "标题": "语文园地五",
+      "页码": [
+        68,
+        69
+      ]
+    },
+    {
+      "类型": "园地",
+      "单元": 6,
+      "标题": "语文园地六",
+      "页码": [
+        80,
+        81,
+        82
+      ]
+    },
+    {
+      "类型": "园地",
+      "单元": 7,
+      "标题": "语文园地七",
+      "页码": [
+        90,
+        91,
+        92
+      ]
+    },
+    {
+      "类型": "园地",
+      "单元": 8,
+      "标题": "语文园地八",
+      "页码": [
+        101,
+        102
+      ]
+    },
+    {
+      "类型": "附录",
+      "标题": "识字表",
+      "页码": [
+        105,
+        106,
+        107
+      ]
+    },
+    {
+      "类型": "附录",
+      "标题": "写字表",
+      "页码": [
+        108
+      ]
+    },
+    {
+      "类型": "附录",
+      "标题": "笔画名称表",
+      "页码": [
+        109
+      ]
+    },
+    {
+      "类型": "附录",
+      "标题": "常用偏旁名称表",
+      "页码": [
+        110
+      ]
+    }
+  ],
+  "课文": [
+    {
+      "单元": null,
+      "课号": null,
+      "栏目": null,
+      "课题": null,
+      "标题": "我是中国人",
+      "作者": null,
+      "年代": null,
+      "出处": null,
+      "页码": [
+        2,
+        3
+      ],
+      "全文": "我是中国人。我们都是中国人。中华民族是一家。",
+      "拼音": "wǒ shì zhōng guó rén 。 wǒ men dōu shì zhōng guó rén 。 zhōng huá mín zú shì yī jiā 。"
+    },
+    {
+      "单元": null,
+      "课号": null,
+      "栏目": null,
+      "课题": null,
+      "标题": "我爱我们的祖国",
+      "作者": null,
+      "年代": null,
+      "出处": null,
+      "页码": [
+        4,
+        5
+      ],
+      "全文": "五星红旗北京天安门我爱五星红旗。我爱北京天安门。长江黄河我爱长江，我爱黄河。我爱中华人民共和国。",
+      "拼音": "wǔ xīng hóng qí běi jīng tiān ān mén wǒ ài wǔ xīng hóng qí 。 wǒ ài běi jīng tiān ān mén 。 cháng jiāng huáng hé wǒ ài cháng jiāng ， wǒ ài huáng hé 。 wǒ ài zhōng huá rén mín gòng hé guó 。"
+    },
+    {
+      "单元": null,
+      "课号": null,
+      "栏目": null,
+      "课题": null,
+      "标题": "我是小学生",
+      "作者": null,
+      "年代": null,
+      "出处": null,
+      "页码": [
+        6
+      ],
+      "全文": "太阳当空照，花儿对我笑。小鸟说：“早，早，早，你为什么背上小书包？”我去上学校，天天不迟到。爱学习，爱劳动，长大要为人民立功劳。",
+      "拼音": "tài yáng dāng kōng zhào ， huā ér duì wǒ xiào 。 xiǎo niǎo shuō ： “ zǎo ， zǎo ， zǎo ， nǐ wèi shén me bèi shàng xiǎo shū bāo ？ ” wǒ qù shàng xué xiào ， tiān tiān bù chí dào 。 ài xué xí ， ài láo dòng ， zhǎng dà yào wèi rén mín lì gōng láo 。"
+    },
+    {
+      "单元": null,
+      "课号": null,
+      "栏目": null,
+      "课题": null,
+      "标题": "我爱学语文",
+      "作者": null,
+      "年代": null,
+      "出处": null,
+      "页码": [
+        7
+      ],
+      "全文": "读书写字讲故事听故事",
+      "拼音": "dú shū xiě zì jiǎng gù shì tīng gù shì"
+    },
+    {
+      "单元": 1,
+      "课号": "1",
+      "栏目": null,
+      "课题": null,
+      "标题": "天地人",
+      "作者": null,
+      "年代": null,
+      "出处": null,
+      "页码": [
+        8
+      ],
+      "全文": "天地人你我他",
+      "拼音": "tiān dì rén nǐ wǒ tā"
+    },
+    {
+      "单元": 1,
+      "课号": "2",
+      "栏目": null,
+      "课题": null,
+      "标题": "金木水火土",
+      "作者": null,
+      "年代": null,
+      "出处": "民间歌谣",
+      "页码": [
+        9
+      ],
+      "全文": "一二三四五，金木水火土。天地分上下，日月照今古。",
+      "拼音": "yī èr sān sì wǔ ， jīn mù shuǐ huǒ tǔ 。 tiān dì fēn shàng xià ， rì yuè zhào jīn gǔ 。"
+    },
+    {
+      "单元": 1,
+      "课号": "3",
+      "栏目": null,
+      "课题": null,
+      "标题": "口耳目手足",
+      "作者": null,
+      "年代": null,
+      "出处": null,
+      "页码": [
+        11,
+        12
+      ],
+      "全文": "耳口目手足站如松，坐如钟。行如风，卧如弓。",
+      "拼音": "ěr kǒu mù shǒu zú zhàn rú sōng ， zuò rú zhōng 。 xíng rú fēng ， wò rú gōng 。"
+    },
+    {
+      "单元": 1,
+      "课号": "4",
+      "栏目": null,
+      "课题": null,
+      "标题": "日月山川",
+      "作者": null,
+      "年代": null,
+      "出处": null,
+      "页码": [
+        13
+      ],
+      "全文": "日月山川水火田禾",
+      "拼音": "rì yuè shān chuān shuǐ huǒ tián hé"
+    },
+    {
+      "单元": 1,
+      "课号": null,
+      "栏目": "口语交际",
+      "课题": null,
+      "标题": "我说你做",
+      "作者": null,
+      "年代": null,
+      "出处": null,
+      "页码": [
+        17
+      ],
+      "全文": "我们一起来做游戏吧！一个人发指令，其他人做动作。请你抬起一条腿。把铅笔放到文具盒里，把书合上，然后坐端正。◎说话时声音要洪亮，吐字要清楚。◎别人说话时要认真听。",
+      "拼音": "wǒ men yì qǐ lái zuò yóu xì ba ！ yí gè rén fā zhǐ lìng ， qí tā rén zuò dòng zuò 。 qǐng nǐ tái qǐ yī tiáo tuǐ 。 bǎ qiān bǐ fàng dào wén jù hé lǐ ， bǎ shū hé shàng ， rán hòu zuò duān zhèng 。 ◎ shuō huà shí shēng yīn yào hóng liàng ， tǔ zì yào qīng chǔ 。 ◎ bié rén shuō huà shí yào rèn zhēn tīng 。"
+    },
+    {
+      "单元": 1,
+      "课号": null,
+      "栏目": "和大人一起读",
+      "课题": null,
+      "标题": "剪窗花",
+      "作者": "窦植",
+      "年代": null,
+      "出处": null,
+      "页码": [
+        18
+      ],
+      "全文": "小剪刀，手中拿，我学奶奶剪窗花。剪雪花，剪梅花，剪对喜鹊叫喳喳。剪只鸡，剪只鸭，剪条鲤鱼摇尾巴。大红鲤鱼谁来抱？哦！再剪一个胖娃娃。",
+      "拼音": "xiǎo jiǎn dāo ， shǒu zhōng ná ， wǒ xué nǎi nǎi jiǎn chuāng huā 。 jiǎn xuě huā ， jiǎn méi huā ， jiǎn duì xǐ què jiào zhā zhā 。 jiǎn zhǐ jī ， jiǎn zhǐ yā ， jiǎn tiáo lǐ yú yáo wěi ba 。 dà hóng lǐ yú shuí lái bào ？ ó ！ zài jiǎn yí gè pàng wá wá 。"
+    },
+    {
+      "单元": 1,
+      "课号": null,
+      "栏目": "快乐读书吧",
+      "课题": null,
+      "标题": "读书真快乐",
+      "作者": null,
+      "年代": null,
+      "出处": null,
+      "页码": [
+        19
+      ],
+      "全文": "我经常和爸爸妈妈一起读有趣的故事书。我读了很多书，会讲很多故事，同学们叫我“故事大王”。周末，我在书店看到了很多好看的图画书。学了拼音，我就可以认更多的字，读更多的书了！",
+      "拼音": "wǒ jīng cháng hé bà bà mā mā yì qǐ dú yǒu qù de gù shì shū 。 wǒ dú le hěn duō shū ， huì jiǎng hěn duō gù shì ， tóng xué men jiào wǒ “ gù shì dà wáng ” 。 zhōu mò ， wǒ zài shū diàn kàn dào le hěn duō hǎo kàn de tú huà shū 。 xué le pīn yīn ， wǒ jiù kě yǐ rèn gèng duō de zì ， dú gèng duō de shū le ！"
+    },
+    {
+      "单元": 2,
+      "课号": "1",
+      "栏目": null,
+      "课题": null,
+      "标题": "aoe",
+      "作者": null,
+      "年代": null,
+      "出处": null,
+      "页码": [
+        20,
+        23
+      ],
+      "全文": "īíǐìūúǔùǖǘǚǜiiuuüü",
+      "拼音": "ī í ǐ ì ū ú ǔ ù ǖ ǘ ǚ ǜ i i u u ü ü"
+    },
+    {
+      "单元": 2,
+      "课号": "3",
+      "栏目": null,
+      "课题": "bpmf",
+      "标题": "baba",
+      "作者": null,
+      "年代": null,
+      "出处": null,
+      "页码": [
+        24
+      ],
+      "全文": "bābābábábǎbǎbàbà",
+      "拼音": "b ā b ā b á b á b ǎ b ǎ b à b à"
+    },
+    {
+      "单元": 2,
+      "课号": "3",
+      "栏目": null,
+      "课题": "bpmf",
+      "标题": "bbppmmff",
+      "作者": null,
+      "年代": null,
+      "出处": null,
+      "页码": [
+        25
+      ],
+      "全文": "bōbípòpībǎbùpápǔbpmōmǐfómǎmùfāfǔmf 爸爸妈妈",
+      "拼音": "b ō b í p ò p ī b ǎ b ù p á p ǔ b p m ō m ǐ f ó m ǎ m ù f ā f ǔ m f  bà ba mā ma"
+    },
+    {
+      "单元": 2,
+      "课号": "4",
+      "栏目": null,
+      "课题": "dtnl",
+      "标题": "ddttnnll",
+      "作者": "刘御",
+      "年代": null,
+      "出处": null,
+      "页码": [
+        26,
+        27
+      ],
+      "全文": "dǎdédīdútātètǐtúnánénǐnùnǚlālèlǐlùlǘ 大地马路泥土 读一读。 小白兔① 小白兔，穿皮袄，耳朵长，尾巴小。三瓣嘴，胡子翘，一动一动总在笑。",
+      "拼音": "d ǎ d é d ī d ú t ā t è t ǐ t ú n á n é n ǐ n ù n ǚ l ā l è l ǐ l ù l ǘ  dà dì mǎ lù ní tǔ  dú yi dú 。  xiǎo bái tù ①  xiǎo bái tù ， chuān pí ǎo ， ěr duo cháng ， wěi ba xiǎo 。 sān bàn zuǐ ， hú zi qiào ， yí dòng yí dòng zǒng zài xiào 。"
+    },
+    {
+      "单元": 2,
+      "课号": "4",
+      "栏目": "和大人一起读",
+      "课题": "dtnl",
+      "标题": "小白兔和小灰兔",
+      "作者": null,
+      "年代": null,
+      "出处": "人民教育出版社 《十年制学校小学课本 （试用本）语文第二册》",
+      "页码": [
+        30,
+        31
+      ],
+      "全文": "老山羊在地里收白菜，小白兔和小灰兔来帮忙。收完白菜，老山羊把一车白菜送给小灰兔。小灰兔收下了，说：“谢谢您！”老山羊又把一车白菜送给小白兔。小白兔说：“我不要白菜，请您给我一些菜籽吧。”老山羊送给小白兔一包菜籽。小白兔回到家里，把地翻松，种上菜籽。过了些日子，白菜长出来了。小白兔常常给白菜浇水，施肥，拔草，捉虫。白菜很快长大了。小灰兔把一车白菜拉回家里。他不干活了，饿了就吃老山羊送的白菜。过了些日子，小灰兔把白菜吃完了，又到老山羊家里去要白菜。这时候，他看见小白兔挑着一担白菜，给老山羊送来了。小灰兔很奇怪，问道：“小白兔，你的菜是哪儿①来的？”小白兔说：“是我自己种的。只有自己种，才有吃不完的菜。”",
+      "拼音": "lǎo shān yáng zài dì lǐ shōu bái cài ， xiǎo bái tù hé xiǎo huī tù lái bāng máng 。 shōu wán bái cài ， lǎo shān yáng bǎ yì chē bái cài sòng gěi xiǎo huī tù 。 xiǎo huī tù shōu xià le ， shuō ： “ xiè xie nín ！ ” lǎo shān yáng yòu bǎ yì chē bái cài sòng gěi xiǎo bái tù 。 xiǎo bái tù shuō ： “ wǒ bú yào bái cài ， qǐng nín gěi wǒ yì xiē cài zǐ ba 。 ” lǎo shān yáng sòng gěi xiǎo bái tù yì bāo cài zǐ 。 xiǎo bái tù huí dào jiā lǐ ， bǎ dì fān sōng ， zhòng shàng cài zǐ 。 guò le xiē rì zi ， bái cài zhǎng chū lái le 。 xiǎo bái tù cháng cháng gěi bái cài jiāo shuǐ ， shī féi ， bá cǎo ， zhuō chóng 。 bái cài hěn kuài zhǎng dà le 。 xiǎo huī tù bǎ yì chē bái cài lā huí jiā lǐ 。 tā bú gàn huó le ， è le jiù chī lǎo shān yáng sòng de bái cài 。 guò le xiē rì zi ， xiǎo huī tù bǎ bái cài chī wán le ， yòu dào lǎo shān yáng jiā lǐ qù yào bái cài 。 zhè shí hou ， tā kàn jiàn xiǎo bái tù tiāo zhe yí dàn bái cài ， gěi lǎo shān yáng sòng lái le 。 xiǎo huī tù hěn qí guài ， wèn dào ： “ xiǎo bái tù ， nǐ de cài shì nǎr ér ① lái de ？ ” xiǎo bái tù shuō ： “ shì wǒ zì jǐ zhòng de 。 zhǐ yǒu zì jǐ zhòng ， cái yǒu chī bù wán de cài 。 ”"
+    },
+    {
+      "单元": 3,
+      "课号": "5",
+      "栏目": null,
+      "课题": "gh",
+      "标题": "guāguā",
+      "作者": "樊发稼",
+      "年代": null,
+      "出处": null,
+      "页码": [
+        32,
+        33
+      ],
+      "全文": "gāgègùguàguàguōguōǎēǔuāhuáuòhuǒhāhēhǔ 哥哥弟弟画画荷花 读一读。 说话① 小溪流说话，哗哗，哗哗。小雨点说话，沙沙，沙沙。小鸽子说话，咕咕，咕咕。小鸭子说话，嘎嘎，嘎嘎。小花猫说话，喵喵，喵喵。小青蛙说话，呱呱，呱呱。",
+      "拼音": "g ā g è g ù g u à g u à g u ō g u ō ǎ ē ǔ u ā h u á u ò h u ǒ h ā h ē h ǔ  gē ge dì di huà huà hé huā  dú yi dú 。  shuō huà ①  xiǎo xī liú shuō huà ， huā huā ， huā huā 。 xiǎo yǔ diǎn shuō huà ， shā shā ， shā shā 。 xiǎo gē zi shuō huà ， gū gū ， gū gū 。 xiǎo yā zi shuō huà ， gā gā ， gā gā 。 xiǎo huā māo shuō huà ， miāo miāo ， miāo miāo 。 xiǎo qīng wā shuō huà ， guā guā ， guā guā 。"
+    },
+    {
+      "单元": 3,
+      "课号": "6",
+      "栏目": null,
+      "课题": "jqx",
+      "标题": "jjqqxx",
+      "作者": "李秀英",
+      "年代": null,
+      "出处": null,
+      "页码": [
+        34,
+        35
+      ],
+      "全文": "jījījiājiājjūqìxīqiāxiáqǖqūxxū 打鼓下棋搭积木 读一读。 在一起① 小黄鸡，小黑鸡，欢欢喜喜在一起。刨刨土，捉捉虫，青草地上做游戏。",
+      "拼音": "j ī j ī j i ā j i ā j j ū q ì x ī q i ā x i á q ǖ q ū x x ū  dǎ gǔ xià qí dā jī mù  dú yi dú 。  zài yì qǐ ①  xiǎo huáng jī ， xiǎo hēi jī ， huān huān xǐ xǐ zài yì qǐ 。 páo pao tǔ ， zhuō zhuo chóng ， qīng cǎo dì shàng zuò yóu xì 。"
+    },
+    {
+      "单元": 3,
+      "课号": "7",
+      "栏目": null,
+      "课题": "zcs",
+      "标题": "zizicicisisi",
+      "作者": "邓元杰",
+      "年代": null,
+      "出处": null,
+      "页码": [
+        36,
+        37
+      ],
+      "全文": "zázézǔzuózǐcācècūcuōcìsǎsèsùsuǒsī 字词句子 读一读。 过桥① 数学题，一道道，等号就像一座桥。做对了，走过桥，做错了，过不了。想一想，算一算，快快乐乐过了桥。",
+      "拼音": "z á z é z ǔ z u ó z ǐ c ā c è c ū c u ō c ì s ǎ s è s ù s u ǒ s ī  zì cí jù zi  dú yi dú 。  guò qiáo ①  shù xué tí ， yí dào dào ， děng hào jiù xiàng yí zuò qiáo 。 zuò duì le ， zǒu guò qiáo ， zuò cuò le ， guò bù liǎo 。 xiǎng yi xiǎng ， suàn yi suàn ， kuài kuài lè lè guò le qiáo 。"
+    },
+    {
+      "单元": 3,
+      "课号": "8",
+      "栏目": null,
+      "课题": "zhchshr",
+      "标题": "zhizhichichishishiriri",
+      "作者": null,
+      "年代": null,
+      "出处": null,
+      "页码": [
+        38,
+        39
+      ],
+      "全文": "zhāzhèzhùzhuǎzhuōzhícháchēchūchuōchīshàshéshǔshuāshuōshīrèrǔruòrì 擦桌子折纸读书 读一读。 绕口令① 四是四，十是十。十四是十四，四十是四十。四十不是十四，十四不是四十。",
+      "拼音": "z h ā z h è z h ù z h u ǎ z h u ō z h í c h á c h ē c h ū c h u ō c h ī s h à s h é s h ǔ s h u ā s h u ō s h ī r è r ǔ r u ò r ì  cā zhuō zi zhé zhǐ dú shū  dú yi dú 。  rào kǒu lìng ①  sì shì sì ， shí shì shí 。 shí sì shì shí sì ， sì shí shì sì shí 。 sì shí bú shì shí sì ， shí sì bú shì sì shí 。"
+    },
+    {
+      "单元": 3,
+      "课号": "8",
+      "栏目": null,
+      "课题": "zhchshr",
+      "标题": "yiyiwuwuyuyuüyuyu",
+      "作者": "杨霞丹",
+      "年代": null,
+      "出处": null,
+      "页码": [
+        40,
+        41
+      ],
+      "全文": "9ywwyuiwuwuyiyi 鱼鸭子乌鸦蚂蚁 读一读。 哪座房子最漂亮① 一座房，两座房，青青的瓦，白白的墙。三座房，四座房，房前花果香，屋后树成行。哪座房子最漂亮？要数我们的小学堂。",
+      "拼音": "9 y w w y u i w u w u y i y i  yú yā zi wū yā mǎ yǐ  dú yi dú 。  nǎ zuò fáng zi zuì piào liang ①  yí zuò fáng ， liǎng zuò fáng ， qīng qīng de wǎ ， bái bái de qiáng 。 sān zuò fáng ， sì zuò fáng ， fáng qián huā guǒ xiāng ， wū hòu shù chéng háng 。 nǎ zuò fáng zi zuì piào liang ？ yào shǔ wǒ men de xiǎo xué táng 。"
+    },
+    {
+      "单元": 3,
+      "课号": "8",
+      "栏目": "和大人一起读",
+      "课题": "zhchshr",
+      "标题": "谁会飞",
+      "作者": null,
+      "年代": null,
+      "出处": "民间歌谣",
+      "页码": [
+        44
+      ],
+      "全文": "谁会飞？鸟会飞。鸟儿怎样飞？扇扇翅膀去又回。谁会跑？马会跑。马儿怎样跑？四脚腾空仰天叫。谁会游？鱼会游。鱼儿怎样游？摇摇尾巴摆摆头。",
+      "拼音": "shuí huì fēi ？ niǎo huì fēi 。 niǎo ér zěn yàng fēi ？ shān shan chì bǎng qù yòu huí 。 shuí huì pǎo ？ mǎ huì pǎo 。 mǎ ér zěn yàng pǎo ？ sì jiǎo téng kōng yǎng tiān jiào 。 shuí huì yóu ？ yú huì yóu 。 yú ér zěn yàng yóu ？ yáo yao wěi ba bǎi bai tóu 。"
+    },
+    {
+      "单元": 4,
+      "课号": "10",
+      "栏目": null,
+      "课题": "aieiui",
+      "标题": "āiáiǎiàiēiéiěièiuīuíuǐuì",
+      "作者": "常福生",
+      "年代": null,
+      "出处": null,
+      "页码": [
+        45,
+        46
+      ],
+      "全文": "gāigāilèilèituǐtuǐguāiguāibēipéifēihuìduīchuītáiāicāigěiwéihēizuǐsuìruìhuàiuài 萝卜白菜蔬菜鸭梨西瓜水果 读一读。 洗手歌① 排着队，向前走，做什么？去洗手。肥皂用来搓搓手，清水帮我冲冲手，毛巾给我擦擦手。小手洗得真干净，大家一起笑开口。",
+      "拼音": "g ā i g ā i l è i l è i t u ǐ t u ǐ g u ā i g u ā i b ē i p é i f ē i h u ì d u ī c h u ī t á i ā i c ā i g ě i w é i h ē i z u ǐ s u ì r u ì h u à i u à i  luó bo bái cài shū cài yā lí xī guā shuǐ guǒ  dú yi dú 。  xǐ shǒu gē ①  pái zhe duì ， xiàng qián zǒu ， zuò shén me ？ qù xǐ shǒu 。 féi zào yòng lái cuō cuo shǒu ， qīng shuǐ bāng wǒ chōng chong shǒu ， máo jīn gěi wǒ cā ca shǒu 。 xiǎo shǒu xǐ de zhēn gān jìng ， dà jiā yì qǐ xiào kāi kǒu 。"
+    },
+    {
+      "单元": 4,
+      "课号": "11",
+      "栏目": null,
+      "课题": "aoouiu",
+      "标题": "āoáoǎoàoōuóuǒuòuiūiúiǔiù",
+      "作者": "马瑾文",
+      "年代": null,
+      "出处": null,
+      "页码": [
+        47,
+        48
+      ],
+      "全文": "niǎoròutóuqiútiàoshǎojiùdiūaokǒuoulóuiuzǎoyàoshōuyóuxiūliùràozǒuniú 小桥流水垂柳桃花 读一读。 欢迎台湾小朋友① 一只船，扬起帆，漂啊漂啊到台湾。接来台湾小朋友，到我学校来参观。伸出双手紧紧握，热情的话儿说不完。",
+      "拼音": "n i ǎ o r ò u t ó u q i ú t i à o s h ǎ o j i ù d i ū a o k ǒ u o u l ó u i u z ǎ o y à o s h ō u y ó u x i ū l i ù r à o z ǒ u n i ú  xiǎo qiáo liú shuǐ chuí liǔ táo huā  dú yi dú 。  huān yíng tái wān xiǎo péng you ①  yì zhī chuán ， yáng qǐ fān ， piāo a piāo a dào tái wān 。 jiē lái tái wān xiǎo péng you ， dào wǒ xué xiào lái cān guān 。 shēn chū shuāng shǒu jǐn jǐn wò ， rè qíng de huà ér shuō bù wán 。"
+    },
+    {
+      "单元": 4,
+      "课号": "12",
+      "栏目": null,
+      "课题": "ieüeer",
+      "标题": "yeyeyueyue",
+      "作者": "王清秀",
+      "年代": null,
+      "出处": null,
+      "页码": [
+        49,
+        50
+      ],
+      "全文": "biéxiéjuédiéqiēnüèquēpiěiejiělüèüexué 梅花开雪花飘夜色美 读一读。 月儿弯弯① 月儿弯弯挂蓝天，小溪弯弯出青山。大河弯弯流入海，山路弯弯到校园。",
+      "拼音": "b i é x i é j u é d i é q i ē n ü è q u ē p i ě i e j i ě l ü è ü e x u é  méi huā kāi xuě huā piāo yè sè měi  dú yi dú 。  yuè ér wān wān ①  yuè ér wān wān guà lán tiān ， xiǎo xī wān wān chū qīng shān 。 dà hé wān wān liú rù hǎi ， shān lù wān wān dào xiào yuán 。"
+    },
+    {
+      "单元": 4,
+      "课号": "13",
+      "栏目": null,
+      "课题": "aneninunün",
+      "标题": "yuanyuanyinyinyunyun",
+      "作者": null,
+      "年代": null,
+      "出处": null,
+      "页码": [
+        51
+      ],
+      "全文": "gguānjjuānyuánkuānkuānqüānquānyīnhhuānxxuānyùn",
+      "拼音": "g g u ā n j j u ā n y u á n k u ā n k u ā n q ü ā n q u ā n y ī n h h u ā n x x u ā n y ù n"
+    },
+    {
+      "单元": 4,
+      "课号": "13",
+      "栏目": null,
+      "课题": "aneninunün",
+      "标题": "lúnchuánlúnchuán",
+      "作者": null,
+      "年代": null,
+      "出处": "北京师范大学出版社 《义务教育课程标准实验教科书语文一年级上册》",
+      "页码": [
+        52,
+        53
+      ],
+      "全文": "wānyǎnchénpīnquánnánnèněnmínnínaneninjiānzhànwènzhēnqīnjìnrǎnduǎnrénxīnrùnchūntūnjūnqúnunnlúnhūnzhǔnxún 蓝天白云草原森林读一读。家①蓝天是白云的家，树林是小鸟的家，小河是鱼儿的家，泥土是种子的家。我们是祖国的花朵，祖国就是我们的家。",
+      "拼音": "w ā n y ǎ n c h é n p ī n q u á n n á n n è n ě n m í n n í n a n e n i n j i ā n z h à n w è n z h ē n q ī n j ì n r ǎ n d u ǎ n r é n x ī n r ù n c h ū n t ū n j ū n q ú n u n n l ú n h ū n z h ǔ n x ú n  lán tiān bái yún cǎo yuán sēn lín dú yi dú 。 jiā ① lán tiān shì bái yún de jiā ， shù lín shì xiǎo niǎo de jiā ， xiǎo hé shì yú ér de jiā ， ní tǔ shì zhǒng zi de jiā 。 wǒ men shì zǔ guó de huā duǒ ， zǔ guó jiù shì wǒ men de jiā 。"
+    },
+    {
+      "单元": 4,
+      "课号": "14",
+      "栏目": null,
+      "课题": "angengingong",
+      "标题": "yingying",
+      "作者": null,
+      "年代": null,
+      "出处": "中华书局 《新小学教科书国语读本初级第三册》",
+      "页码": [
+        54,
+        55
+      ],
+      "全文": "bānghuángrēnghéngqiángangchuāngfēngengdēngjǐngbǐnghǒngzhōngtīngingqīngsòngongqióng 游泳滑冰骑自行车打乒乓球 读一读。 两只羊① 桥东走来一只羊，桥西走来一只羊，一起走到小桥上。你也不肯让，我也不肯让，扑通掉进河中央。",
+      "拼音": "b ā n g h u á n g r ē n g h é n g q i á n g a n g c h u ā n g f ē n g e n g d ē n g j ǐ n g b ǐ n g h ǒ n g z h ō n g t ī n g i n g q ī n g s ò n g o n g q i ó n g  yóu yǒng huá bīng qí zì xíng chē dǎ pīng pāng qiú  dú yi dú 。  liǎng zhī yáng ①  qiáo dōng zǒu lái yì zhī yáng ， qiáo xī zǒu lái yì zhī yáng ， yì qǐ zǒu dào xiǎo qiáo shàng 。 nǐ yě bù kěn ràng ， wǒ yě bù kěn ràng ， pū tōng diào jìn hé zhōng yāng 。"
+    },
+    {
+      "单元": 4,
+      "课号": "14",
+      "栏目": "和大人一起读",
+      "课题": "angengingong",
+      "标题": "小鸟念书",
+      "作者": "胡木仁",
+      "年代": null,
+      "出处": null,
+      "页码": [
+        59
+      ],
+      "全文": "老师教大家念书。老师念一句，我们跟着念一句。窗外的风吹着，淅淅沙沙。窗外的鸟叫着，叽叽喳喳。老师说：“风也在教小鸟念书吗？”我们仔细地听。窗外的风念着：“淅淅沙沙。”窗外的鸟念着：“叽叽喳喳。”我们都笑了。哈哈！小鸟念错啦！",
+      "拼音": "lǎo shī jiāo dà jiā niàn shū 。 lǎo shī niàn yí jù ， wǒ men gēn zhe niàn yí jù 。 chuāng wài de fēng chuī zhe ， xī xi shā shā 。 chuāng wài de niǎo jiào zhe ， jī ji zhā zhā 。 lǎo shī shuō ： “ fēng yě zài jiāo xiǎo niǎo niàn shū ma ？ ” wǒ men zǐ xì de tīng 。 chuāng wài de fēng niàn zhe ： “ xī xi shā shā 。 ” chuāng wài de niǎo niàn zhe ： “ jī ji zhā zhā 。 ” wǒ men dōu xiào le 。 hā hā ！ xiǎo niǎo niàn cuò la ！"
+    },
+    {
+      "单元": 5,
+      "课号": "1",
+      "栏目": null,
+      "课题": null,
+      "标题": "秋天",
+      "作者": null,
+      "年代": null,
+      "出处": "人民教育出版社 《五年制小学课本语文第一册》",
+      "页码": [
+        60
+      ],
+      "全文": "天气凉了，树叶黄了，一片片叶子从树上落下来。天那么蓝，那么高。一群大雁往南飞，一会儿排成个“人”字，一会儿排成个“一”字。啊！秋天来了！",
+      "拼音": "tiān qì liáng le ， shù yè huáng le ， yí piàn piàn yè zi cóng shù shàng luò xià lái 。 tiān nà me lán ， nà me gāo 。 yì qún dà yàn wǎng nán fēi ， yí huìr er pái chéng gè “ rén ” zì ， yí huìr er pái chéng gè “ yī ” zì 。 à ！ qiū tiān lái le ！"
+    },
+    {
+      "单元": 5,
+      "课号": "2",
+      "栏目": null,
+      "课题": null,
+      "标题": "江南",
+      "作者": null,
+      "年代": null,
+      "出处": "汉乐府",
+      "页码": [
+        62
+      ],
+      "全文": "江南可采莲，莲叶何田田。鱼戏莲叶间。鱼戏莲叶东，鱼戏莲叶西，鱼戏莲叶南，鱼戏莲叶北。",
+      "拼音": "jiāng nán kě cǎi lián ， lián yè hé tián tián 。 yú xì lián yè jiān 。 yú xì lián yè dōng ， yú xì lián yè xī ， yú xì lián yè nán ， yú xì lián yè běi 。"
+    },
+    {
+      "单元": 5,
+      "课号": "3",
+      "栏目": null,
+      "课题": null,
+      "标题": "雪地里的小画家",
+      "作者": "程宏明",
+      "年代": null,
+      "出处": null,
+      "页码": [
+        64
+      ],
+      "全文": "下雪啦，下雪啦！雪地里来了一群小画家。小鸡画竹叶，小狗画梅花，小鸭画枫叶，小马画月牙。不用颜料不用笔，几步就成一幅画。青蛙为什么没参加？他在洞里睡着啦。",
+      "拼音": "xià xuě la ， xià xuě la ！ xuě dì lǐ lái le yì qún xiǎo huà jiā 。 xiǎo jī huà zhú yè ， xiǎo gǒu huà méi huā ， xiǎo yā huà fēng yè ， xiǎo mǎ huà yuè yá 。 bú yòng yán liào bú yòng bǐ ， jǐ bù jiù chéng yì fú huà 。 qīng wā wèi shén me méi cān jiā ？ tā zài dòng lǐ shuì zháo la 。"
+    },
+    {
+      "单元": 5,
+      "课号": "4",
+      "栏目": null,
+      "课题": null,
+      "标题": "四季",
+      "作者": "薛卫民",
+      "年代": null,
+      "出处": null,
+      "页码": [
+        66,
+        67
+      ],
+      "全文": "草芽尖尖，他对小鸟说：“我是春天。”荷叶圆圆，他对青蛙说：“我是夏天。”谷穗弯弯，他鞠着躬说：“我是秋天。”雪人大肚子一挺，他顽皮地说：“我就是冬天。”",
+      "拼音": "cǎo yá jiān jiān ， tā duì xiǎo niǎo shuō ： “ wǒ shì chūn tiān 。 ” hé yè yuán yuán ， tā duì qīng wā shuō ： “ wǒ shì xià tiān 。 ” gǔ suì wān wān ， tā jū zhe gōng shuō ： “ wǒ shì qiū tiān 。 ” xuě rén dà dù zi yì tǐng ， tā wán pí de shuō ： “ wǒ jiù shì dōng tiān 。 ”"
+    },
+    {
+      "单元": 5,
+      "课号": null,
+      "栏目": "口语交际",
+      "课题": null,
+      "标题": "交朋友",
+      "作者": null,
+      "年代": null,
+      "出处": null,
+      "页码": [
+        70
+      ],
+      "全文": "班里有些同学你是不是还不太熟悉？去作个自我介绍，跟他们聊聊天，成为朋友吧！我喜欢跳绳。你呢？我也喜欢。放学后我们一起去跳绳吧！好啊！◎主动与他人交流。◎说话的时候，看着对方的眼睛。",
+      "拼音": "bān lǐ yǒu xiē tóng xué nǐ shì bú shì hái bú tài shú xi ？ qù zuò gè zì wǒ jiè shào ， gēn tā men liáo liao tiān ， chéng wéi péng you ba ！ wǒ xǐ huān tiào shéng 。 nǐ ne ？ wǒ yě xǐ huān 。 fàng xué hòu wǒ men yì qǐ qù tiào shéng ba ！ hǎo a ！ ◎ zhǔ dòng yǔ tā rén jiāo liú 。 ◎ shuō huà de shí hòu ， kàn zhe duì fāng de yǎn jīng 。"
+    },
+    {
+      "单元": 5,
+      "课号": null,
+      "栏目": "和大人一起读",
+      "课题": null,
+      "标题": "拔萝卜",
+      "作者": "阿·尼·托尔斯泰",
+      "年代": "苏联",
+      "出处": null,
+      "页码": [
+        71,
+        72
+      ],
+      "全文": "老公公种了一个萝卜。萝卜长大了，老公公去地里拔萝卜。老公公拉着萝卜叶子，“嗨哟！嗨哟！”拔呀拔，拔不动。老公公喊老婆婆来帮忙。老婆婆拉着老公公，老公公拉着萝卜叶子，“嗨哟！嗨哟！”拔呀拔，拔不动。老婆婆喊小姑娘来帮忙。小姑娘拉着老婆婆，老婆婆拉着老公公，老公公拉着萝卜叶子，“嗨哟！嗨哟！”拔呀拔，拔不动。小姑娘喊小狗来帮忙。小狗拉着小姑娘，小姑娘拉着老婆婆，老婆婆拉着老公公，老公公拉着萝卜叶子，“嗨哟！嗨哟！”拔呀拔，拔不动。小狗喊小猫来帮忙……",
+      "拼音": "lǎo gōng gong zhòng le yí gè luó bo 。 luó bo zhǎng dà le ， lǎo gōng gong qù dì lǐ bá luó bo 。 lǎo gōng gong lā zhe luó bo yè zi ， “ hāi yō ！ hāi yō ！ ” bá ya bá ， bá bú dòng 。 lǎo gōng gong hǎn lǎo pó po lái bāng máng 。 lǎo pó po lā zhe lǎo gōng gong ， lǎo gōng gong lā zhe luó bo yè zi ， “ hāi yō ！ hāi yō ！ ” bá ya bá ， bá bú dòng 。 lǎo pó po hǎn xiǎo gū niang lái bāng máng 。 xiǎo gū niang lā zhe lǎo pó po ， lǎo pó po lā zhe lǎo gōng gong ， lǎo gōng gong lā zhe luó bo yè zi ， “ hāi yō ！ hāi yō ！ ” bá ya bá ， bá bú dòng 。 xiǎo gū niang hǎn xiǎo gǒu lái bāng máng 。 xiǎo gǒu lā zhe xiǎo gū niang ， xiǎo gū niang lā zhe lǎo pó po ， lǎo pó po lā zhe lǎo gōng gong ， lǎo gōng gong lā zhe luó bo yè zi ， “ hāi yō ！ hāi yō ！ ” bá ya bá ， bá bú dòng 。 xiǎo gǒu hǎn xiǎo māo lái bāng máng … …"
+    },
+    {
+      "单元": 6,
+      "课号": "5",
+      "栏目": null,
+      "课题": null,
+      "标题": "对韵歌",
+      "作者": null,
+      "年代": null,
+      "出处": null,
+      "页码": [
+        73
+      ],
+      "全文": "云对雨，雪对风。花对树，鸟对虫。山清对水秀，柳绿对桃红。",
+      "拼音": "yún duì yǔ ， xuě duì fēng 。 huā duì shù ， niǎo duì chóng 。 shān qīng duì shuǐ xiù ， liǔ lǜ duì táo hóng 。"
+    },
+    {
+      "单元": 6,
+      "课号": "6",
+      "栏目": null,
+      "课题": null,
+      "标题": "日月明",
+      "作者": "人民教育出版社小学语文室",
+      "年代": null,
+      "出处": null,
+      "页码": [
+        74
+      ],
+      "全文": "日月明，田力男。小大尖，小土尘。二人从，三人众。双木林，三木森。一人不成众，独木不成林。众人一条心，黄土变成金。",
+      "拼音": "rì yuè míng ， tián lì nán 。 xiǎo dà jiān ， xiǎo tǔ chén 。 èr rén cóng ， sān rén zhòng 。 shuāng mù lín ， sān mù sēn 。 yì rén bù chéng zhòng ， dú mù bù chéng lín 。 zhòng rén yì tiáo xīn ， huáng tǔ biàn chéng jīn 。"
+    },
+    {
+      "单元": 6,
+      "课号": "7",
+      "栏目": null,
+      "课题": null,
+      "标题": "小书包",
+      "作者": null,
+      "年代": null,
+      "出处": null,
+      "页码": [
+        76
+      ],
+      "全文": "橡皮尺子作业本笔袋铅笔转笔刀我的小书包，宝贝真不少。课本作业本，铅笔转笔刀。天天起得早，陪我去学校。",
+      "拼音": "xiàng pí chǐ zi zuò yè běn bǐ dài qiān bǐ zhuàn bǐ dāo wǒ de xiǎo shū bāo ， bǎo bèi zhēn bù shǎo 。 kè běn zuò yè běn ， qiān bǐ zhuàn bǐ dāo 。 tiān tiān qǐ de zǎo ， péi wǒ qù xué xiào 。"
+    },
+    {
+      "单元": 6,
+      "课号": "8",
+      "栏目": null,
+      "课题": null,
+      "标题": "升国旗",
+      "作者": null,
+      "年代": null,
+      "出处": "人民教育出版社 《九年一贯制试用课本 （全日制）语文第一册》",
+      "页码": [
+        78,
+        79
+      ],
+      "全文": "中国国旗五星红旗五星红旗，我们的国旗。国歌声中，徐徐升起。迎风飘扬，多么美丽。向着国旗，我们立正。望着国旗，我们敬礼。",
+      "拼音": "zhōng guó guó qí wǔ xīng hóng qí wǔ xīng hóng qí ， wǒ men de guó qí 。 guó gē shēng zhōng ， xú xú shēng qǐ 。 yíng fēng piāo yáng ， duō me měi lì 。 xiàng zhe guó qí ， wǒ men lì zhèng 。 wàng zhe guó qí ， wǒ men jìng lǐ 。"
+    },
+    {
+      "单元": 6,
+      "课号": null,
+      "栏目": "和大人一起读",
+      "课题": null,
+      "标题": "小松鼠找花生",
+      "作者": "嵇鸿",
+      "年代": null,
+      "出处": null,
+      "页码": [
+        83
+      ],
+      "全文": "大树旁边的地里长着许多花生。花生已经开花了，一朵朵金黄色的小花，在阳光下格外鲜艳。小松鼠问鼹鼠：“这是什么花啊？”鼹鼠说：“这是花生的花。到了秋天，会结花生。花生可好吃啦！”小松鼠很高兴，他想：等花生结了果，我就把它摘下来，留着冬天吃。小松鼠每天都到地里去，看看结花生了没有。他等啊，等啊，等到花都落光了，也没看见花生。小松鼠感到很奇怪，自言自语地说：“是谁把花生摘走了呢？”",
+      "拼音": "dà shù páng biān de dì lǐ zhǎng zhe xǔ duō huā shēng 。 huā shēng yǐ jīng kāi huā le ， yì duǒ duǒ jīn huáng sè de xiǎo huā ， zài yáng guāng xià gé wài xiān yàn 。 xiǎo sōng shǔ wèn yǎn shǔ ： “ zhè shì shén me huā a ？ ” yǎn shǔ shuō ： “ zhè shì huā shēng de huā 。 dào le qiū tiān ， huì jiē huā shēng 。 huā shēng kě hǎo chī la ！ ” xiǎo sōng shǔ hěn gāo xìng ， tā xiǎng ： děng huā shēng jiē le guǒ ， wǒ jiù bǎ tā zhāi xià lái ， liú zhe dōng tiān chī 。 xiǎo sōng shǔ měi tiān dōu dào dì lǐ qù ， kàn kan jiē huā shēng le méi yǒu 。 tā děng a ， děng a ， děng dào huā dōu luò guāng le ， yě méi kàn jiàn huā shēng 。 xiǎo sōng shǔ gǎn dào hěn qí guài ， zì yán zì yǔ de shuō ： “ shì shuí bǎ huā shēng zhāi zǒu le ne ？ ”"
+    },
+    {
+      "单元": 7,
+      "课号": "5",
+      "栏目": null,
+      "课题": null,
+      "标题": "小小的船",
+      "作者": "叶圣陶",
+      "年代": null,
+      "出处": null,
+      "页码": [
+        84
+      ],
+      "全文": "弯弯的月儿小小的船，小小的船儿两头尖。我在小小的船里坐，只看见闪闪的星星蓝蓝的天。",
+      "拼音": "wān wān de yuè ér xiǎo xiǎo de chuán ， xiǎo xiǎo de chuán ér liǎng tóu jiān 。 wǒ zài xiǎo xiǎo de chuán lǐ zuò ， zhǐ kàn jiàn shǎn shǎn de xīng xing lán lán de tiān 。"
+    },
+    {
+      "单元": 7,
+      "课号": "6",
+      "栏目": null,
+      "课题": null,
+      "标题": "影子",
+      "作者": "林焕彰",
+      "年代": null,
+      "出处": null,
+      "页码": [
+        86
+      ],
+      "全文": "影子在前，影子在后，影子常常跟着我，就像一条小黑狗。影子在左，影子在右，影子常常陪着我，它是我的好朋友。",
+      "拼音": "yǐng zi zài qián ， yǐng zi zài hòu ， yǐng zi cháng cháng gēn zhe wǒ ， jiù xiàng yì tiáo xiǎo hēi gǒu 。 yǐng zi zài zuǒ ， yǐng zi zài yòu ， yǐng zi cháng cháng péi zhe wǒ ， tā shì wǒ de hǎo péng you 。"
+    },
+    {
+      "单元": 7,
+      "课号": "7",
+      "栏目": null,
+      "课题": null,
+      "标题": "两件宝",
+      "作者": "陶行知",
+      "年代": null,
+      "出处": null,
+      "页码": [
+        88,
+        89
+      ],
+      "全文": "人有两件宝，双手和大脑。双手会做工，大脑会思考。用手不用脑，事情做不好。用脑不用手，啥也办不到。用手又用脑，才能有创造。",
+      "拼音": "rén yǒu liǎng jiàn bǎo ， shuāng shǒu hé dà nǎo 。 shuāng shǒu huì zuò gōng ， dà nǎo huì sī kǎo 。 yòng shǒu bú yòng nǎo ， shì qing zuò bù hǎo 。 yòng nǎo bú yòng shǒu ， shá yě bàn bú dào 。 yòng shǒu yòu yòng nǎo ， cái néng yǒu chuàng zào 。"
+    },
+    {
+      "单元": 7,
+      "课号": null,
+      "栏目": "和大人一起读",
+      "课题": null,
+      "标题": "猴子捞月亮",
+      "作者": null,
+      "年代": null,
+      "出处": "陈鹤琴等编 《儿童故事》",
+      "页码": [
+        93,
+        94
+      ],
+      "全文": "有只小猴子在井边玩。他往井里一看，里面有个月亮。小猴子叫起来：“糟啦，糟啦！月亮掉在井里啦！”大猴子听见了，跑过来一看，跟着叫起来：“糟啦，糟啦！月亮掉在井里啦！”老猴子听见了，跑过来一看，也跟着叫起来：“糟啦，糟啦！月亮掉在井里啦！”附近的猴子听见了，都跑过来看。大家跟着叫起来：“糟啦，糟啦！月亮掉在井里啦！咱们快把它捞上来！”猴子们爬上了井旁边的大树。老猴子倒挂在树上，拉住大猴子的脚。大猴子也倒挂着，拉住另一只猴子的脚。猴子们就这样一只拉一只，一直挂到井里头，小猴子挂在最下边。小猴子伸手去捞月亮，手刚碰到水，月亮就不见了。老猴子一抬头，看见月亮还在天上。他喘着气说：“不用捞了，不用捞了！月亮还好好地挂在天上呢！”",
+      "拼音": "yǒu zhī xiǎo hóu zi zài jǐng biān wán 。 tā wǎng jǐng lǐ yí kàn ， lǐ miàn yǒu gè yuè liang 。 xiǎo hóu zi jiào qǐ lái ： “ zāo la ， zāo la ！ yuè liang diào zài jǐng lǐ la ！ ” dà hóu zi tīng jiàn le ， pǎo guò lái yí kàn ， gēn zhe jiào qǐ lái ： “ zāo la ， zāo la ！ yuè liang diào zài jǐng lǐ la ！ ” lǎo hóu zi tīng jiàn le ， pǎo guò lái yí kàn ， yě gēn zhe jiào qǐ lái ： “ zāo la ， zāo la ！ yuè liang diào zài jǐng lǐ la ！ ” fù jìn de hóu zi tīng jiàn le ， dōu pǎo guò lái kàn 。 dà jiā gēn zhe jiào qǐ lái ： “ zāo la ， zāo la ！ yuè liang diào zài jǐng lǐ la ！ zán men kuài bǎ tā lāo shàng lái ！ ” hóu zi men pá shàng le jǐng páng biān de dà shù 。 lǎo hóu zi dào guà zài shù shàng ， lā zhù dà hóu zi de jiǎo 。 dà hóu zi yě dào guà zhe ， lā zhù lìng yì zhī hóu zi de jiǎo 。 hóu zi men jiù zhè yàng yì zhī lā yì zhī ， yì zhí guà dào jǐng lǐ tou ， xiǎo hóu zi guà zài zuì xià biān 。 xiǎo hóu zi shēn shǒu qù lāo yuè liang ， shǒu gāng pèng dào shuǐ ， yuè liang jiù bú jiàn le 。 lǎo hóu zi yì tái tóu ， kàn jiàn yuè liang hái zài tiān shàng 。 tā chuǎn zhe qì shuō ： “ bú yòng lāo le ， bú yòng lāo le ！ yuè liang hái hǎo hǎo de guà zài tiān shàng ne ！ ”"
+    },
+    {
+      "单元": 8,
+      "课号": "8",
+      "栏目": null,
+      "课题": null,
+      "标题": "比尾巴",
+      "作者": "程宏明",
+      "年代": null,
+      "出处": null,
+      "页码": [
+        95,
+        96
+      ],
+      "全文": "谁的尾巴长？谁的尾巴短？谁的尾巴好像一把伞？猴子的尾巴长。兔子的尾巴短。松鼠的尾巴好像一把伞。谁的尾巴弯？谁的尾巴扁？谁的尾巴最好看？公鸡的尾巴弯。鸭子的尾巴扁。孔雀的尾巴最好看。",
+      "拼音": "shuí de wěi ba cháng ？ shuí de wěi ba duǎn ？ shuí de wěi ba hǎo xiàng yì bǎ sǎn ？ hóu zi de wěi ba cháng 。 tù zi de wěi ba duǎn 。 sōng shǔ de wěi ba hǎo xiàng yì bǎ sǎn 。 shuí de wěi ba wān ？ shuí de wěi ba biǎn ？ shuí de wěi ba zuì hǎo kàn ？ gōng jī de wěi ba wān 。 yā zi de wěi ba biǎn 。 kǒng què de wěi ba zuì hǎo kàn 。"
+    },
+    {
+      "单元": 8,
+      "课号": "9",
+      "栏目": null,
+      "课题": null,
+      "标题": "乌鸦喝水",
+      "作者": null,
+      "年代": null,
+      "出处": "伊索寓言",
+      "页码": [
+        97,
+        98
+      ],
+      "全文": "一只乌鸦口渴了，到处找水喝。乌鸦看见一个瓶子，瓶子里有水。但是，瓶子里水不多，瓶口又小，乌鸦喝不着水。怎么办呢？乌鸦看见旁边有许多小石子，想出办法来了。乌鸦把小石子一颗一颗地放进瓶子里。瓶子里的水渐渐升高，乌鸦就喝着水了。",
+      "拼音": "yì zhī wū yā kǒu kě le ， dào chù zhǎo shuǐ hē 。 wū yā kàn jiàn yí gè píng zi ， píng zi lǐ yǒu shuǐ 。 dàn shì ， píng zi lǐ shuǐ bù duō ， píng kǒu yòu xiǎo ， wū yā hē bù zháo shuǐ 。 zěn me bàn ne ？ wū yā kàn jiàn páng biān yǒu xǔ duō xiǎo shí zǐ ， xiǎng chū bàn fǎ lái le 。 wū yā bǎ xiǎo shí zǐ yì kē yì kē de fàng jìn píng zi lǐ 。 píng zi lǐ de shuǐ jiàn jiàn shēng gāo ， wū yā jiù hē zháo shuǐ le 。"
+    },
+    {
+      "单元": 8,
+      "课号": "10",
+      "栏目": null,
+      "课题": null,
+      "标题": "雨点儿",
+      "作者": "金波",
+      "年代": null,
+      "出处": null,
+      "页码": [
+        99
+      ],
+      "全文": "数不清的雨点儿，从云彩里落下来。半空中，大雨点儿问小雨点儿：“你要到哪里去？”小雨点儿回答：“我要去有花有草的地方。你呢？”大雨点儿说：“我要去没有花没有草的地方。”不久，有花有草的地方，花更红了，草更绿了。没有花没有草的地方，开出了红的花，长出了绿的草。",
+      "拼音": "shǔ bù qīng de yǔ diǎnr ér ， cóng yún cai lǐ luò xià lái 。 bàn kōng zhōng ， dà yǔ diǎnr ér wèn xiǎo yǔ diǎnr ér ： “ nǐ yào dào nǎ lǐ qù ？ ” xiǎo yǔ diǎnr ér huí dá ： “ wǒ yào qù yǒu huā yǒu cǎo de dì fang 。 nǐ ne ？ ” dà yǔ diǎnr ér shuō ： “ wǒ yào qù méi yǒu huā méi yǒu cǎo de dì fang 。 ” bù jiǔ ， yǒu huā yǒu cǎo de dì fang ， huā gèng hóng le ， cǎo gèng lǜ le 。 méi yǒu huā méi yǒu cǎo de dì fang ， kāi chū le hóng de huā ， zhǎng chū le lǜ de cǎo 。"
+    },
+    {
+      "单元": 8,
+      "课号": null,
+      "栏目": "口语交际",
+      "课题": null,
+      "标题": "我会想办法",
+      "作者": null,
+      "年代": null,
+      "出处": null,
+      "页码": [
+        103
+      ],
+      "全文": "小兔要把南瓜运回家，可以用哪些办法呢？快来帮它想想吧。◎大胆说出自己的想法。",
+      "拼音": "xiǎo tù yào bǎ nán guā yùn huí jiā ， kě yǐ yòng nǎ xiē bàn fǎ ne ？ kuài lái bāng tā xiǎng xiang ba 。 ◎ dà dǎn shuō chū zì jǐ de xiǎng fǎ 。"
+    },
+    {
+      "单元": 8,
+      "课号": null,
+      "栏目": "和大人一起读",
+      "课题": null,
+      "标题": "春节童谣",
+      "作者": null,
+      "年代": null,
+      "出处": null,
+      "页码": [
+        104
+      ],
+      "全文": "小孩小孩你别馋，过了腊八就是年。腊八粥，喝几天，哩哩啦啦二十三。二十三，糖瓜粘。二十四，扫房子。二十五，磨豆腐。二十六，去买肉。二十七，宰公鸡。二十八，把面发。二十九，蒸馒头。三十晚上熬一宿，初一初二满街走。",
+      "拼音": "xiǎo hái xiǎo hái nǐ bié chán ， guò le là bā jiù shì nián 。 là bā zhōu ， hē jǐ tiān ， lī li lā lā èr shí sān 。 èr shí sān ， táng guā zhān 。 èr shí sì ， sǎo fáng zi 。 èr shí wǔ ， mò dòu fu 。 èr shí liù ， qù mǎi ròu 。 èr shí qī ， zǎi gōng jī 。 èr shí bā ， bǎ miàn fā 。 èr shí jiǔ ， zhēng mán tou 。 sān shí wǎn shang áo yì xiǔ ， chū yī chū èr mǎn jiē zǒu 。"
+    }
+  ],
+  "园地": [
+    {
+      "单元": 1,
+      "标题": "语文园地一",
+      "页码": [
+        15,
+        16
+      ],
+      "栏目": [
+        {
+          "名称": "识字加油站",
+          "全文": "一片两片三四片， 你能猜出 这是什么吗？ 五片六片七八片。 九片十片无数片， 飞入芦花都不见。 六 七 八 九 十",
+          "拼音": "yī piàn liǎng piàn sān sì piàn ，  nǐ néng cāi chū  zhè shì shén me ma ？  wǔ piàn liù piàn qī bā piàn 。  jiǔ piàn shí piàn wú shù piàn ，  fēi rù lú huā dōu bú jiàn 。  liù  qī  bā  jiǔ  shí"
+        },
+        {
+          "名称": "字词句运用",
+          "全文": "读一读，比一比。 人 天 口 田 日 目",
+          "拼音": "dú yī dú ， bǐ yī bǐ 。  rén  tiān  kǒu  tián  rì  mù"
+        },
+        {
+          "名称": "书写提示",
+          "全文": "写字时注意坐 笔顺规则： 端正，握好笔。 先横后竖。 先撇后捺。笔顺规则：",
+          "拼音": "xiě zì shí zhù yì zuò  bǐ shùn guī zé ：  duān zhèng ， wò hǎo bǐ 。  xiān héng hòu shù 。  xiān piē hòu nà 。 bǐ shùn guī zé ："
+        },
+        {
+          "名称": "日积月累",
+          "全文": "咏鹅骆宾王 鹅，鹅，鹅， 曲项向天歌。 白毛浮绿水， 红掌拨清波。",
+          "拼音": "yǒng é luò bīn wáng  é ， é ， é ，  qū xiàng xiàng tiān gē 。  bái máo fú lǜ shuǐ ，  hóng zhǎng bō qīng bō 。"
+        }
+      ]
+    },
+    {
+      "单元": 2,
+      "标题": "语文园地二",
+      "页码": [
+        28,
+        29
+      ],
+      "栏目": [
+        {
+          "名称": "识字加油站",
+          "全文": "拼音本 学校： 班级： 姓名：",
+          "拼音": "pīn yīn běn‘  xué xiào ：  bān jí ：  xìng míng ："
+        },
+        {
+          "名称": "用拼音",
+          "全文": "读一读，读准声调。 dǎ—dà mō—mǒ bí—bǐ pǔ—pù 比一比，读一读。 b—d là bǐ dà mǐ f—t fú tī dì tú 中国地图",
+          "拼音": "dú yi dú ， dú zhǔn shēng diào 。  d ǎ — d à  m ō — m ǒ  b í — b ǐ  p ǔ — p ù  bǐ yi bǐ ， dú yi dú 。  b — d  l à  b ǐ  d à  m ǐ  f — t  f ú  t ī  d ì  t ú  zhōng guó dì tú"
+        },
+        {
+          "名称": "字词句运用",
+          "全文": "读一读，连一连。 他 八 马　u 七 地 你　a 目 土 足　i 我还会说：妈、爸、大……",
+          "拼音": "dú yi dú ， lián yi lián 。  tā  bā  mǎ  u  qī  dì  nǐ  a  mù  tǔ  zú  i  wǒ hái huì shuō ： mā 、 bà 、 dà … …"
+        },
+        {
+          "名称": "日积月累",
+          "全文": "画 远看山有色， 近听水无声。 春去花还在， 人来鸟不惊。",
+          "拼音": "huà  yuǎn kàn shān yǒu sè ，  jìn tīng shuǐ wú shēng 。  chūn qù huā hái zài ，  rén lái niǎo bù jīng 。"
+        }
+      ]
+    },
+    {
+      "单元": 3,
+      "标题": "语文园地三",
+      "页码": [
+        42,
+        43
+      ],
+      "栏目": [
+        {
+          "名称": "识字加油站",
+          "全文": "看看你的课程表，星期三有什么课？ 课程表 星期一　星期二　星期三　星期四　星期五 第一节　语文　语文　数学　语文　数学 第二节　数学　数学　语文　美术　语文 课间操 第三节　道德与法治　语文　体育与健康　科学　体育与健康 第四节　音乐　体育与健康　语文　写字　音乐 第五节　美术　综合实践活动　道德与法治　体育与健康　班会 第六节　劳动",
+          "拼音": "kàn kàn nǐ de kè chéng biǎo ， xīng qī sān yǒu shén me kè ？  kè chéng biǎo  xīng qī yī  xīng qī èr  xīng qī sān  xīng qī sì  xīng qī wǔ  dì yī jié  yǔ wén  yǔ wén  shù xué  yǔ wén  shù xué  dì èr jié  shù xué  shù xué  yǔ wén  měi shù  yǔ wén  kè jiān cāo  dì sān jié  dào dé yǔ fǎ zhì  yǔ wén  tǐ yù yǔ jiàn kāng  kē xué  tǐ yù yǔ jiàn kāng  dì sì jié  yīn yuè  tǐ yù yǔ jiàn kāng  yǔ wén  xiě zì  yīn yuè  dì wǔ jié  měi shù  zōng hé shí jiàn huó dòng  dào dé yǔ fǎ zhì  tǐ yù yǔ jiàn kāng  bān huì  dì liù jié  láo dòng"
+        },
+        {
+          "名称": "用拼音",
+          "全文": "还能摆什么？快来试试看。 读一读，比一比。 z—zh c—ch s—sh zì mǔ cā bō li sù shè zhī zhū hē chá shū jià 读一读，做动作。 shuā yá qí mǎ chī xī guā tuō dì lǐ fà bá luó bo",
+          "拼音": "hái néng bǎi shén me ？ kuài lái shì shi kàn 。  dú yi dú ， bǐ yi bǐ 。  z — z h  c — c h  s — s h  z ì  m ǔ  c ā  b ō  l i  s ù  s h è  z h ī  z h ū  h ē  c h á  s h ū  j i à  dú yi dú ， zuò dòng zuò 。  s h u ā  y á  q í  m ǎ  c h ī  x ī  g u ā  t u ō  d ì  l ǐ  f à  b á  l u ó  b o"
+        },
+        {
+          "名称": "字词句运用",
+          "全文": "读一读，在图里找一找。 鸡　鱼　河 一座山　一棵树 四只鸽子　七朵花",
+          "拼音": "dú yi dú ， zài tú lǐ zhǎo yi zhǎo 。  jī  yú  hé  yi zuò shān  yi kē shù  sì zhī gē zi  qī duǒ huā"
+        },
+        {
+          "名称": "日积月累",
+          "全文": "一模一样 一心一意 独一无二 三头六臂 五颜六色 十全十美",
+          "拼音": "yì mú yí yàng  yì xīn yí yì  dú yī wú èr  sān tóu liù bì  wǔ yán liù sè  shí quán shí měi"
+        }
+      ]
+    },
+    {
+      "单元": 4,
+      "标题": "语文园地四",
+      "页码": [
+        56,
+        57,
+        58
+      ],
+      "栏目": [
+        {
+          "名称": "识字加油站",
+          "全文": "上午　昨天　上个月　去年 下午　今天　这个月　今年 晚上　明天　下个月　明年",
+          "拼音": "shàng wǔ  zuó tiān  shàng gè yuè  qù nián  xià wǔ  jīn tiān  zhè gè yuè  jīn nián  wǎn shàng  míng tiān  xià gè yuè  míng nián"
+        },
+        {
+          "名称": "用拼音",
+          "全文": "读一读，把音节读准。 yǎn yuǎn yīn yīng jiǎn juǎn zuān zhuān chán chuán chuáng 比一比，读一读。 xiě zì chuī qì qiú ie ei iu ui dǎ léi duī xuě rén dié bèi zi diū shǒu juàn 秋游的时候，你想带些什么？ mào zi shuǐ hú píng guǒ tiào qí miàn bāo shuǐ cǎi bǐ bǐng gān yǔ sǎn wàng yuǎn jìng 读一读，记一记，再说一说你的名字里有哪些声母和韵母。 b p m f d t n l g h j q x zh ch sh r z c s （y w） a o e i u ü ai ei ui ao ou iu ie üe er an en in un ün ang eng ing ong zhi chi shi ri zi ci si yi wu yu ye yue yuan yin yun ying",
+          "拼音": "dú yi dú ， bǎ yīn jié dú zhǔn 。  y ǎ n  y u ǎ n  y ī n  y ī n g  j i ǎ n  j u ǎ n  z u ā n  z h u ā n  c h á n  c h u á n  c h u á n g  bǐ yi bǐ ， dú yi dú 。  x i ě  z ì  c h u ī  q ì  q i ú  i e  e i  i u  u i  d ǎ  l é i  d u ī  x u ě  r é n  d i é  b è i  z i  d i ū  s h ǒ u  j u à n  qiū yóu de shí hou ， nǐ xiǎng dài xiē shén me ？  m à o  z i  s h u ǐ  h ú  p í n g  g u ǒ  t i à o  q í  m i à n  b ā o  s h u ǐ  c ǎ i  b ǐ  b ǐ n g  g ā n  y ǔ  s ǎ n  w à n g  y u ǎ n  j ì n g  dú yi dú ， jì yi jì ， zài shuō yi shuō nǐ de míng zi lǐ yǒu nǎ xiē shēng mǔ hé yùn mǔ 。  b  p  m  f  d  t  n  l  g  h  j  q  x  z h  c h  s h  r  z  c  s  （ y  w ）  a  o  e  i  u  ü  a i  e i  u i  a o  o u  i u  i e  ü e  e r  a n  e n  i n  u n  ü n  a n g  e n g  i n g  o n g  z h i  c h i  s h i  r i  z i  c i  s i  y i  w u  y u  y e  y u e  y u a n  y i n  y u n  y i n g"
+        },
+        {
+          "名称": "字词句运用",
+          "全文": "读一读，说一说。 车 火车　马车　汽车 上车　坐车　车站　车厢 拼一拼，写一写。 门口　生日　题目　田野",
+          "拼音": "dú yi dú ， shuō yi shuō 。  chē  huǒ chē  mǎ chē  qì chē  shàng chē  zuò chē  chē zhàn  chē xiāng  pīn yi pīn ， xiě yi xiě 。  mén kǒu  shēng rì  tí mù  tián yě"
+        },
+        {
+          "名称": "日积月累",
+          "全文": "悯农（其二）李绅 锄禾日当午， 汗滴禾下土。 谁知盘中餐， 粒粒皆辛苦。",
+          "拼音": "mǐn nóng （ qí èr ） lǐ shēn  chú hé rì dāng wǔ ，  hàn dī hé xià tǔ 。  shuí zhī pán zhōng cān ，  lì lì jiē xīn kǔ 。"
+        }
+      ]
+    },
+    {
+      "单元": 5,
+      "标题": "语文园地五",
+      "页码": [
+        68,
+        69
+      ],
+      "栏目": [
+        {
+          "名称": "识字加油站",
+          "全文": "南—北　男—女　开—关 正—反　先—后　内—外 我也会说这样的词语……",
+          "拼音": "nán — běi  nán — nǚ  kāi — guān  zhèng — fǎn  xiān — hòu  nèi — wài  wǒ yě huì shuō zhè yàng de cí yǔ … …"
+        },
+        {
+          "名称": "字词句运用",
+          "全文": "读一读，说一说。 春天　夏天　秋天　冬天 大地　树叶　青草　莲花 飞鸟　小鱼　青蛙　雪人 我最喜欢冬天，因为冬天可以堆雪人…… 你认识哪些同学的名字？是怎么认识的？ 和同学交流。 这些卡片上的名字我都认识。 我从写字本上认识了一些同学的名字。 一年级（3）班　刘丽 李晓宇　6岁",
+          "拼音": "dú yi dú ， shuō yi shuō 。  chūn tiān  xià tiān  qiū tiān  dōng tiān  dà dì  shù yè  qīng cǎo  lián huā  fēi niǎo  xiǎo yú  qīng wā  xuě rén  wǒ zuì xǐ huān dōng tiān ， yīn wèi dōng tiān kě yǐ duī xuě rén … …  nǐ rèn shi nǎ xiē tóng xué de míng zi ？ shì zěn me rèn shi de ？  hé tóng xué jiāo liú 。  zhè xiē kǎ piàn shàng de míng zi wǒ dōu rèn shi 。  wǒ cóng xiě zi běn shàng rèn shi le yi xiē tóng xué de míng zi 。  yi nián jí （ 3 ） bān  liú lì  lǐ xiǎo yǔ  6 suì"
+        },
+        {
+          "名称": "日积月累",
+          "全文": "一年之计在于春，一日之计在于晨。 一寸光阴一寸金，寸金难买寸光阴。",
+          "拼音": "yì nián zhī jì zài yú chūn ， yí rì zhī jì zài yú chén 。  yí cùn guāng yīn yí cùn jīn ， cùn jīn nán mǎi cùn guāng yīn 。"
+        }
+      ]
+    },
+    {
+      "单元": 6,
+      "标题": "语文园地六",
+      "页码": [
+        80,
+        81,
+        82
+      ],
+      "栏目": [
+        {
+          "名称": "识字加油站",
+          "全文": "学校 老师 工厂 工人 我还知道 很多职业…… 医院 医生 传达室 门卫",
+          "拼音": "xué xiào  lǎo shī  gōng chǎng  gōng rén  wǒ hái zhī dào  hěn duō zhí yè … …  yī yuàn  yī shēng  chuán dá shì  mén wèi"
+        },
+        {
+          "名称": "字词句运用",
+          "全文": "读一读，读准字音。 你们　家里　男生　蓝色 上山　三年　写字　报纸 读一读，和同学交流你的发现。 树　林　桃　桥 花　草　莲　菜 很多木字旁的字都和树木有关。 “桥”字为什么和树木有关呢？我想问问老师。 你在路上认识了哪些字？和同学交流。 看图写词语，再说一两句话。",
+          "拼音": "dú yi dú ， dú zhǔn zì yīn 。  nǐ men  jiā lǐ  nán shēng  lán sè  shàng shān  sān nián  xiě zì  bào zhǐ  dú yi dú ， hé tóng xué jiāo liú nǐ de fā xiàn 。  shù  lín  táo  qiáo  huā  cǎo  lián  cài  hěn duō mù zì páng de zì dōu hé shù mù yǒu guān 。  “ qiáo ” zì wèi shén me hé shù mù yǒu guān ne ？ wǒ xiǎng wèn wèn lǎo shī 。  nǐ zài lù shàng rèn shi le nǎ xiē zì ？ hé tóng xué jiāo liú 。  kàn tú xiě cí yǔ ， zài shuō yì liǎng jù huà 。"
+        },
+        {
+          "名称": "书写提示",
+          "全文": "从上到下。笔顺规则： 笔顺规则： 从左到右。",
+          "拼音": "cóng shàng dào xià 。 bǐ shùn guī zé ：  bǐ shùn guī zé ：  cóng zuǒ dào yòu 。"
+        },
+        {
+          "名称": "日积月累",
+          "全文": "古朗月行（节选）李白 小时不识月， 呼作白玉盘。 又疑瑶台镜， 飞在青云端。",
+          "拼音": "gǔ lǎng yuè xíng （ jié xuǎn ） lǐ bái  xiǎo shí bù shí yuè ，  hū zuò bái yù pán 。  yòu yí yáo tái jìng ，  fēi zài qīng yún duān 。"
+        }
+      ]
+    },
+    {
+      "单元": 7,
+      "标题": "语文园地七",
+      "页码": [
+        90,
+        91,
+        92
+      ],
+      "栏目": [
+        {
+          "名称": "识字加油站",
+          "全文": "我给大家介绍 一下我的家人…… 爷爷 奶奶 姥爷 姥姥 叔叔 姑姑 爸爸 妈妈 舅舅 姨妈 哥哥 姐姐 弟弟 妹妹",
+          "拼音": "wǒ gěi dà jiā jiè shào  yī xià wǒ de jiā rén … …  yé yé  nǎi nǎi  lǎo yé  lǎo lǎo  shū shū  gū gū  bà bà  mā mā  jiù jiù  yí mā  gē gē  jiě jiě  dì di  mèi mèi"
+        },
+        {
+          "名称": "字词句运用",
+          "全文": "比一比，写一写。 了　才　云　山 儿　四　我　心 读一读，和同学交流你的发现。 明　晚　昨　春 妈　奶　姐　妹 这几个字的意思都和时间有关。 读一读，背一背。 早晨起来，面向太阳。 前面是东，后面是西。 左面是北，右面是南。",
+          "拼音": "bǐ yi bǐ ， xiě yi xiě 。  le  cái  yún  shān  ér  sì  wǒ  xīn  dú yi dú ， hé tóng xué jiāo liú nǐ de fā xiàn 。  míng  wǎn  zuó  chūn  mā  nǎi  jiě  mèi  zhè jǐ gè zì de yì si dōu hé shí jiān yǒu guān 。  dú yi dú ， bèi yi bèi 。  zǎo chén qǐ lái ， miàn xiàng tài yáng 。  qián miàn shì dōng ， hòu miàn shì xī 。  zuǒ miàn shì běi ， yòu miàn shì nán 。"
+        },
+        {
+          "名称": "日积月累",
+          "全文": "◎种瓜得瓜，种豆得豆。 ◎前人栽树，后人乘凉。 ◎千里之行，始于足下。 ◎百尺竿头，更进一步。",
+          "拼音": "◎ zhòng guā dé guā ， zhòng dòu dé dòu 。  ◎ qián rén zāi shù ， hòu rén chéng liáng 。  ◎ qiān lǐ zhī xíng ， shǐ yú zú xià 。  ◎ bǎi chǐ gān tóu ， gèng jìn yí bù 。"
+        },
+        {
+          "名称": "口语交际",
+          "全文": "用多大的声音说话 什么时候要大声说话？什么时候要小声说话？想一想，试一试。 请问，这里有人吗？ 老师，我在教室里 捡到一块橡皮。 我给大家讲一个故事…… ◎ 有时候要大声说话， 让别人听清楚。 ◎ 有时候要小声说话， 不影响其他人。",
+          "拼音": "yòng duō dà de shēng yīn shuō huà  shén me shí hou yào dà shēng shuō huà ？ shén me shí hou yào xiǎo shēng shuō huà ？ xiǎng yi xiǎng ， shì yi shì 。  qǐng wèn ， zhè lǐ yǒu rén ma ？  lǎo shī ， wǒ zài jiào shì lǐ  jiǎn dào yi kuài xiàng pí 。  wǒ gěi dà jiā jiǎng yi gè gù shì … …  ◎  yǒu shí hou yào dà shēng shuō huà ，  ràng bié rén tīng qīng chǔ 。  ◎  yǒu shí hou yào xiǎo shēng shuō huà ，  bù yǐng xiǎng qí tā rén 。"
+        }
+      ]
+    },
+    {
+      "单元": 8,
+      "标题": "语文园地八",
+      "页码": [
+        101,
+        102
+      ],
+      "栏目": [
+        {
+          "名称": "识字加油站",
+          "全文": "连一连。 牛　羊　只　爪　叶 花　田　作 元　拼　音　巴　白 有些字可以分成上下两部分。",
+          "拼音": "lián yi lián 。  niú  yáng  zhǐ  zhuǎ  yè  huā  tián  zuò  yuán  pīn  yīn  bā  bái  yǒu xiē zì kě yǐ fēn chéng shàng xià liǎng bù fèn 。"
+        },
+        {
+          "名称": "字词句运用",
+          "全文": "读一读。 果皮　树皮　加法　办法　回来　回答 许多　不许　到处　四处　方向　地方 新年快到了，给家人或朋友写一句祝福的话吧！",
+          "拼音": "dú yi dú 。  guǒ pí  shù pí  jiā fǎ  bàn fǎ  huí lái  huí dá  xǔ duō  bù xǔ  dào chù  sì chù  fāng xiàng  dì fāng  xīn nián kuài dào le ， gěi jiā rén huò péng you xiě yí jù zhù fú de huà ba ！"
+        },
+        {
+          "名称": "书写提示",
+          "全文": "笔顺规则：先外后内。 月　风 笔顺规则：先中间后两边。 小　水",
+          "拼音": "bǐ shùn guī zé ： xiān wài hòu nèi 。  yuè  fēng  bǐ shùn guī zé ： xiān zhōng jiān hòu liǎng biān 。  xiǎo  shuǐ"
+        },
+        {
+          "名称": "日积月累",
+          "全文": "风李峤 解落三秋叶， 能开二月花。 过江千尺浪， 入竹万竿斜。",
+          "拼音": "fēng lǐ jiào  jiě luò sān qiū yè ，  néng kāi èr yuè huā 。  guò jiāng qiān chǐ làng ，  rù zhú wàn gān xié 。"
+        }
+      ]
+    }
+  ],
+  "附录": [
+    {
+      "模块": "识字表",
+      "分组": "识字",
+      "序号": "1",
+      "字": [
+        "天",
+        "地",
+        "人",
+        "你",
+        "我",
+        "他"
+      ],
+      "词": [],
+      "拼音": [
+        "tiān",
+        "dì",
+        "rén",
+        "nǐ",
+        "wǒ",
+        "tā"
+      ]
+    },
+    {
+      "模块": "识字表",
+      "分组": "识字",
+      "序号": "2",
+      "字": [
+        "一",
+        "二",
+        "三",
+        "四",
+        "五",
+        "上",
+        "下"
+      ],
+      "词": [],
+      "拼音": [
+        "yī",
+        "èr",
+        "sān",
+        "sì",
+        "wǔ",
+        "shàng",
+        "xià"
+      ]
+    },
+    {
+      "模块": "识字表",
+      "分组": "识字",
+      "序号": "3",
+      "字": [
+        "口",
+        "耳",
+        "目",
+        "手",
+        "足",
+        "站",
+        "坐"
+      ],
+      "词": [],
+      "拼音": [
+        "kǒu",
+        "ěr",
+        "mù",
+        "shǒu",
+        "zú",
+        "zhàn",
+        "zuò"
+      ]
+    },
+    {
+      "模块": "识字表",
+      "分组": "识字",
+      "序号": "4",
+      "字": [
+        "日",
+        "月",
+        "山",
+        "川",
+        "水",
+        "火",
+        "田",
+        "禾"
+      ],
+      "词": [],
+      "拼音": [
+        "rì",
+        "yuè",
+        "shān",
+        "chuān",
+        "shuǐ",
+        "huǒ",
+        "tián",
+        "hé"
+      ]
+    },
+    {
+      "模块": "识字表",
+      "分组": "识字",
+      "序号": "语文园地一",
+      "字": [
+        "六",
+        "七",
+        "八",
+        "九",
+        "十"
+      ],
+      "词": [],
+      "拼音": [
+        "liù",
+        "qī",
+        "bā",
+        "jiǔ",
+        "shí"
+      ]
+    },
+    {
+      "模块": "识字表",
+      "分组": "汉语拼音",
+      "序号": "3",
+      "字": [
+        "爸",
+        "妈",
+        "大",
+        "马",
+        "路",
+        "土"
+      ],
+      "词": [],
+      "拼音": [
+        "bà",
+        "mā",
+        "dà",
+        "mǎ",
+        "lù",
+        "tǔ"
+      ]
+    },
+    {
+      "模块": "识字表",
+      "分组": "汉语拼音",
+      "序号": "语文园地二",
+      "字": [
+        "本",
+        "学",
+        "校",
+        "班",
+        "级",
+        "姓",
+        "名",
+        "王"
+      ],
+      "词": [],
+      "拼音": [
+        "běn",
+        "xué",
+        "xiào",
+        "bān",
+        "jí",
+        "xìng",
+        "míng",
+        "wáng"
+      ]
+    },
+    {
+      "模块": "识字表",
+      "分组": "汉语拼音",
+      "序号": "5",
+      "字": [
+        "哥",
+        "弟",
+        "画",
+        "花",
+        "桌",
+        "纸",
+        "读",
+        "书"
+      ],
+      "词": [],
+      "拼音": [
+        "gē",
+        "dì",
+        "huà",
+        "huā",
+        "zhuō",
+        "zhǐ",
+        "dú",
+        "shū"
+      ]
+    },
+    {
+      "模块": "识字表",
+      "分组": "汉语拼音",
+      "序号": "6",
+      "字": [
+        "打",
+        "棋",
+        "积",
+        "木",
+        "鱼",
+        "鸭",
+        "乌",
+        "鸦"
+      ],
+      "词": [],
+      "拼音": [
+        "dǎ",
+        "qí",
+        "jī",
+        "mù",
+        "yú",
+        "yā",
+        "wū",
+        "yā"
+      ]
+    },
+    {
+      "模块": "识字表",
+      "分组": "汉语拼音",
+      "序号": "7",
+      "字": [
+        "字",
+        "词",
+        "句",
+        "子"
+      ],
+      "词": [],
+      "拼音": [
+        "zì",
+        "cí",
+        "jù",
+        "zǐ"
+      ]
+    },
+    {
+      "模块": "识字表",
+      "分组": "汉语拼音",
+      "序号": "语文园地三",
+      "字": [
+        "午",
+        "星",
+        "期",
+        "语",
+        "文",
+        "数",
+        "写",
+        "会"
+      ],
+      "词": [],
+      "拼音": [
+        "wǔ",
+        "xīng",
+        "qī",
+        "yǔ",
+        "wén",
+        "shù",
+        "xiě",
+        "huì"
+      ]
+    },
+    {
+      "模块": "识字表",
+      "分组": "汉语拼音",
+      "序号": "10",
+      "字": [
+        "白",
+        "菜",
+        "西",
+        "瓜",
+        "果",
+        "蓝",
+        "云",
+        "草",
+        "原"
+      ],
+      "词": [],
+      "拼音": [
+        "bái",
+        "cài",
+        "xī",
+        "guā",
+        "guǒ",
+        "lán",
+        "yún",
+        "cǎo",
+        "yuán"
+      ]
+    },
+    {
+      "模块": "识字表",
+      "分组": "汉语拼音",
+      "序号": "11",
+      "字": [
+        "小",
+        "桥",
+        "流",
+        "柳",
+        "冰",
+        "自",
+        "行",
+        "车"
+      ],
+      "词": [],
+      "拼音": [
+        "xiǎo",
+        "qiáo",
+        "liú",
+        "liǔ",
+        "bīng",
+        "zì",
+        "xíng",
+        "chē"
+      ]
+    },
+    {
+      "模块": "识字表",
+      "分组": "汉语拼音",
+      "序号": "12",
+      "字": [
+        "开",
+        "雪",
+        "夜",
+        "色",
+        "美"
+      ],
+      "词": [],
+      "拼音": [
+        "kāi",
+        "xuě",
+        "yè",
+        "sè",
+        "měi"
+      ]
+    },
+    {
+      "模块": "识字表",
+      "分组": "汉语拼音",
+      "序号": "语文园地四",
+      "字": [
+        "晚",
+        "昨",
+        "今",
+        "明",
+        "个",
+        "这",
+        "去",
+        "年"
+      ],
+      "词": [],
+      "拼音": [
+        "wǎn",
+        "zuó",
+        "jīn",
+        "míng",
+        "gè",
+        "zhè",
+        "qù",
+        "nián"
+      ]
+    },
+    {
+      "模块": "识字表",
+      "分组": "阅读",
+      "序号": "1",
+      "字": [
+        "秋",
+        "气",
+        "了",
+        "树",
+        "叶",
+        "黄",
+        "片",
+        "从",
+        "来",
+        "飞"
+      ],
+      "词": [],
+      "拼音": [
+        "qiū",
+        "qì",
+        "le",
+        "shù",
+        "yè",
+        "huáng",
+        "piàn",
+        "cóng",
+        "lái",
+        "fēi"
+      ]
+    },
+    {
+      "模块": "识字表",
+      "分组": "阅读",
+      "序号": "2",
+      "字": [
+        "江",
+        "南",
+        "可",
+        "采",
+        "莲",
+        "戏",
+        "间",
+        "东",
+        "北"
+      ],
+      "词": [],
+      "拼音": [
+        "jiāng",
+        "nán",
+        "kě",
+        "cǎi",
+        "lián",
+        "xì",
+        "jiān",
+        "dōng",
+        "běi"
+      ]
+    },
+    {
+      "模块": "识字表",
+      "分组": "阅读",
+      "序号": "3",
+      "字": [
+        "的",
+        "家",
+        "鸡",
+        "竹",
+        "牙",
+        "用",
+        "几",
+        "步",
+        "没",
+        "参",
+        "加"
+      ],
+      "词": [],
+      "拼音": [
+        "de",
+        "jiā",
+        "jī",
+        "zhú",
+        "yá",
+        "yòng",
+        "jǐ",
+        "bù",
+        "méi",
+        "cān",
+        "jiā"
+      ]
+    },
+    {
+      "模块": "识字表",
+      "分组": "阅读",
+      "序号": "4",
+      "字": [
+        "鸟",
+        "说",
+        "是",
+        "春",
+        "青",
+        "蛙",
+        "夏",
+        "着",
+        "皮",
+        "地",
+        "就",
+        "冬"
+      ],
+      "词": [],
+      "拼音": [
+        "niǎo",
+        "shuō",
+        "shì",
+        "chūn",
+        "qīng",
+        "wā",
+        "xià",
+        "zhe",
+        "pí",
+        "de",
+        "jiù",
+        "dōng"
+      ]
+    },
+    {
+      "模块": "识字表",
+      "分组": "阅读",
+      "序号": "语文园地五",
+      "字": [
+        "男",
+        "女",
+        "关",
+        "正",
+        "反",
+        "先",
+        "后",
+        "内",
+        "外"
+      ],
+      "词": [],
+      "拼音": [
+        "nán",
+        "nǚ",
+        "guān",
+        "zhèng",
+        "fǎn",
+        "xiān",
+        "hòu",
+        "nèi",
+        "wài"
+      ]
+    },
+    {
+      "模块": "识字表",
+      "分组": "识字",
+      "序号": "5",
+      "字": [
+        "对",
+        "歌",
+        "雨",
+        "风",
+        "虫",
+        "清",
+        "绿",
+        "桃",
+        "红"
+      ],
+      "词": [],
+      "拼音": [
+        "duì",
+        "gē",
+        "yǔ",
+        "fēng",
+        "chóng",
+        "qīng",
+        "lǜ",
+        "táo",
+        "hóng"
+      ]
+    },
+    {
+      "模块": "识字表",
+      "分组": "识字",
+      "序号": "6",
+      "字": [
+        "力",
+        "尖",
+        "尘",
+        "众",
+        "双",
+        "林",
+        "森",
+        "不",
+        "条",
+        "心",
+        "金"
+      ],
+      "词": [],
+      "拼音": [
+        "lì",
+        "jiān",
+        "chén",
+        "zhòng",
+        "shuāng",
+        "lín",
+        "sēn",
+        "bù",
+        "tiáo",
+        "xīn",
+        "jīn"
+      ]
+    },
+    {
+      "模块": "识字表",
+      "分组": "识字",
+      "序号": "7",
+      "字": [
+        "包",
+        "尺",
+        "作",
+        "业",
+        "笔",
+        "刀",
+        "宝",
+        "贝",
+        "少",
+        "课",
+        "早"
+      ],
+      "词": [],
+      "拼音": [
+        "bāo",
+        "chǐ",
+        "zuò",
+        "yè",
+        "bǐ",
+        "dāo",
+        "bǎo",
+        "bèi",
+        "shǎo",
+        "kè",
+        "zǎo"
+      ]
+    },
+    {
+      "模块": "识字表",
+      "分组": "识字",
+      "序号": "8",
+      "字": [
+        "升",
+        "国",
+        "旗",
+        "中",
+        "们",
+        "声",
+        "起",
+        "多",
+        "么",
+        "向",
+        "立"
+      ],
+      "词": [],
+      "拼音": [
+        "shēng",
+        "guó",
+        "qí",
+        "zhōng",
+        "men",
+        "shēng",
+        "qǐ",
+        "duō",
+        "me",
+        "xiàng",
+        "lì"
+      ]
+    },
+    {
+      "模块": "识字表",
+      "分组": "识字",
+      "序号": "语文园地六",
+      "字": [
+        "老",
+        "师",
+        "工",
+        "厂",
+        "医",
+        "院",
+        "生",
+        "门",
+        "卫"
+      ],
+      "词": [],
+      "拼音": [
+        "lǎo",
+        "shī",
+        "gōng",
+        "chǎng",
+        "yī",
+        "yuàn",
+        "shēng",
+        "mén",
+        "wèi"
+      ]
+    },
+    {
+      "模块": "识字表",
+      "分组": "阅读",
+      "序号": "5",
+      "字": [
+        "船",
+        "弯",
+        "儿",
+        "两",
+        "头",
+        "在",
+        "里",
+        "看",
+        "见",
+        "闪"
+      ],
+      "词": [],
+      "拼音": [
+        "chuán",
+        "wān",
+        "ér",
+        "liǎng",
+        "tóu",
+        "zài",
+        "lǐ",
+        "kàn",
+        "jiàn",
+        "shǎn"
+      ]
+    },
+    {
+      "模块": "识字表",
+      "分组": "阅读",
+      "序号": "6",
+      "字": [
+        "影",
+        "前",
+        "常",
+        "黑",
+        "狗",
+        "左",
+        "右",
+        "它",
+        "好",
+        "朋",
+        "友"
+      ],
+      "词": [],
+      "拼音": [
+        "yǐng",
+        "qián",
+        "cháng",
+        "hēi",
+        "gǒu",
+        "zuǒ",
+        "yòu",
+        "tā",
+        "hǎo",
+        "péng",
+        "yǒu"
+      ]
+    },
+    {
+      "模块": "识字表",
+      "分组": "阅读",
+      "序号": "7",
+      "字": [
+        "件",
+        "有",
+        "和",
+        "做",
+        "也",
+        "办",
+        "到",
+        "又",
+        "才",
+        "能"
+      ],
+      "词": [],
+      "拼音": [
+        "jiàn",
+        "yǒu",
+        "hé",
+        "zuò",
+        "yě",
+        "bàn",
+        "dào",
+        "yòu",
+        "cái",
+        "néng"
+      ]
+    },
+    {
+      "模块": "识字表",
+      "分组": "阅读",
+      "序号": "语文园地七",
+      "字": [
+        "爷",
+        "奶",
+        "叔",
+        "姐",
+        "妹"
+      ],
+      "词": [],
+      "拼音": [
+        "yé",
+        "nǎi",
+        "shū",
+        "jiě",
+        "mèi"
+      ]
+    },
+    {
+      "模块": "识字表",
+      "分组": "阅读",
+      "序号": "8",
+      "字": [
+        "比",
+        "尾",
+        "巴",
+        "谁",
+        "长",
+        "短",
+        "把",
+        "伞",
+        "兔",
+        "最",
+        "公"
+      ],
+      "词": [],
+      "拼音": [
+        "bǐ",
+        "wěi",
+        "bā",
+        "shuí",
+        "cháng",
+        "duǎn",
+        "bǎ",
+        "sǎn",
+        "tù",
+        "zuì",
+        "gōng"
+      ]
+    },
+    {
+      "模块": "识字表",
+      "分组": "阅读",
+      "序号": "9",
+      "字": [
+        "喝",
+        "只",
+        "处",
+        "找",
+        "着",
+        "许",
+        "石",
+        "出",
+        "法",
+        "放",
+        "进",
+        "高"
+      ],
+      "词": [],
+      "拼音": [
+        "hē",
+        "zhī",
+        "chù",
+        "zhǎo",
+        "zháo",
+        "xǔ",
+        "shí",
+        "chū",
+        "fǎ",
+        "fàng",
+        "jìn",
+        "gāo"
+      ]
+    },
+    {
+      "模块": "识字表",
+      "分组": "阅读",
+      "序号": "10",
+      "字": [
+        "点",
+        "数",
+        "彩",
+        "半",
+        "空",
+        "问",
+        "回",
+        "答",
+        "方",
+        "久",
+        "更",
+        "长"
+      ],
+      "词": [],
+      "拼音": [
+        "diǎn",
+        "shǔ",
+        "cǎi",
+        "bàn",
+        "kōng",
+        "wèn",
+        "huí",
+        "dá",
+        "fāng",
+        "jiǔ",
+        "gèng",
+        "zhǎng"
+      ]
+    },
+    {
+      "模块": "识字表",
+      "分组": "阅读",
+      "序号": "语文园地八",
+      "字": [
+        "牛",
+        "羊",
+        "爪",
+        "元",
+        "拼",
+        "音"
+      ],
+      "词": [],
+      "拼音": [
+        "niú",
+        "yáng",
+        "zhuǎ",
+        "yuán",
+        "pīn",
+        "yīn"
+      ]
+    },
+    {
+      "模块": "写字表",
+      "分组": "识字",
+      "序号": "2",
+      "字": [
+        "一",
+        "二",
+        "三",
+        "上"
+      ],
+      "词": [],
+      "拼音": [
+        "yī",
+        "èr",
+        "sān",
+        "shàng"
+      ]
+    },
+    {
+      "模块": "写字表",
+      "分组": "识字",
+      "序号": "3",
+      "字": [
+        "口",
+        "耳",
+        "目",
+        "手"
+      ],
+      "词": [],
+      "拼音": [
+        "kǒu",
+        "ěr",
+        "mù",
+        "shǒu"
+      ]
+    },
+    {
+      "模块": "写字表",
+      "分组": "识字",
+      "序号": "4",
+      "字": [
+        "日",
+        "火",
+        "田",
+        "禾"
+      ],
+      "词": [],
+      "拼音": [
+        "rì",
+        "huǒ",
+        "tián",
+        "hé"
+      ]
+    },
+    {
+      "模块": "写字表",
+      "分组": "识字",
+      "序号": "语文园地一",
+      "字": [
+        "六",
+        "七",
+        "八",
+        "十"
+      ],
+      "词": [],
+      "拼音": [
+        "liù",
+        "qī",
+        "bā",
+        "shí"
+      ]
+    },
+    {
+      "模块": "写字表",
+      "分组": "汉语拼音",
+      "序号": "语文园地二",
+      "字": [
+        "九",
+        "王"
+      ],
+      "词": [],
+      "拼音": [
+        "jiǔ",
+        "wáng"
+      ]
+    },
+    {
+      "模块": "写字表",
+      "分组": "汉语拼音",
+      "序号": "语文园地三",
+      "字": [
+        "午",
+        "下"
+      ],
+      "词": [],
+      "拼音": [
+        "wǔ",
+        "xià"
+      ]
+    },
+    {
+      "模块": "写字表",
+      "分组": "汉语拼音",
+      "序号": "语文园地四",
+      "字": [
+        "个",
+        "去"
+      ],
+      "词": [],
+      "拼音": [
+        "gè",
+        "qù"
+      ]
+    },
+    {
+      "模块": "写字表",
+      "分组": "阅读",
+      "序号": "1",
+      "字": [
+        "了",
+        "子",
+        "大",
+        "人"
+      ],
+      "词": [],
+      "拼音": [
+        "le",
+        "zi",
+        "dà",
+        "rén"
+      ]
+    },
+    {
+      "模块": "写字表",
+      "分组": "阅读",
+      "序号": "2",
+      "字": [
+        "可",
+        "叶",
+        "东",
+        "西"
+      ],
+      "词": [],
+      "拼音": [
+        "kě",
+        "yè",
+        "dōng",
+        "xī"
+      ]
+    },
+    {
+      "模块": "写字表",
+      "分组": "阅读",
+      "序号": "3",
+      "字": [
+        "竹",
+        "马",
+        "牙",
+        "用",
+        "几"
+      ],
+      "词": [],
+      "拼音": [
+        "zhú",
+        "mǎ",
+        "yá",
+        "yòng",
+        "jǐ"
+      ]
+    },
+    {
+      "模块": "写字表",
+      "分组": "阅读",
+      "序号": "4",
+      "字": [
+        "四",
+        "小",
+        "鸟",
+        "是",
+        "天"
+      ],
+      "词": [],
+      "拼音": [
+        "sì",
+        "xiǎo",
+        "niǎo",
+        "shì",
+        "tiān"
+      ]
+    },
+    {
+      "模块": "写字表",
+      "分组": "阅读",
+      "序号": "语文园地五",
+      "字": [
+        "女",
+        "开",
+        "关",
+        "先"
+      ],
+      "词": [],
+      "拼音": [
+        "nǚ",
+        "kāi",
+        "guān",
+        "xiān"
+      ]
+    },
+    {
+      "模块": "写字表",
+      "分组": "识字",
+      "序号": "5",
+      "字": [
+        "云",
+        "雨",
+        "虫",
+        "山",
+        "水"
+      ],
+      "词": [],
+      "拼音": [
+        "yún",
+        "yǔ",
+        "chóng",
+        "shān",
+        "shuǐ"
+      ]
+    },
+    {
+      "模块": "写字表",
+      "分组": "识字",
+      "序号": "6",
+      "字": [
+        "力",
+        "男",
+        "土",
+        "木",
+        "心"
+      ],
+      "词": [],
+      "拼音": [
+        "lì",
+        "nán",
+        "tǔ",
+        "mù",
+        "xīn"
+      ]
+    },
+    {
+      "模块": "写字表",
+      "分组": "识字",
+      "序号": "7",
+      "字": [
+        "尺",
+        "本",
+        "刀",
+        "不",
+        "少"
+      ],
+      "词": [],
+      "拼音": [
+        "chǐ",
+        "běn",
+        "dāo",
+        "bù",
+        "shǎo"
+      ]
+    },
+    {
+      "模块": "写字表",
+      "分组": "识字",
+      "序号": "8",
+      "字": [
+        "中",
+        "五",
+        "风",
+        "立",
+        "正"
+      ],
+      "词": [],
+      "拼音": [
+        "zhōng",
+        "wǔ",
+        "fēng",
+        "lì",
+        "zhèng"
+      ]
+    },
+    {
+      "模块": "写字表",
+      "分组": "识字",
+      "序号": "语文园地六",
+      "字": [
+        "工",
+        "厂",
+        "门",
+        "卫"
+      ],
+      "词": [],
+      "拼音": [
+        "gōng",
+        "chǎng",
+        "mén",
+        "wèi"
+      ]
+    },
+    {
+      "模块": "写字表",
+      "分组": "阅读",
+      "序号": "5",
+      "字": [
+        "月",
+        "儿",
+        "头",
+        "里",
+        "见"
+      ],
+      "词": [],
+      "拼音": [
+        "yuè",
+        "ér",
+        "tóu",
+        "lǐ",
+        "jiàn"
+      ]
+    },
+    {
+      "模块": "写字表",
+      "分组": "阅读",
+      "序号": "6",
+      "字": [
+        "在",
+        "我",
+        "左",
+        "右"
+      ],
+      "词": [],
+      "拼音": [
+        "zài",
+        "wǒ",
+        "zuǒ",
+        "yòu"
+      ]
+    },
+    {
+      "模块": "写字表",
+      "分组": "阅读",
+      "序号": "7",
+      "字": [
+        "和",
+        "也",
+        "又",
+        "才"
+      ],
+      "词": [],
+      "拼音": [
+        "hé",
+        "yě",
+        "yòu",
+        "cái"
+      ]
+    },
+    {
+      "模块": "写字表",
+      "分组": "阅读",
+      "序号": "语文园地七",
+      "字": [
+        "爸",
+        "妈"
+      ],
+      "词": [],
+      "拼音": [
+        "bà",
+        "mā"
+      ]
+    },
+    {
+      "模块": "写字表",
+      "分组": "阅读",
+      "序号": "8",
+      "字": [
+        "比",
+        "巴",
+        "长",
+        "公"
+      ],
+      "词": [],
+      "拼音": [
+        "bǐ",
+        "bā",
+        "zhǎng",
+        "gōng"
+      ]
+    },
+    {
+      "模块": "写字表",
+      "分组": "阅读",
+      "序号": "9",
+      "字": [
+        "只",
+        "多",
+        "办",
+        "石",
+        "出"
+      ],
+      "词": [],
+      "拼音": [
+        "zhǐ",
+        "duō",
+        "bàn",
+        "shí",
+        "chū"
+      ]
+    },
+    {
+      "模块": "写字表",
+      "分组": "阅读",
+      "序号": "10",
+      "字": [
+        "来",
+        "半",
+        "你",
+        "有"
+      ],
+      "词": [],
+      "拼音": [
+        "lái",
+        "bàn",
+        "nǐ",
+        "yǒu"
+      ]
+    },
+    {
+      "模块": "写字表",
+      "分组": "阅读",
+      "序号": "语文园地八",
+      "字": [
+        "牛",
+        "羊",
+        "爪",
+        "白"
+      ],
+      "词": [],
+      "拼音": [
+        "niú",
+        "yáng",
+        "zhǎo",
+        "bái"
+      ]
+    },
+    {
+      "模块": "笔画名称表",
+      "分组": null,
+      "序号": "㇐",
+      "字": [],
+      "词": [
+        "横",
+        "一十"
+      ],
+      "拼音": [
+        "héng",
+        "yī shí"
+      ]
+    },
+    {
+      "模块": "笔画名称表",
+      "分组": null,
+      "序号": "㇑",
+      "字": [],
+      "词": [
+        "竖",
+        "上木"
+      ],
+      "拼音": [
+        "shù",
+        "shàng mù"
+      ]
+    },
+    {
+      "模块": "笔画名称表",
+      "分组": null,
+      "序号": "㇒",
+      "字": [],
+      "词": [
+        "撇",
+        "手八"
+      ],
+      "拼音": [
+        "piē",
+        "shǒu bā"
+      ]
+    },
+    {
+      "模块": "笔画名称表",
+      "分组": null,
+      "序号": "㇔",
+      "字": [],
+      "词": [
+        "点",
+        "火头"
+      ],
+      "拼音": [
+        "diǎn",
+        "huǒ tóu"
+      ]
+    },
+    {
+      "模块": "笔画名称表",
+      "分组": null,
+      "序号": "㇏",
+      "字": [],
+      "词": [
+        "捺",
+        "火人"
+      ],
+      "拼音": [
+        "nà",
+        "huǒ rén"
+      ]
+    },
+    {
+      "模块": "笔画名称表",
+      "分组": null,
+      "序号": "㇀",
+      "字": [],
+      "词": [
+        "提",
+        "虫我"
+      ],
+      "拼音": [
+        "tí",
+        "chóng wǒ"
+      ]
+    },
+    {
+      "模块": "笔画名称表",
+      "分组": null,
+      "序号": "㇕",
+      "字": [],
+      "词": [
+        "横折",
+        "口五"
+      ],
+      "拼音": [
+        "héng zhé",
+        "kǒu wǔ"
+      ]
+    },
+    {
+      "模块": "笔画名称表",
+      "分组": null,
+      "序号": "㇇",
+      "字": [],
+      "词": [
+        "横撇",
+        "了水"
+      ],
+      "拼音": [
+        "héng piē",
+        "le shuǐ"
+      ]
+    },
+    {
+      "模块": "笔画名称表",
+      "分组": null,
+      "序号": "㇖",
+      "字": [],
+      "词": [
+        "横钩",
+        "你"
+      ],
+      "拼音": [
+        "héng gōu",
+        "nǐ"
+      ]
+    },
+    {
+      "模块": "笔画名称表",
+      "分组": null,
+      "序号": "㇗",
+      "字": [],
+      "词": [
+        "竖折",
+        "牙山"
+      ],
+      "拼音": [
+        "shù zhé",
+        "yá shān"
+      ]
+    },
+    {
+      "模块": "笔画名称表",
+      "分组": null,
+      "序号": "㇄",
+      "字": [],
+      "词": [
+        "竖弯",
+        "西四"
+      ],
+      "拼音": [
+        "shù wān",
+        "xī sì"
+      ]
+    },
+    {
+      "模块": "笔画名称表",
+      "分组": null,
+      "序号": "㇙",
+      "字": [],
+      "词": [
+        "竖提",
+        "比长"
+      ],
+      "拼音": [
+        "shù tí",
+        "bǐ zhǎng"
+      ]
+    },
+    {
+      "模块": "笔画名称表",
+      "分组": null,
+      "序号": "㇚",
+      "字": [],
+      "词": [
+        "竖钩",
+        "可小"
+      ],
+      "拼音": [
+        "shù gōu",
+        "kě xiǎo"
+      ]
+    },
+    {
+      "模块": "笔画名称表",
+      "分组": null,
+      "序号": "㇜",
+      "字": [],
+      "词": [
+        "撇折",
+        "去云"
+      ],
+      "拼音": [
+        "piē zhé",
+        "qù yún"
+      ]
+    },
+    {
+      "模块": "笔画名称表",
+      "分组": null,
+      "序号": "㇛",
+      "字": [],
+      "词": [
+        "撇点",
+        "女妈"
+      ],
+      "拼音": [
+        "piē diǎn",
+        "nǚ mā"
+      ]
+    },
+    {
+      "模块": "笔画名称表",
+      "分组": null,
+      "序号": "㇁",
+      "字": [],
+      "词": [
+        "弯钩",
+        "手子"
+      ],
+      "拼音": [
+        "wān gōu",
+        "shǒu zi"
+      ]
+    },
+    {
+      "模块": "笔画名称表",
+      "分组": null,
+      "序号": "㇂",
+      "字": [],
+      "词": [
+        "斜钩",
+        "我"
+      ],
+      "拼音": [
+        "xié gōu",
+        "wǒ"
+      ]
+    },
+    {
+      "模块": "笔画名称表",
+      "分组": null,
+      "序号": "㇃",
+      "字": [],
+      "词": [
+        "卧钩",
+        "心"
+      ],
+      "拼音": [
+        "wò gōu",
+        "xīn"
+      ]
+    },
+    {
+      "模块": "笔画名称表",
+      "分组": null,
+      "序号": "㇅",
+      "字": [],
+      "词": [
+        "横折折",
+        "凹"
+      ],
+      "拼音": [
+        "héng zhé zhé",
+        "āo"
+      ]
+    },
+    {
+      "模块": "笔画名称表",
+      "分组": null,
+      "序号": "㇍",
+      "字": [],
+      "词": [
+        "横折弯",
+        "船"
+      ],
+      "拼音": [
+        "héng zhé wān",
+        "chuán"
+      ]
+    },
+    {
+      "模块": "笔画名称表",
+      "分组": null,
+      "序号": "㇊",
+      "字": [],
+      "词": [
+        "横折提",
+        "话"
+      ],
+      "拼音": [
+        "héng zhé tí",
+        "huà"
+      ]
+    },
+    {
+      "模块": "笔画名称表",
+      "分组": null,
+      "序号": "㇆",
+      "字": [],
+      "词": [
+        "横折钩",
+        "用刀"
+      ],
+      "拼音": [
+        "héng zhé gōu",
+        "yòng dāo"
+      ]
+    },
+    {
+      "模块": "笔画名称表",
+      "分组": null,
+      "序号": "㇈",
+      "字": [],
+      "词": [
+        "横斜钩",
+        "风"
+      ],
+      "拼音": [
+        "héng xié gōu",
+        "fēng"
+      ]
+    },
+    {
+      "模块": "笔画名称表",
+      "分组": null,
+      "序号": "㇞",
+      "字": [],
+      "词": [
+        "竖折折",
+        "鼎"
+      ],
+      "拼音": [
+        "shù zhé zhé",
+        "dǐng"
+      ]
+    },
+    {
+      "模块": "笔画名称表",
+      "分组": null,
+      "序号": "㇋",
+      "字": [],
+      "词": [
+        "竖折撇",
+        "专"
+      ],
+      "拼音": [
+        "shù zhé piē",
+        "zhuān"
+      ]
+    },
+    {
+      "模块": "笔画名称表",
+      "分组": null,
+      "序号": "㇟",
+      "字": [],
+      "词": [
+        "竖弯钩",
+        "七儿"
+      ],
+      "拼音": [
+        "shù wān gōu",
+        "qī ér"
+      ]
+    },
+    {
+      "模块": "笔画名称表",
+      "分组": null,
+      "序号": "㇅",
+      "字": [],
+      "词": [
+        "横折折折",
+        "凸"
+      ],
+      "拼音": [
+        "héng zhé zhé zhé",
+        "tū"
+      ]
+    },
+    {
+      "模块": "笔画名称表",
+      "分组": null,
+      "序号": "㇋",
+      "字": [],
+      "词": [
+        "横折折撇",
+        "及"
+      ],
+      "拼音": [
+        "héng zhé zhé piē",
+        "jí"
+      ]
+    },
+    {
+      "模块": "笔画名称表",
+      "分组": null,
+      "序号": "㇈",
+      "字": [],
+      "词": [
+        "横折弯钩",
+        "九几"
+      ],
+      "拼音": [
+        "héng zhé wān gōu",
+        "jiǔ jǐ"
+      ]
+    },
+    {
+      "模块": "笔画名称表",
+      "分组": null,
+      "序号": "㇌",
+      "字": [],
+      "词": [
+        "横撇弯钩",
+        "那"
+      ],
+      "拼音": [
+        "héng piē wān gōu",
+        "nà"
+      ]
+    },
+    {
+      "模块": "笔画名称表",
+      "分组": null,
+      "序号": "㇉",
+      "字": [],
+      "词": [
+        "竖折折钩",
+        "马鸟"
+      ],
+      "拼音": [
+        "shù zhé zhé gōu",
+        "mǎ niǎo"
+      ]
+    },
+    {
+      "模块": "笔画名称表",
+      "分组": null,
+      "序号": "㇎",
+      "字": [],
+      "词": [
+        "横折折折钩",
+        "奶"
+      ],
+      "拼音": [
+        "héng zhé zhé zhé gōu",
+        "nǎi"
+      ]
+    },
+    {
+      "模块": "常用偏旁名称表",
+      "分组": null,
+      "序号": "亻",
+      "字": [],
+      "词": [
+        "单人旁",
+        "作件"
+      ],
+      "拼音": [
+        "dān rén páng",
+        "zuò jiàn"
+      ]
+    },
+    {
+      "模块": "常用偏旁名称表",
+      "分组": null,
+      "序号": "八",
+      "字": [],
+      "词": [
+        "八字头",
+        "公"
+      ],
+      "拼音": [
+        "bā zì tóu",
+        "gōng"
+      ]
+    },
+    {
+      "模块": "常用偏旁名称表",
+      "分组": null,
+      "序号": "人",
+      "字": [],
+      "词": [
+        "人字头",
+        "今会"
+      ],
+      "拼音": [
+        "rén zì tóu",
+        "jīn huì"
+      ]
+    },
+    {
+      "模块": "常用偏旁名称表",
+      "分组": null,
+      "序号": "⺈",
+      "字": [],
+      "词": [
+        "斜刀头",
+        "兔"
+      ],
+      "拼音": [
+        "xié dāo tóu",
+        "tù"
+      ]
+    },
+    {
+      "模块": "常用偏旁名称表",
+      "分组": null,
+      "序号": "勹",
+      "字": [],
+      "词": [
+        "包字头",
+        "包句"
+      ],
+      "拼音": [
+        "bāo zì tóu",
+        "bāo jù"
+      ]
+    },
+    {
+      "模块": "常用偏旁名称表",
+      "分组": null,
+      "序号": "丷",
+      "字": [],
+      "词": [
+        "倒八",
+        "关前"
+      ],
+      "拼音": [
+        "dào bā",
+        "guān qián"
+      ]
+    },
+    {
+      "模块": "常用偏旁名称表",
+      "分组": null,
+      "序号": "讠",
+      "字": [],
+      "词": [
+        "言字旁",
+        "说语"
+      ],
+      "拼音": [
+        "yán zì páng",
+        "shuō yǔ"
+      ]
+    },
+    {
+      "模块": "常用偏旁名称表",
+      "分组": null,
+      "序号": "阝",
+      "字": [],
+      "词": [
+        "双耳旁",
+        "院"
+      ],
+      "拼音": [
+        "shuāng ěr páng",
+        "yuàn"
+      ]
+    },
+    {
+      "模块": "常用偏旁名称表",
+      "分组": null,
+      "序号": "土",
+      "字": [],
+      "词": [
+        "提土旁",
+        "地"
+      ],
+      "拼音": [
+        "tí tǔ páng",
+        "dì"
+      ]
+    },
+    {
+      "模块": "常用偏旁名称表",
+      "分组": null,
+      "序号": "扌",
+      "字": [],
+      "词": [
+        "提手旁",
+        "把打"
+      ],
+      "拼音": [
+        "tí shǒu páng",
+        "bǎ dǎ"
+      ]
+    },
+    {
+      "模块": "常用偏旁名称表",
+      "分组": null,
+      "序号": "艹",
+      "字": [],
+      "词": [
+        "草字头",
+        "莲花"
+      ],
+      "拼音": [
+        "cǎo zì tóu",
+        "lián huā"
+      ]
+    },
+    {
+      "模块": "常用偏旁名称表",
+      "分组": null,
+      "序号": "口",
+      "字": [],
+      "词": [
+        "口字旁",
+        "叶喝"
+      ],
+      "拼音": [
+        "kǒu zì páng",
+        "yè hē"
+      ]
+    },
+    {
+      "模块": "常用偏旁名称表",
+      "分组": null,
+      "序号": "囗",
+      "字": [],
+      "词": [
+        "国字框",
+        "国回"
+      ],
+      "拼音": [
+        "guó zì kuāng",
+        "guó huí"
+      ]
+    },
+    {
+      "模块": "常用偏旁名称表",
+      "分组": null,
+      "序号": "彡",
+      "字": [],
+      "词": [
+        "三撇",
+        "影彩"
+      ],
+      "拼音": [
+        "sān piē",
+        "yǐng cǎi"
+      ]
+    },
+    {
+      "模块": "常用偏旁名称表",
+      "分组": null,
+      "序号": "犭",
+      "字": [],
+      "词": [
+        "反犬旁",
+        "狗"
+      ],
+      "拼音": [
+        "fǎn quǎn páng",
+        "gǒu"
+      ]
+    },
+    {
+      "模块": "常用偏旁名称表",
+      "分组": null,
+      "序号": "夂",
+      "字": [],
+      "词": [
+        "折文",
+        "夏冬"
+      ],
+      "拼音": [
+        "zhé wén",
+        "xià dōng"
+      ]
+    },
+    {
+      "模块": "常用偏旁名称表",
+      "分组": null,
+      "序号": "门",
+      "字": [],
+      "词": [
+        "门字框",
+        "闪问"
+      ],
+      "拼音": [
+        "mén zì kuāng",
+        "shǎn wèn"
+      ]
+    },
+    {
+      "模块": "常用偏旁名称表",
+      "分组": null,
+      "序号": "氵",
+      "字": [],
+      "词": [
+        "三点水",
+        "江流"
+      ],
+      "拼音": [
+        "sān diǎn shuǐ",
+        "jiāng liú"
+      ]
+    },
+    {
+      "模块": "常用偏旁名称表",
+      "分组": null,
+      "序号": "宀",
+      "字": [],
+      "词": [
+        "宝盖头",
+        "家它"
+      ],
+      "拼音": [
+        "bǎo gài tóu",
+        "jiā tā"
+      ]
+    },
+    {
+      "模块": "常用偏旁名称表",
+      "分组": null,
+      "序号": "辶",
+      "字": [],
+      "词": [
+        "走之底",
+        "进这"
+      ],
+      "拼音": [
+        "zǒu zhī dǐ",
+        "jìn zhè"
+      ]
+    },
+    {
+      "模块": "常用偏旁名称表",
+      "分组": null,
+      "序号": "女",
+      "字": [],
+      "词": [
+        "女字旁",
+        "奶妹"
+      ],
+      "拼音": [
+        "nǚ zì páng",
+        "nǎi mèi"
+      ]
+    },
+    {
+      "模块": "常用偏旁名称表",
+      "分组": null,
+      "序号": "纟",
+      "字": [],
+      "词": [
+        "绞丝旁",
+        "绿红"
+      ],
+      "拼音": [
+        "jiǎo sī páng",
+        "lǜ hóng"
+      ]
+    },
+    {
+      "模块": "常用偏旁名称表",
+      "分组": null,
+      "序号": "木",
+      "字": [],
+      "词": [
+        "木字旁",
+        "树桥"
+      ],
+      "拼音": [
+        "mù zì páng",
+        "shù qiáo"
+      ]
+    },
+    {
+      "模块": "常用偏旁名称表",
+      "分组": null,
+      "序号": "日",
+      "字": [],
+      "词": [
+        "日字旁",
+        "晚明"
+      ],
+      "拼音": [
+        "rì zì páng",
+        "wǎn míng"
+      ]
+    },
+    {
+      "模块": "常用偏旁名称表",
+      "分组": null,
+      "序号": "月",
+      "字": [],
+      "词": [
+        "月字旁",
+        "朋"
+      ],
+      "拼音": [
+        "yuè zì páng",
+        "péng"
+      ]
+    },
+    {
+      "模块": "常用偏旁名称表",
+      "分组": null,
+      "序号": "灬",
+      "字": [],
+      "词": [
+        "四点底",
+        "点"
+      ],
+      "拼音": [
+        "sì diǎn dǐ",
+        "diǎn"
+      ]
+    },
+    {
+      "模块": "常用偏旁名称表",
+      "分组": null,
+      "序号": "禾",
+      "字": [],
+      "词": [
+        "禾字旁",
+        "秋和"
+      ],
+      "拼音": [
+        "hé zì páng",
+        "qiū hé"
+      ]
+    },
+    {
+      "模块": "常用偏旁名称表",
+      "分组": null,
+      "序号": "穴",
+      "字": [],
+      "词": [
+        "穴字头",
+        "空"
+      ],
+      "拼音": [
+        "xué zì tóu",
+        "kōng"
+      ]
+    },
+    {
+      "模块": "常用偏旁名称表",
+      "分组": null,
+      "序号": "竹",
+      "字": [],
+      "词": [
+        "竹字头",
+        "笔答"
+      ],
+      "拼音": [
+        "zhú zì tóu",
+        "bǐ dá"
+      ]
+    }
+  ]
+}

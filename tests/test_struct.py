@@ -4,6 +4,9 @@ from zh_textbook_parser.struct import _lesson_text, annotate
 
 
 class SourceFirstPinyinTest(unittest.TestCase):
+    def test_reviewed_tone_sandhi_for_yiqilai(self) -> None:
+        self.assertEqual(annotate("一起来"), "yì qǐ lái")
+
     def test_annotate_preserves_source_and_fills_missing_pinyin(self) -> None:
         text = "似剪刀。"
         result = annotate(text, {0: "shì"})

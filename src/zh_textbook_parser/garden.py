@@ -27,7 +27,20 @@ from .semantics import (
 TITLE_RE = re.compile(r"^语文园地[一二三四五六七八九十]+$")
 # 黑体小标题里，「我爱阅读」是整篇选文，按课文处理，不算园地栏目
 SELECTION_LABELS = ("我爱阅读",)
+FZHTJW_SELECTION_LABELS = ("和大人一起读",)
 CONTENT_ONLY_SECTIONS = ("日积月累",)
+COMPACT_ITEM_SECTIONS = ("日积月累", "用拼音")
+GARDEN_SECTION_NAMES = {
+    "识字加油站",
+    "字词句运用",
+    "书写提示",
+    "我的发现",
+    "日积月累",
+    "展示台",
+    "和大人一起读",
+    "用拼音",
+}
+GARDEN_SECTION_FONTS = (SECTION_FONT, "FZHTJW")
 
 
 def _dedupe(text: str) -> str:
@@ -44,7 +57,7 @@ def label_of(line: Line) -> tuple[str | None, Line | None]:
     """
     lead: list = []
     for span in line.spans:
-        if span.font.startswith(SECTION_FONT) and span.size >= 15:
+        if span.font.startswith(GARDEN_SECTION_FONTS) and span.size >= 15:
             lead.append(span)
         else:
             break
@@ -52,6 +65,12 @@ def label_of(line: Line) -> tuple[str | None, Line | None]:
         return None, line
     name = _dedupe(normalize("".join(s.text for s in lead)))
     if not name or len(name) > 8:
+        return None, line
+    if (
+        any(span.font.startswith("FZHTJW") for span in lead)
+        and name not in GARDEN_SECTION_NAMES
+        and name not in SELECTION_LABELS
+    ):
         return None, line
     tail = line.spans[len(lead) :]
     if not tail:
@@ -63,14 +82,24 @@ def label_of(line: Line) -> tuple[str | None, Line | None]:
 
 def is_section_label(line: Line) -> bool:
     name, _ = label_of(line)
-    return bool(name) and name not in SELECTION_LABELS
+    return bool(name) and not _is_selection_label(line, name)
+
+
+def _is_selection_label(line: Line, name: str | None) -> bool:
+    return bool(name) and (
+        name in SELECTION_LABELS
+        or (
+            name in FZHTJW_SELECTION_LABELS
+            and any(span.font.startswith("FZHTJW") for span in line.spans)
+        )
+    )
 
 
 def selection_label_y(body: list[Line]) -> float | None:
     """「我爱阅读」标签所在的 y —— 它下面是整篇选文，不属于园地栏目。"""
     for ln in body:
         name, _ = label_of(ln)
-        if name in SELECTION_LABELS:
+        if _is_selection_label(ln, name):
             return ln.y0
     return None
 
@@ -161,8 +190,8 @@ def _items(lines: list[Line], rules, grid: list[Char]) -> list[dict]:
 
 def _only_grid(item: dict, grid: list[Char]) -> bool:
     """这段是否真的位于田字格内，而不只是恰好用了会写字。"""
-    plain = item["文本"].replace(" ", "")
-    if not plain or len(plain) > 4 or any(not _is_cjk(c) for c in plain):
+    plain = item["文本"].replace(" ", "").replace("＿", "")
+    if not plain or any(not _is_cjk(c) for c in plain):
         return False
     x0, y0, x1, y1 = item["bbox"]
     return all(
@@ -183,6 +212,16 @@ def _remove_item_spaces(item: dict) -> None:
         if "序" in note:
             note["序"] = len(original[: note["序"]].replace(" ", ""))
     item["文本"] = original.replace(" ", "")
+
+
+def _compact_practice_spaces(item: dict) -> None:
+    """说明文字去掉疏排字距；拼音组间改用不会触发换行的窄空格。"""
+    original = item["文本"]
+    replacement = "" if any(_is_cjk(char) for char in original) else "\u2005"
+    for note in item["注音"]:
+        if "序" in note:
+            note["序"] = len(original[: note["序"]].replace(" ", replacement))
+    item["文本"] = original.replace(" ", replacement)
 
 
 def _section(name: str | None, lines: list[Line], rules) -> dict:
@@ -218,11 +257,14 @@ def _section(name: str | None, lines: list[Line], rules) -> dict:
 
     # 田字格的字自成一段，剔掉它们，同一行上的说明文字要留着
     items = _items(leftover if picked else rest, rules, grid)
-    if name in CONTENT_ONLY_SECTIONS:
+    if name in COMPACT_ITEM_SECTIONS:
         # 日积月累常为逐字疏排；分栏已由 _items 切成独立条目，条目内部的
         # 空格只是 PDF 字距，不是换行或词语间隔。
         for item in items:
-            _remove_item_spaces(item)
+            if name == "用拼音":
+                _compact_practice_spaces(item)
+            else:
+                _remove_item_spaces(item)
     section = {
         "名称": name,
         "生字": recognize,

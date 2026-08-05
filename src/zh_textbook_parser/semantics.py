@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import re
+from collections import Counter
 
 from . import attribution
 from .blocks import Char, Line, Span, round_box, union
@@ -14,12 +15,14 @@ CLOSING = "”’」』）》"
 LATIN_FONTS = ("Futura", "CenturyGothic", "Times", "Arial")
 
 AUTHOR_RE = re.compile(r"^[\[\［](?P<年代>[^\]\］]+)[\]\］]\s*(?P<作者>.+)$")
+SOURCE_LINE_RE = re.compile(r"^(?:汉乐府|北朝民歌|南北朝民歌|民间歌谣|民间故事)$")
 NOTE_RE = re.compile(r"^[①-⑳]")
 EX_MARK = "\t"  # 课后练习题的题号位（原文用制表符占位，前面是花朵项目符号图片）
 BULLET = "◇"
 SECTION_FONT = "FZHTK"  # 栏目标签用的黑体
 INDENT_TOLERANCE = 4.0  # 段首缩进判定（pt）
 READING_CORNER = "快乐读书吧"
+MIXED_SECTION_LABELS = {"口语交际"}
 
 
 def _is_latin_number(line: Line) -> bool:
@@ -34,12 +37,30 @@ def dominant_size(lines: list[Line]) -> float:
     return _dominant_size(lines)
 
 
+def _has_lesson_number(line: Line) -> bool:
+    """这一行是否同时包含西文课号和中文课题。"""
+    chars = line.visible_chars()
+    return any(
+        c.char.isdigit() and c.font.startswith(LATIN_FONTS) for c in chars
+    ) and any(_is_cjk(c.char) for c in chars)
+
+
 def lesson_dominant(lesson_lines: list[Line], page_body: list[Line]) -> float:
     """课文区的主字号。
 
     课文区字数够多就用它自己的（页脚的课后练习字号更小，会把正文挤成标题）；
     只剩标题和一两行小字时（识字表那种页面）退回整页的主字号。
     """
+    numbered = [ln for ln in lesson_lines if _has_lesson_number(ln)]
+    if numbered:
+        # 有课号时可以先可靠剔除标题行，再忽略脚注/图片署名的小字。低年级
+        # 识字课正文可能只有五六个大字，不能沿用普通课文的 20 字门槛。
+        title_ids = {id(ln) for ln in numbered}
+        prose = [
+            ln for ln in lesson_lines if id(ln) not in title_ids and ln.size >= 13
+        ]
+        if sum(len(ln.visible_chars()) for ln in prose) >= 4:
+            return _dominant_size(prose)
     chars = sum(len(ln.visible_chars()) for ln in lesson_lines)
     return _dominant_size(lesson_lines if chars >= 20 else page_body)
 
@@ -147,6 +168,54 @@ def _half_line(line: Line, midpoint: float, left: bool) -> Line | None:
     return Line(spans, chars)
 
 
+def _bubble_stream(lines: list[Line], width: float) -> list[tuple[Char, int]]:
+    """把左右云朵中的小字号文字聚成独立块，再按版面行序输出。"""
+    midpoint = width / 2
+    columns = [
+        [part for line in lines if (part := _half_line(line, midpoint, left))]
+        for left in (True, False)
+    ]
+    blocks: list[list[Line]] = []
+    for column in columns:
+        current: list[Line] = []
+        for line in sorted(column, key=lambda item: item.y0):
+            if current and line.y0 - current[-1].y1 >= line.size * 3:
+                blocks.append(current)
+                current = []
+            current.append(line)
+        if current:
+            blocks.append(current)
+
+    # 先按垂直重叠归成一排，再在同排内从左到右；云朵中的首行高度可能
+    # 相差二三十点，不能直接对所有块按 y0 排序。
+    rows: list[list[list[Line]]] = []
+    for block in sorted(blocks, key=lambda item: min(line.y0 for line in item)):
+        y0 = min(line.y0 for line in block)
+        y1 = max(line.y1 for line in block)
+        row = next(
+            (
+                item
+                for item in rows
+                if y0 <= max(line.y1 for part in item for line in part) + 10
+                and y1 >= min(line.y0 for part in item for line in part) - 10
+            ),
+            None,
+        )
+        if row is None:
+            row = []
+            rows.append(row)
+        row.append(block)
+
+    stream: list[tuple[Char, int]] = []
+    paragraph = 0
+    for row in rows:
+        for block in sorted(row, key=lambda item: min(line.x0 for line in item)):
+            paragraph += 1
+            for line in block:
+                stream.extend((char, paragraph) for char in line.visible_chars())
+    return stream
+
+
 def extract_reading_corner(body: list[Line], width: float) -> dict | None:
     """抽取「快乐读书吧」内嵌书页，按左栏再右栏恢复阅读顺序。"""
     label = next((ln for ln in body if ln.text() == READING_CORNER), None)
@@ -178,7 +247,11 @@ def extract_reading_corner(body: list[Line], width: float) -> dict | None:
         candidates = [ln for ln in body if ln.y0 > title.y1]
         main_size = dominant_size(candidates)
         content_lines = [ln for ln in candidates if abs(ln.size - main_size) < 0.6]
-    stream, first_indent = _char_stream(content_lines)
+    if not book_starts and main_size <= 12:
+        stream = _bubble_stream(content_lines, width)
+        first_indent = False
+    else:
+        stream, first_indent = _char_stream(content_lines)
 
     return {
         "课号": None,
@@ -239,6 +312,10 @@ def _is_exercise_line(line: Line) -> bool:
     """课后练习题：题号位是花朵图片 + 一个制表符占位。"""
     raw = "".join(s.text for s in line.spans)
     return raw.lstrip(" 　").startswith(EX_MARK)
+
+
+def _is_read_aloud_label(line: Line) -> bool:
+    return re.sub(r"\s+", "", line.text()) == "读一读。"
 
 
 def _is_recognize_strip(line: Line) -> bool:
@@ -319,7 +396,18 @@ def _grid_chars(lines: list[Line]) -> list[Char]:
             for o in big
         )
     ]
-    return twins if len(twins) >= 4 else []
+    # 普通对偶句也可能在同一行重复一个大字（如“站如松，坐如钟”）。真正的
+    # 田字格则至少是一个黑字加两个描红字，保留同一基线至少三个候选的行。
+    rows: dict[float, list[Char]] = {}
+    for char in twins:
+        rows.setdefault(round(char.bbox[1], 0), []).append(char)
+    grid = [
+        char
+        for row in rows.values()
+        if max(Counter(item.char for item in row).values(), default=0) >= 3
+        for char in row
+    ]
+    return grid if len(grid) >= 4 else []
 
 
 def split_after_class(body: list[Line]) -> tuple[list[Line], list[Line]]:
@@ -331,7 +419,16 @@ def split_after_class(body: list[Line]) -> tuple[list[Line], list[Line]]:
     if not marks:
         return body, []
     cut = min(marks)
-    return [ln for ln in body if ln.y0 < cut - 1], [ln for ln in body if ln.y0 >= cut - 1]
+    lesson = [ln for ln in body if ln.y0 < cut - 1]
+    after = [ln for ln in body if ln.y0 >= cut - 1]
+
+    # 拼音课常把会认字条放在中间，下面继续安排“读一读”儿歌。会认字条仍归
+    # 课后，但朗读区要重新接回课文续页，不能随第一次切分一起丢掉。
+    read_aloud = next((ln for ln in after if _is_read_aloud_label(ln)), None)
+    if read_aloud is not None:
+        lesson.extend(ln for ln in after if ln.y0 >= read_aloud.y0 - 1)
+        after = [ln for ln in after if ln.y0 < read_aloud.y0 - 1]
+    return lesson, after
 
 
 def extract_lesson(
@@ -350,8 +447,53 @@ def extract_lesson(
     lesson_no = title = subtitle = None
     consumed: set[int] = set()
 
+    # 口语交际页用多套字号表达导语、示例和提示，不能用单一正文主字号筛选。
+    # 栏目标签下方字号最大的短行才是篇目标题（如“口语交际 / 我说你做”）。
+    mixed_section = next(
+        (
+            ln
+            for ln in body
+            if ln.text() in MIXED_SECTION_LABELS
+            and any(font.startswith("FZHTJW") for font in ln.fonts)
+        ),
+        None,
+    )
+    mixed_title = None
+    if mixed_section is not None:
+        mixed_title = max(
+            (
+                ln
+                for ln in body
+                if ln.y0 > mixed_section.y1
+                and any(_is_cjk(char.char) for char in ln.visible_chars())
+            ),
+            key=lambda ln: ln.max_size,
+            default=None,
+        )
+    read_aloud = next((ln for ln in body if _is_read_aloud_label(ln)), None)
+
     # 标题：字号大于正文主字号的行（课题 > 篇目标题）
-    big = [ln for ln in body if ln.size > dominant + 0.5 and not _is_latin_number(ln)]
+    numbered = {id(ln) for ln in body if _has_lesson_number(ln)}
+    big = (
+        [mixed_title]
+        if mixed_title is not None
+        else [
+            ln
+            for ln in body
+            if (ln.size > dominant + 0.5 or id(ln) in numbered)
+            and (read_aloud is None or ln.y0 < read_aloud.y0)
+            and not _is_latin_number(ln)
+        ]
+    )
+    if (
+        not big
+        and len(body) == 1
+        and body[0].max_size >= 24
+        and not _is_latin_number(body[0])
+    ):
+        # 跨页图文篇目可能把大标题单独放在一整页（如一上“我是中国人”）。
+        # 此时唯一一行本身会被统计成正文主字号，需按独立标题页识别。
+        big = [body[0]]
     heads: list[tuple[Line, str, str]] = []
     for ln in big:
         chars = [c for c in ln.visible_chars() if not c.font.startswith(LATIN_FONTS)]
@@ -373,7 +515,9 @@ def extract_lesson(
             note_mark = heads[0][2]
 
     # 栏目标签：标题上方的黑体小字（我爱阅读 / 口语交际 / 日积月累 …）
-    section = None
+    section = mixed_section.text() if mixed_section is not None else None
+    if mixed_section is not None:
+        consumed.add(id(mixed_section))
     title_y = heads[0][0].y0 if heads else float("inf")
     for ln in body:
         text = ln.text()
@@ -381,14 +525,14 @@ def extract_lesson(
             id(ln) not in consumed
             and ln.y0 < title_y
             and len(text) <= 8
-            and any(f.startswith(SECTION_FONT) for f in ln.fonts)
+            and any(f.startswith((SECTION_FONT, "FZHTJW")) for f in ln.fonts)
         ):
             section = text
             consumed.add(id(ln))
             break
 
     # 作者行：仿宋、带朝代方括号
-    period = author = None
+    period = author = source = None
     author_line = None
     for ln in body:
         if id(ln) in consumed:
@@ -398,6 +542,18 @@ def extract_lesson(
             period = m.group("年代").strip()
             author = re.sub(r"\s+", "", m.group("作者"))
             author_line = ln
+            consumed.add(id(ln))
+            break
+
+    # 乐府、民歌等篇目在标题下直接标注作品来源，而不是作者。
+    source_line = None
+    for ln in body:
+        if id(ln) in consumed:
+            continue
+        text = re.sub(r"\s+", "", ln.text())
+        if SOURCE_LINE_RE.fullmatch(text) and ln.size < dominant:
+            source = text
+            source_line = ln
             consumed.add(id(ln))
             break
 
@@ -421,13 +577,46 @@ def extract_lesson(
     text_lines = [
         ln
         for ln in body
-        if id(ln) not in consumed and abs(ln.size - dominant) < 0.6 and ln.visible_chars()
+        if id(ln) not in consumed
+        and (
+            mixed_section is not None
+            or (read_aloud is not None and ln.y0 >= read_aloud.y0)
+            or abs(ln.size - dominant) < 0.6
+        )
+        and (
+            mixed_section is None
+            or any(_is_cjk(char.char) for char in ln.visible_chars())
+        )
+        and ln.visible_chars()
     ]
     if not title and not text_lines:
         return None, body
 
-    stream, first_indent = _char_stream(text_lines)
-    content = _chars_to_clauses(stream)
+    if read_aloud is not None:
+        leading = [ln for ln in text_lines if ln.y0 < read_aloud.y0]
+        selection = [ln for ln in text_lines if ln.y0 >= read_aloud.y0]
+        stream, first_indent = _char_stream(leading)
+        content = _chars_to_clauses(stream)
+        paragraph = max((unit["段落"] for unit in content), default=0)
+
+        # “读一读”和紧随其后的篇名各自成行；正文再按标点断句。否则前面的
+        # 无标点词条会与栏目名、篇名一路粘到儿歌第一处逗号。
+        for line in selection[:2]:
+            paragraph += 1
+            items = [(char, paragraph) for char in line.visible_chars()]
+            if items:
+                content.append(_unit(items, len(content) + 1))
+        poem_stream: list[tuple[Char, int]] = []
+        if len(selection) > 2:
+            paragraph += 1
+            for line in selection[2:]:
+                poem_stream.extend((char, paragraph) for char in line.visible_chars())
+        content.extend(_chars_to_clauses(poem_stream))
+        for no, unit in enumerate(content, 1):
+            unit["序号"] = no
+    else:
+        stream, first_indent = _char_stream(text_lines)
+        content = _chars_to_clauses(stream)
 
     if not title and not content:
         return None, body
@@ -444,8 +633,8 @@ def extract_lesson(
         "年代": period,
         "国别": None,
         "译者": None,
-        "出处": None,
-        "作者出处": "作者行" if author else None,
+        "出处": source,
+        "作者出处": "作者行" if author else ("出处行" if source else None),
         "注释": notes,
         "正文": content,
         "首行缩进": first_indent,
@@ -459,6 +648,8 @@ def extract_lesson(
         lesson["作者出处"] = lesson["作者出处"] or (f"注释{mark}" if mark else "注释")
     if author_line is not None:
         lesson["作者行"] = {"文本": author_line.text(), "bbox": round_box(author_line.bbox)}
+    if source_line is not None:
+        lesson["出处行"] = {"文本": source_line.text(), "bbox": round_box(source_line.bbox)}
     return lesson, rest
 
 

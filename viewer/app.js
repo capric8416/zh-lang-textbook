@@ -785,6 +785,7 @@
       var author = [];
       if (d["年代"]) author.push("〔" + d["年代"] + "〕");
       if (d["作者"]) author.push(d["作者"]);
+      if (d["出处"]) author.push(d["出处"]);
       var meta = [];
       if (item.pages.length) meta.push("第 " + item.pages.join("、") + " 页");
       if (d["全文"]) meta.push(d["全文"].length + " 字");

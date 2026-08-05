@@ -15,14 +15,49 @@ import re
 
 from .blocks import Line, round_box
 
+STROKE_TABLE = "笔画名称表"
 RADICAL_TABLE = "常用偏旁名称表"
-TITLE_RE = re.compile(rf"^(识字表|写字表|词语表|{RADICAL_TABLE})$")
+COLUMN_TABLES = {STROKE_TABLE, RADICAL_TABLE}
+TITLE_RE = re.compile(
+    rf"^(识字表|写字表|词语表|{STROKE_TABLE}|{RADICAL_TABLE})$"
+)
 LABEL_RE = re.compile(r"^(\d{1,2}|语文园地[一二三四五六七八九十]+)")
 NOTE_RE = re.compile(r"^[①-⑳]")
-GROUP_FONT = "FZS3K"  # 「阅读」「识字」这种分组标签用的字体
+SUMMARY_RE = re.compile(r"^[（(]?共\d+个(?:生字|字)[）)]?$")
+GROUP_FONT = "FZS3"  # 「阅读」「识字」等分组标签的字体名前缀
+GROUP_NAMES = {"阅读", "识字", "汉语拼音"}
 TITLE_MIN_SIZE = 20
 
 RADICAL_BY_NAME = {
+    "单人旁": "亻",
+    "八字头": "八",
+    "人字头": "人",
+    "斜刀头": "⺈",
+    "包字头": "勹",
+    "倒八": "丷",
+    "言字旁": "讠",
+    "双耳旁": "阝",
+    "提土旁": "土",
+    "提手旁": "扌",
+    "草字头": "艹",
+    "口字旁": "口",
+    "国字框": "囗",
+    "三撇": "彡",
+    "反犬旁": "犭",
+    "折文": "夂",
+    "门字框": "门",
+    "三点水": "氵",
+    "宝盖头": "宀",
+    "走之底": "辶",
+    "女字旁": "女",
+    "绞丝旁": "纟",
+    "木字旁": "木",
+    "日字旁": "日",
+    "月字旁": "月",
+    "四点底": "灬",
+    "禾字旁": "禾",
+    "穴字头": "穴",
+    "竹字头": "竹",
     "立刀旁": "刂",
     "京字头": "亠",
     "两点水": "冫",
@@ -58,6 +93,41 @@ RADICAL_BY_NAME = {
     "足字旁": "足",
     "雨字头": "雨",
 }
+
+STROKE_ROWS = [
+    ("㇐", "横", "一十"),
+    ("㇑", "竖", "上木"),
+    ("㇒", "撇", "手八"),
+    ("㇔", "点", "火头"),
+    ("㇏", "捺", "火人"),
+    ("㇀", "提", "虫我"),
+    ("㇕", "横折", "口五"),
+    ("㇇", "横撇", "了水"),
+    ("㇖", "横钩", "你"),
+    ("㇗", "竖折", "牙山"),
+    ("㇄", "竖弯", "西四"),
+    ("㇙", "竖提", "比长"),
+    ("㇚", "竖钩", "可小"),
+    ("㇜", "撇折", "去云"),
+    ("㇛", "撇点", "女妈"),
+    ("㇁", "弯钩", "手子"),
+    ("㇂", "斜钩", "我"),
+    ("㇃", "卧钩", "心"),
+    ("㇅", "横折折", "凹"),
+    ("㇍", "横折弯", "船"),
+    ("㇊", "横折提", "话"),
+    ("㇆", "横折钩", "用刀"),
+    ("㇈", "横斜钩", "风"),
+    ("㇞", "竖折折", "鼎"),
+    ("㇋", "竖折撇", "专"),
+    ("㇟", "竖弯钩", "七儿"),
+    ("㇅", "横折折折", "凸"),
+    ("㇋", "横折折撇", "及"),
+    ("㇈", "横折弯钩", "九几"),
+    ("㇌", "横撇弯钩", "那"),
+    ("㇉", "竖折折钩", "马鸟"),
+    ("㇎", "横折折折钩", "奶"),
+]
 
 
 def _clean(text: str) -> str:
@@ -127,15 +197,45 @@ def _radical_rows(body: list[Line]) -> list[dict]:
     return left + right
 
 
+def _stroke_rows() -> list[dict]:
+    return [
+        {"标签": stroke, "字": [], "文本": "", "内容": [stroke, name, example]}
+        for stroke, name, example in STROKE_ROWS
+    ]
+
+
+def _column_order(body: list[Line], split_x: float = 255) -> list[Line]:
+    """把双栏附录按左栏、右栏的阅读顺序拆开。"""
+    columns: list[list[Line]] = [[], []]
+    for line in body:
+        for column, spans in enumerate(
+            (
+                [span for span in line.spans if (span.bbox[0] + span.bbox[2]) / 2 < split_x],
+                [span for span in line.spans if (span.bbox[0] + span.bbox[2]) / 2 >= split_x],
+            )
+        ):
+            if not spans:
+                continue
+            x0 = min(span.bbox[0] for span in spans)
+            x1 = max(span.bbox[2] for span in spans)
+            chars = [char for char in line.chars if x0 - 0.5 <= char.cx <= x1 + 0.5]
+            columns[column].append(Line(spans, chars))
+    return columns[0] + columns[1]
+
+
 def parse_appendix(body: list[Line]) -> dict | None:
     """把一页附录拆成 {名称, 分组[], 注释[]}。"""
-    if appendix_title(body) == RADICAL_TABLE:
-        rows = _radical_rows(body)
+    appendix_name = appendix_title(body)
+    if appendix_name in COLUMN_TABLES:
+        rows = _stroke_rows() if appendix_name == STROKE_TABLE else _radical_rows(body)
         return {
-            "名称": RADICAL_TABLE,
+            "名称": appendix_name,
             "分组": [{"名称": None, "行": rows}],
             "注释": [],
         }
+
+    if appendix_name == "写字表":
+        body = _column_order(body)
 
     title = None
     groups: list[dict] = []
@@ -148,8 +248,15 @@ def parse_appendix(body: list[Line]) -> dict | None:
         if NOTE_RE.match(text) and ln.size < 14:
             notes.append({"文本": text, "bbox": round_box(ln.bbox)})
             continue
-        if any(f.startswith(GROUP_FONT) for f in ln.fonts) and len(_clean(text)) <= 6:
-            groups.append({"名称": _clean(text), "行": []})
+        if SUMMARY_RE.match(_clean(text)):
+            continue
+        clean = _clean(text)
+        group_name = next(
+            (name for name in GROUP_NAMES if clean == name or clean == name * 2),
+            None,
+        )
+        if group_name and any(f.startswith(GROUP_FONT) for f in ln.fonts):
+            groups.append({"名称": group_name, "行": []})
             continue
         label, chars, text = _split_label(ln)
         if not chars:
@@ -170,7 +277,7 @@ def parse_appendix(body: list[Line]) -> dict | None:
 
 def _content(name: str | None, row: dict) -> list:
     """按表的种类把一行整理成最终内容。"""
-    if name == RADICAL_TABLE:
+    if name in COLUMN_TABLES:
         return row["内容"]
     if name == "识字表":
         return row["字"]
