@@ -31,7 +31,7 @@ cmake -E remove_directory "${vendor_root}"
 mkdir -p "${vendor_root}"
 
 platform_args=()
-opencv_platform_args=()
+opencv_platform_args=(-DBUILD_ANDROID_PROJECTS=OFF)
 openmp=OFF
 case "${target}" in
   linux-x64)
@@ -45,7 +45,6 @@ case "${target}" in
       "-DANDROID_PLATFORM=android-23"
       "-DANDROID_STL=c++_static"
     )
-    opencv_platform_args+=("-DBUILD_ANDROID_PROJECTS=OFF")
     ;;
   macos-x86_64)
     platform_args+=("-DCMAKE_OSX_ARCHITECTURES=x86_64" "-DCMAKE_OSX_DEPLOYMENT_TARGET=10.15")

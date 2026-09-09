@@ -36,6 +36,14 @@ set(OCR_SOURCES
 
 add_library(zh_ocr ${ZH_OCR_LIBRARY_TYPE} ${OCR_SOURCES})
 target_compile_features(zh_ocr PRIVATE cxx_std_17)
+if(MSVC)
+  set_source_files_properties(${OCR_SOURCES} PROPERTIES COMPILE_OPTIONS /EHsc)
+else()
+  # Some Android/iOS dependency targets propagate -fno-exceptions after
+  # target-level options. Source options are emitted last, and these sources
+  # require exceptions for JSON parsing and the FFI safety boundary.
+  set_source_files_properties(${OCR_SOURCES} PROPERTIES COMPILE_OPTIONS -fexceptions)
+endif()
 set_target_properties(zh_ocr PROPERTIES
   CXX_VISIBILITY_PRESET hidden
   VISIBILITY_INLINES_HIDDEN YES
