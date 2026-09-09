@@ -31,6 +31,7 @@ cmake -E remove_directory "${vendor_root}"
 mkdir -p "${vendor_root}"
 
 platform_args=()
+opencv_platform_args=()
 openmp=OFF
 case "${target}" in
   linux-x64)
@@ -44,6 +45,7 @@ case "${target}" in
       "-DANDROID_PLATFORM=android-23"
       "-DANDROID_STL=c++_static"
     )
+    opencv_platform_args+=("-DBUILD_ANDROID_PROJECTS=OFF")
     ;;
   macos-x86_64)
     platform_args+=("-DCMAKE_OSX_ARCHITECTURES=x86_64" "-DCMAKE_OSX_DEPLOYMENT_TARGET=10.15")
@@ -88,7 +90,7 @@ cmake --build "${build_root}/ncnn" --parallel
 cmake --install "${build_root}/ncnn"
 
 cmake -S "${opencv_source}" -B "${build_root}/opencv" \
-  "${common_args[@]}" "${platform_args[@]}" \
+  "${common_args[@]}" "${platform_args[@]}" "${opencv_platform_args[@]}" \
   -DBUILD_LIST=core,imgproc,imgcodecs \
   -DBUILD_opencv_apps=OFF \
   -DBUILD_opencv_java=OFF \
@@ -114,6 +116,7 @@ cmake -S "${opencv_source}" -B "${build_root}/opencv" \
   -DWITH_WEBP=OFF \
   -DWITH_ITT=OFF \
   -DWITH_IPP=OFF \
+  -DWITH_KLEIDICV=OFF \
   -DWITH_LAPACK=OFF
 cmake --build "${build_root}/opencv" --parallel
 # OpenCV exports the optional ADE target even when G-API is excluded by

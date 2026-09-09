@@ -2,7 +2,7 @@
 #include <string>
 #include <algorithm>
 #include <string_view>
-#include <omp.h>
+#include <thread>
 
 #include <opencv2/imgproc.hpp>
 
@@ -15,7 +15,11 @@ namespace OCR
 
 int GetThreads(const int threads)
 {
-    return threads <= 0 ? omp_get_num_procs() : threads;
+    if (threads > 0)
+        return threads;
+
+    const unsigned int hardware_threads = std::thread::hardware_concurrency();
+    return hardware_threads == 0 ? 1 : static_cast<int>(hardware_threads);
 }
 
 std::vector<cv::Point2f> GetMinBoxes(const cv::RotatedRect &rrect, int &max_side_len)

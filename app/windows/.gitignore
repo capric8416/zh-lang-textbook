@@ -1,5 +1,8 @@
 flutter/ephemeral/
 
+# Required by runner/CMakeLists.txt and supplied by the Flutter Windows runner.
+!runner/runner.exe.manifest
+
 # Visual Studio user-specific files.
 *.suo
 *.user
