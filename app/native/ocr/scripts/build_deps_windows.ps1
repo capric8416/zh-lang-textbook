@@ -25,12 +25,14 @@ New-Item -ItemType Directory -Force -Path $VendorRoot | Out-Null
 $CommonArgs = @(
   "-G", "Visual Studio 17 2022",
   "-A", "x64",
+  "-DCMAKE_POLICY_VERSION_MINIMUM=3.5",
   "-DCMAKE_INSTALL_PREFIX=$VendorRoot",
   "-DCMAKE_POSITION_INDEPENDENT_CODE=ON",
   "-DBUILD_SHARED_LIBS=OFF"
 )
 
 cmake -S $NcnnSource -B (Join-Path $BuildRoot "ncnn") @CommonArgs `
+  -DNCNN_VERSION=20241226 `
   -DNCNN_SHARED_LIB=OFF `
   -DNCNN_OPENMP=ON `
   -DNCNN_VULKAN=OFF `
@@ -43,7 +45,7 @@ cmake --install (Join-Path $BuildRoot "ncnn") --config Release
 
 cmake -S $OpenCvSource -B (Join-Path $BuildRoot "opencv") @CommonArgs `
   -DBUILD_WITH_STATIC_CRT=OFF `
-  -DBUILD_LIST=core,imgproc,imgcodecs `
+  "-DBUILD_LIST=core,imgproc,imgcodecs" `
   -DBUILD_opencv_apps=OFF `
   -DBUILD_opencv_java=OFF `
   -DBUILD_opencv_python2=OFF `

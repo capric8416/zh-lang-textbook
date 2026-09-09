@@ -68,6 +68,7 @@ esac
 common_args=(
   -G Ninja
   -DCMAKE_BUILD_TYPE=Release
+  -DCMAKE_POLICY_VERSION_MINIMUM=3.5
   "-DCMAKE_INSTALL_PREFIX=${vendor_root}"
   -DCMAKE_POSITION_INDEPENDENT_CODE=ON
   -DBUILD_SHARED_LIBS=OFF
@@ -75,6 +76,7 @@ common_args=(
 
 cmake -S "${ncnn_source}" -B "${build_root}/ncnn" \
   "${common_args[@]}" "${platform_args[@]}" \
+  -DNCNN_VERSION=20241226 \
   -DNCNN_SHARED_LIB=OFF \
   "-DNCNN_OPENMP=${openmp}" \
   -DNCNN_VULKAN=OFF \
