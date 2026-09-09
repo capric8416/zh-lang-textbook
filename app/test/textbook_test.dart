@@ -40,14 +40,41 @@ void main() {
     final source = File(
       '../json_reviewed/zh-lang-grade2b-textbook-struct.json',
     ).readAsStringSync();
-    final catalog = PracticeCatalog.fromTextbook(
-      Textbook.fromJsonString(source),
-    );
+    final textbook = Textbook.fromJsonString(source);
+    final catalog = PracticeCatalog.fromTextbook(textbook);
+    final chapterIds = textbook.index
+        .where((unit) => unit.id != 'appendix')
+        .expand((unit) => unit.chapters)
+        .map((chapter) => chapter.id)
+        .toSet();
 
     expect(catalog.questions.length, greaterThan(900));
     expect(catalog.questions.any((item) => item.category == '字'), isTrue);
     expect(catalog.questions.any((item) => item.category == '词'), isTrue);
     expect(catalog.questions.any((item) => item.category == '引用句子'), isTrue);
     expect(catalog.questions.any((item) => item.category == '诗词'), isTrue);
+    expect(
+      catalog.questions.every(
+        (question) => chapterIds.contains(question.chapterId),
+      ),
+      isTrue,
+    );
+  });
+
+  test('练习题可按课文目录归类', () {
+    final source = File(
+      '../json_reviewed/zh-lang-grade2b-textbook-struct.json',
+    ).readAsStringSync();
+    final catalog = PracticeCatalog.fromTextbook(
+      Textbook.fromJsonString(source),
+    );
+    final questions = catalog.forChapter('u01-reading-01');
+
+    expect(questions, isNotEmpty);
+    expect(
+      questions.every((question) => question.chapterId == 'u01-reading-01'),
+      isTrue,
+    );
+    expect(questions.any((question) => question.category == '诗词'), isTrue);
   });
 }

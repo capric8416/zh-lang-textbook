@@ -46,7 +46,12 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.textContaining('题库'), findsOneWidget);
+    await tester.tap(find.byTooltip('打开目录'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('练习目录'), findsOneWidget);
     expect(find.text('书写区'), findsOneWidget);
+    expect(find.text('下一题'), findsNothing);
+    expect(find.text('批改'), findsOneWidget);
   });
 }

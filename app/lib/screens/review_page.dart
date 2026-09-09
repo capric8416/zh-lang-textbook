@@ -120,6 +120,9 @@ class _ReviewPageState extends State<ReviewPage> {
                   icon: const Icon(Icons.arrow_back),
                   padding: EdgeInsets.zero,
                   constraints: const BoxConstraints.tightFor(width: 40),
+                  style: IconButton.styleFrom(
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  ),
                   onPressed: () => Navigator.of(context).maybePop(),
                 ),
                 if (!wide)
@@ -128,6 +131,9 @@ class _ReviewPageState extends State<ReviewPage> {
                     icon: const Icon(Icons.menu),
                     padding: EdgeInsets.zero,
                     constraints: const BoxConstraints.tightFor(width: 40),
+                    style: IconButton.styleFrom(
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    ),
                     onPressed: () => _scaffoldKey.currentState?.openDrawer(),
                   ),
               ],
@@ -224,7 +230,7 @@ class _TableOfContents extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
-    return ColoredBox(
+    return Material(
       color: colors.surfaceContainerLow,
       child: ListView(
         padding: const EdgeInsets.fromLTRB(8, 12, 8, 24),

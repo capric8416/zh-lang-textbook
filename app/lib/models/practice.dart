@@ -2,8 +2,6 @@ import 'textbook.dart';
 
 enum PracticeDirection { writeHanzi, writePinyin }
 
-enum PracticeScope { all, wrong, completed }
-
 class PracticeQuestion {
   const PracticeQuestion({
     required this.id,
@@ -12,6 +10,7 @@ class PracticeQuestion {
     required this.answerLines,
     required this.promptLines,
     required this.source,
+    required this.chapterId,
   });
 
   final String id;
@@ -20,16 +19,23 @@ class PracticeQuestion {
   final List<String> answerLines;
   final List<String> promptLines;
   final String source;
+  final String chapterId;
 
   String get answer => answerLines.join('\n');
 
   String get prompt => promptLines.join('\n');
+
+  String attemptId(PracticeDirection direction) => '$id:${direction.name}';
 }
 
 class PracticeCatalog {
   const PracticeCatalog(this.questions);
 
   final List<PracticeQuestion> questions;
+
+  List<PracticeQuestion> forChapter(String chapterId) => questions
+      .where((question) => question.chapterId == chapterId)
+      .toList(growable: false);
 
   factory PracticeCatalog.fromTextbook(Textbook textbook) {
     final questions = <PracticeQuestion>[];
@@ -43,6 +49,12 @@ class PracticeCatalog {
         if (entry.id.isEmpty || entry.zh.isEmpty || entry.pinyin.isEmpty) {
           continue;
         }
+        final chapterId = entry.introducedChapterId.isNotEmpty
+            ? entry.introducedChapterId
+            : entry.refs
+                  .map((ref) => ref.chapterId)
+                  .firstWhere((id) => id.isNotEmpty, orElse: () => '');
+        if (chapterId.isEmpty) continue;
         questions.add(
           PracticeQuestion(
             id: 'appendix:${entry.id}',
@@ -51,6 +63,7 @@ class PracticeCatalog {
             answerLines: [entry.zh],
             promptLines: [entry.pinyin],
             source: table.name,
+            chapterId: chapterId,
           ),
         );
 
@@ -70,30 +83,40 @@ class PracticeCatalog {
               answerLines: [sentence.zh],
               promptLines: [sentence.pinyin],
               source: textbook.node(ref.workId)?.displayTitle ?? table.name,
+              chapterId: ref.chapterId,
             ),
           );
         }
       }
     }
 
-    for (final node in textbook.allNodes.where((item) => item.memorize)) {
-      for (final sentence in node.text) {
-        if (sentence.id.isEmpty ||
-            sentence.zh.isEmpty ||
-            sentence.pinyin.isEmpty ||
-            !seen.add('poem:${sentence.id}')) {
-          continue;
+    for (final unit in textbook.contents.where(
+      (item) => item.id != 'appendix',
+    )) {
+      for (final chapter in unit.chapters) {
+        for (final node in _descendants(
+          chapter,
+        ).where((item) => item.memorize)) {
+          for (final sentence in node.text) {
+            if (sentence.id.isEmpty ||
+                sentence.zh.isEmpty ||
+                sentence.pinyin.isEmpty ||
+                !seen.add('poem:${sentence.id}')) {
+              continue;
+            }
+            questions.add(
+              PracticeQuestion(
+                id: 'poem:${sentence.id}',
+                kind: '背诵诗词',
+                category: '诗词',
+                answerLines: [sentence.zh],
+                promptLines: [sentence.pinyin],
+                source: node.displayTitle,
+                chapterId: chapter.id,
+              ),
+            );
+          }
         }
-        questions.add(
-          PracticeQuestion(
-            id: 'poem:${sentence.id}',
-            kind: '背诵诗词',
-            category: '诗词',
-            answerLines: [sentence.zh],
-            promptLines: [sentence.pinyin],
-            source: node.displayTitle,
-          ),
-        );
       }
     }
     return PracticeCatalog(questions);
@@ -105,4 +128,11 @@ class PracticeCatalog {
     'appendix-words' => '词',
     _ => '附录',
   };
+}
+
+Iterable<ContentNode> _descendants(ContentNode node) sync* {
+  yield node;
+  for (final child in node.children) {
+    yield* _descendants(child);
+  }
 }

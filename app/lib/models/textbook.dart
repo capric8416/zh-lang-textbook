@@ -211,6 +211,7 @@ class TextSegment extends BilingualText {
     required super.zh,
     required super.pinyin,
     required this.refs,
+    required this.introducedChapterId,
   });
 
   factory TextSegment.fromJson(Map<String, dynamic> json) => TextSegment(
@@ -218,10 +219,14 @@ class TextSegment extends BilingualText {
     zh: _string(json['zh']),
     pinyin: _string(json['pinyin']),
     refs: _maps(json['refs']).map(TextReference.fromJson).toList(),
+    introducedChapterId: json['introduced_at'] is Map
+        ? _string((json['introduced_at'] as Map)['chapter_id'])
+        : '',
   );
 
   final String id;
   final List<TextReference> refs;
+  final String introducedChapterId;
 }
 
 class TextReference {
