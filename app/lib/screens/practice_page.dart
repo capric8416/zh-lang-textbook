@@ -2,8 +2,10 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
+import '../models/ocr.dart';
 import '../models/practice.dart';
 import '../models/textbook.dart';
+import '../services/ocr_engine.dart';
 import '../services/practice_progress.dart';
 import '../services/textbook_repository.dart';
 import '../widgets/writing_pad.dart';
@@ -34,6 +36,7 @@ class _PracticePageState extends State<PracticePage> {
   late String _selectedChapterId;
   PracticeDirection _direction = PracticeDirection.writeHanzi;
   bool _graded = false;
+  bool _grading = false;
   bool _selecting = false;
 
   @override
@@ -159,52 +162,69 @@ class _PracticePageState extends State<PracticePage> {
   Future<void> _showCorrection() async {
     final question = _question;
     final store = _store;
-    if (question == null || store == null || _graded) return;
-    final target = _direction == PracticeDirection.writeHanzi
-        ? question.answerLines
-        : question.promptLines;
-    final hasWriting = _writingPadKey.currentState?.hasWriting ?? false;
-    final correct = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('逐句对比参考答案'),
-        content: SizedBox(
-          width: 560,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text(
-                '手写内容暂不做自动识别，请逐句比较后确认结果。',
-                style: Theme.of(context).textTheme.bodySmall,
-              ),
-              const SizedBox(height: 12),
-              for (var index = 0; index < target.length; index++) ...[
-                _AnswerLine(
-                  index: index + 1,
-                  answer: target[index],
-                  response: hasWriting ? '（已在书写区作答）' : '（未书写）',
+    final writingPad = _writingPadKey.currentState;
+    if (question == null || store == null || _graded || _grading) return;
+    if (writingPad == null || !writingPad.hasWriting) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('请先在书写区作答。')));
+      return;
+    }
+    setState(() => _grading = true);
+    try {
+      final images = await writingPad.renderForOcr();
+      final recognized = await OcrEngine.instance.recognizeAll(images);
+      final expected = _direction == PracticeDirection.writeHanzi
+          ? _hanziSlots(question.answer)
+          : _pinyinSlots(question.prompt);
+      final comparisons = [
+        for (var index = 0; index < expected.length; index++)
+          _OcrComparison(
+            expected: expected[index],
+            recognized: index < recognized.length ? recognized[index] : '',
+            correct:
+                _normalizeAnswer(expected[index], _direction) ==
+                _normalizeAnswer(
+                  index < recognized.length ? recognized[index] : '',
+                  _direction,
                 ),
-                const SizedBox(height: 10),
-              ],
-            ],
           ),
+      ];
+      if (!mounted) return;
+      final correct = await showDialog<bool>(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) =>
+            _CorrectionDialog(images: images, comparisons: comparisons),
+      );
+      if (correct == null) {
+        if (mounted) setState(() => _grading = false);
+        return;
+      }
+      await store.record(question.attemptId(_direction), correct: correct);
+      if (!mounted) return;
+      setState(() {
+        _graded = true;
+        _grading = false;
+      });
+    } catch (error, stackTrace) {
+      debugPrintStack(label: 'OCR 批改失败：$error', stackTrace: stackTrace);
+      if (!mounted) return;
+      setState(() => _grading = false);
+      await showDialog<void>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('OCR 批改失败'),
+          content: Text('$error'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('关闭'),
+            ),
+          ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('答错了'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text('答对了'),
-          ),
-        ],
-      ),
-    );
-    if (correct == null) return;
-    await store.record(question.attemptId(_direction), correct: correct);
-    if (mounted) setState(() => _graded = true);
+      );
+    }
   }
 
   String get _unitName => widget.textbook.index
@@ -334,6 +354,7 @@ class _PracticePageState extends State<PracticePage> {
           direction: _direction,
           writingPadKey: _writingPadKey,
           graded: _graded,
+          grading: _grading,
           onCorrect: _showCorrection,
           onNext: _graded ? _chooseQuestion : null,
         ),
@@ -347,6 +368,7 @@ class _QuestionCard extends StatelessWidget {
     required this.direction,
     required this.writingPadKey,
     required this.graded,
+    required this.grading,
     required this.onCorrect,
     required this.onNext,
   });
@@ -355,6 +377,7 @@ class _QuestionCard extends StatelessWidget {
   final PracticeDirection direction;
   final GlobalKey<WritingPadState> writingPadKey;
   final bool graded;
+  final bool grading;
   final VoidCallback onCorrect;
   final VoidCallback? onNext;
 
@@ -414,8 +437,6 @@ class _QuestionCard extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 18),
-            Text('书写区', style: Theme.of(context).textTheme.titleSmall),
-            const SizedBox(height: 6),
             WritingPad(
               key: writingPadKey,
               grid: showPinyin ? WritingGrid.hanzi : WritingGrid.pinyin,
@@ -434,9 +455,14 @@ class _QuestionCard extends StatelessWidget {
                       label: const Text('下一题'),
                     )
                   : FilledButton.icon(
-                      onPressed: onCorrect,
-                      icon: const Icon(Icons.fact_check_outlined),
-                      label: const Text('批改'),
+                      onPressed: grading ? null : onCorrect,
+                      icon: grading
+                          ? const SizedBox.square(
+                              dimension: 18,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : const Icon(Icons.fact_check_outlined),
+                      label: Text(grading ? '识别中…' : '批改'),
                     ),
             ),
           ],
@@ -549,38 +575,348 @@ class _PracticeTocTile extends StatelessWidget {
   }
 }
 
-class _AnswerLine extends StatelessWidget {
-  const _AnswerLine({
-    required this.index,
-    required this.response,
-    required this.answer,
-  });
+class _CorrectionDialog extends StatefulWidget {
+  const _CorrectionDialog({required this.images, required this.comparisons});
 
-  final int index;
-  final String response;
-  final String answer;
+  final List<OcrImage> images;
+  final List<_OcrComparison> comparisons;
 
   @override
-  Widget build(BuildContext context) => DecoratedBox(
-    decoration: BoxDecoration(
-      border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
-      borderRadius: BorderRadius.circular(12),
+  State<_CorrectionDialog> createState() => _CorrectionDialogState();
+}
+
+class _CorrectionDialogState extends State<_CorrectionDialog> {
+  late final List<bool> _reviewed = [
+    for (final comparison in widget.comparisons) comparison.correct,
+  ];
+
+  bool get _correct => _reviewed.isNotEmpty && _reviewed.every((item) => item);
+
+  @override
+  Widget build(BuildContext context) => AlertDialog(
+    title: Text(_correct ? '批改结果：正确' : '批改结果：需要复习'),
+    content: SizedBox(
+      width: 720,
+      child: SingleChildScrollView(
+        child: _OcrComparisonTable(
+          images: widget.images,
+          comparisons: widget.comparisons,
+          reviewed: _reviewed,
+          onReviewChanged: (index, correct) =>
+              setState(() => _reviewed[index] = correct),
+        ),
+      ),
     ),
-    child: Padding(
-      padding: const EdgeInsets.all(12),
-      child: Column(
+    actions: [
+      FilledButton(
+        onPressed: () => Navigator.pop(context, _correct),
+        child: const Text('确认'),
+      ),
+    ],
+  );
+}
+
+class _OcrComparisonTable extends StatelessWidget {
+  const _OcrComparisonTable({
+    required this.images,
+    required this.comparisons,
+    required this.reviewed,
+    required this.onReviewChanged,
+  });
+
+  final List<OcrImage> images;
+  final List<_OcrComparison> comparisons;
+  final List<bool> reviewed;
+  final void Function(int index, bool correct) onReviewChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final widths = [
+      for (var index = 0; index < comparisons.length; index++)
+        _columnWidth(index),
+    ];
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final lines = _wrapColumns(
+              widths,
+              max(72.0, constraints.maxWidth - 72),
+            );
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                for (var line = 0; line < lines.length; line++) ...[
+                  if (line > 0) const Divider(height: 20),
+                  _comparisonBlock(context, lines[line], widths),
+                ],
+              ],
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _comparisonBlock(
+    BuildContext context,
+    List<int> indices,
+    List<double> widths,
+  ) => Row(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      const SizedBox(
+        width: 72,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _ResultRowLabel('用户书写', height: 60),
+            SizedBox(height: 4),
+            _ResultRowLabel('识别结果', height: 38),
+            SizedBox(height: 4),
+            _ResultRowLabel('正确结果', height: 38),
+            SizedBox(height: 4),
+            _ResultRowLabel('复核结果', height: 38),
+          ],
+        ),
+      ),
+      Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('第 $index 句', style: Theme.of(context).textTheme.labelLarge),
-          const SizedBox(height: 6),
-          Text('你的作答：$response'),
-          const Divider(height: 20),
-          Text(
-            '参考答案：$answer',
-            style: const TextStyle(fontWeight: FontWeight.w700),
+          _resultRow(indices, widths, (index) {
+            final image = images[index];
+            return Padding(
+              padding: const EdgeInsets.all(4),
+              child: Image.memory(
+                image.previewPng,
+                fit: BoxFit.contain,
+                filterQuality: FilterQuality.high,
+              ),
+            );
+          }, height: 60),
+          const SizedBox(height: 4),
+          _resultRow(
+            indices,
+            widths,
+            (index) => _OcrResultCell(comparison: comparisons[index]),
+            height: 38,
+          ),
+          const SizedBox(height: 4),
+          _resultRow(
+            indices,
+            widths,
+            (index) => Center(
+              child: Text(
+                comparisons[index].expected,
+                style: Theme.of(
+                  context,
+                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+              ),
+            ),
+            height: 38,
+          ),
+          const SizedBox(height: 4),
+          _resultRow(
+            indices,
+            widths,
+            (index) => _ReviewResultCell(
+              correct: reviewed[index],
+              automaticallyCorrect: comparisons[index].correct,
+              onChanged: (correct) => onReviewChanged(index, correct),
+            ),
+            height: 38,
           ),
         ],
       ),
+    ],
+  );
+
+  List<List<int>> _wrapColumns(List<double> widths, double maxWidth) {
+    final lines = <List<int>>[];
+    var current = <int>[];
+    var usedWidth = 0.0;
+    for (var index = 0; index < widths.length; index++) {
+      final addedWidth = widths[index] + (current.isEmpty ? 0 : 8);
+      if (current.isNotEmpty && usedWidth + addedWidth > maxWidth) {
+        lines.add(current);
+        current = <int>[];
+        usedWidth = 0;
+      }
+      usedWidth += widths[index] + (current.isEmpty ? 0 : 8);
+      current.add(index);
+    }
+    if (current.isNotEmpty) lines.add(current);
+    return lines;
+  }
+
+  double _columnWidth(int index) {
+    if (index >= images.length) return 72;
+    final image = images[index];
+    return (72 * image.width / image.height).clamp(72.0, 160.0).toDouble();
+  }
+
+  Widget _resultRow(
+    List<int> indices,
+    List<double> widths,
+    Widget Function(int index) builder, {
+    required double height,
+  }) => Row(
+    children: [
+      for (var position = 0; position < indices.length; position++) ...[
+        SizedBox(
+          width: widths[indices[position]],
+          height: height,
+          child: builder(indices[position]),
+        ),
+        if (position != indices.length - 1) const SizedBox(width: 8),
+      ],
+    ],
+  );
+}
+
+class _ReviewResultCell extends StatelessWidget {
+  const _ReviewResultCell({
+    required this.correct,
+    required this.automaticallyCorrect,
+    required this.onChanged,
+  });
+
+  final bool correct;
+  final bool automaticallyCorrect;
+  final ValueChanged<bool> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    final color = automaticallyCorrect
+        ? colors.onSurfaceVariant
+        : correct
+        ? colors.primary
+        : colors.error;
+    final backgroundColor = automaticallyCorrect
+        ? colors.surfaceContainerHighest
+        : color.withValues(alpha: 0.08);
+    return Tooltip(
+      message: automaticallyCorrect
+          ? '自动识别正确'
+          : correct
+          ? '点击改回错误'
+          : '点击复核为正确',
+      child: Material(
+        color: backgroundColor,
+        shape: RoundedRectangleBorder(
+          side: BorderSide(color: color.withValues(alpha: 0.45)),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(8),
+          onTap: automaticallyCorrect ? null : () => onChanged(!correct),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                correct ? Icons.check_circle : Icons.cancel,
+                size: 16,
+                color: color,
+              ),
+              const SizedBox(width: 4),
+              Text(correct ? '正确' : '改正确'),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ResultRowLabel extends StatelessWidget {
+  const _ResultRowLabel(this.text, {required this.height});
+
+  final String text;
+  final double height;
+
+  @override
+  Widget build(BuildContext context) => SizedBox(
+    height: height,
+    child: Align(
+      alignment: Alignment.centerLeft,
+      child: Text(text, style: Theme.of(context).textTheme.labelLarge),
     ),
   );
+}
+
+class _OcrResultCell extends StatelessWidget {
+  const _OcrResultCell({required this.comparison});
+
+  final _OcrComparison comparison;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    final color = comparison.correct ? colors.primary : colors.error;
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.08),
+        border: Border.all(color: color.withValues(alpha: 0.45)),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Stack(
+        children: [
+          Center(
+            child: Text(
+              comparison.recognized.isEmpty ? '未识别' : comparison.recognized,
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+          ),
+          Positioned(
+            top: 3,
+            right: 3,
+            child: Icon(
+              comparison.correct ? Icons.check_circle : Icons.cancel,
+              color: color,
+              size: 14,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _OcrComparison {
+  const _OcrComparison({
+    required this.expected,
+    required this.recognized,
+    required this.correct,
+  });
+
+  final String expected;
+  final String recognized;
+  final bool correct;
+}
+
+List<String> _hanziSlots(String text) => [
+  for (final match in RegExp(r'[\u4E00-\u9FFF]').allMatches(text))
+    match.group(0)!,
+];
+
+List<String> _pinyinSlots(String text) => [
+  for (final match in RegExp(r'[A-Za-z\u00C0-\u024F]+').allMatches(text))
+    match.group(0)!,
+];
+
+String _normalizeAnswer(String text, PracticeDirection direction) {
+  final pattern = direction == PracticeDirection.writeHanzi
+      ? RegExp(r'[\u4E00-\u9FFF]')
+      : RegExp(r'[A-Za-z\u00C0-\u024F]');
+  return pattern
+      .allMatches(text)
+      .map((match) => match.group(0)!)
+      .join()
+      .toLowerCase();
 }

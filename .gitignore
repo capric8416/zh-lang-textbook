@@ -225,5 +225,7 @@ __marimo__/
 output.zip
 output/
 tools/
-
+app/native/ocr/.build-deps/
+app/native/ocr/build-*/
+app/native/ocr/vendor/
 

@@ -1,1 +1,2 @@
 #include "Generated.xcconfig"
+OTHER_LDFLAGS = $(inherited) -Wl,-force_load,$(SRCROOT)/../native/ocr/build-ios/libzh_ocr_all.a -Wl,-u,_zh_ocr_create -Wl,-u,_zh_ocr_destroy -Wl,-u,_zh_ocr_recognize_rgba

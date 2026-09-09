@@ -52,6 +52,12 @@ add_subdirectory(${FLUTTER_MANAGED_DIR})
 # Application build; see runner/CMakeLists.txt.
 add_subdirectory("runner")
 
+# Native PP-OCRv6 engine. OpenCV and ncnn are linked statically into the DLL.
+add_subdirectory(
+  "${CMAKE_CURRENT_SOURCE_DIR}/../native/ocr"
+  "${CMAKE_BINARY_DIR}/zh_ocr"
+)
+add_dependencies(${BINARY_NAME} zh_ocr)
 
 # Generated plugin build rules, which manage building the plugins and adding
 # them to the application.
@@ -73,6 +79,9 @@ set(INSTALL_BUNDLE_DATA_DIR "${CMAKE_INSTALL_PREFIX}/data")
 set(INSTALL_BUNDLE_LIB_DIR "${CMAKE_INSTALL_PREFIX}")
 
 install(TARGETS ${BINARY_NAME} RUNTIME DESTINATION "${CMAKE_INSTALL_PREFIX}"
+  COMPONENT Runtime)
+
+install(TARGETS zh_ocr RUNTIME DESTINATION "${CMAKE_INSTALL_PREFIX}"
   COMPONENT Runtime)
 
 install(FILES "${FLUTTER_ICU_DATA_FILE}" DESTINATION "${INSTALL_BUNDLE_DATA_DIR}"

@@ -1,6 +1,9 @@
 import 'dart:math' as math;
+import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
+
+import '../models/ocr.dart';
 
 enum WritingTool { pen, eraser }
 
@@ -18,7 +21,6 @@ class WritingPad extends StatefulWidget {
 
 class WritingPadState extends State<WritingPad> {
   late List<List<_Stroke>> _slots;
-  WritingTool _tool = WritingTool.pen;
 
   bool get hasWriting => _slots.any((slot) => slot.isNotEmpty);
 
@@ -43,6 +45,48 @@ class WritingPadState extends State<WritingPad> {
   void clear() =>
       setState(() => _slots = _emptySlots(widget.slotLengths.length));
 
+  Future<List<OcrImage>> renderForOcr() async {
+    final images = <OcrImage>[];
+    for (var index = 0; index < _slots.length; index++) {
+      final sourceSize = _slotSize(index);
+      final scale = widget.grid == WritingGrid.hanzi ? 3.0 : 2.0;
+      const padding = 16.0;
+      final width = (sourceSize.width * scale + padding * 2).ceil();
+      final height = (sourceSize.height * scale + padding * 2).ceil();
+      final recorder = ui.PictureRecorder();
+      final canvas = Canvas(recorder);
+      canvas.drawColor(Colors.white, BlendMode.src);
+      canvas
+        ..translate(padding, padding)
+        ..scale(scale);
+      _paintInk(canvas, sourceSize, _slots[index], Colors.black);
+      final picture = recorder.endRecording();
+      final image = await picture.toImage(width, height);
+      final bytes = await image.toByteData(format: ui.ImageByteFormat.rawRgba);
+      final preview = await image.toByteData(format: ui.ImageByteFormat.png);
+      image.dispose();
+      picture.dispose();
+      if (bytes == null || preview == null) {
+        throw StateError('无法生成 OCR 笔迹图像');
+      }
+      images.add(
+        OcrImage(
+          rgba: bytes.buffer.asUint8List(
+            bytes.offsetInBytes,
+            bytes.lengthInBytes,
+          ),
+          previewPng: preview.buffer.asUint8List(
+            preview.offsetInBytes,
+            preview.lengthInBytes,
+          ),
+          width: width,
+          height: height,
+        ),
+      );
+    }
+    return images;
+  }
+
   Size _slotSize(int index) {
     if (widget.grid == WritingGrid.hanzi) return const Size(72, 72);
     final letters = index < widget.slotLengths.length
@@ -57,7 +101,7 @@ class WritingPadState extends State<WritingPad> {
       context: context,
       builder: (context) => _WritingDialog(
         grid: widget.grid,
-        tool: _tool,
+        tool: WritingTool.pen,
         strokes: _slots[index],
         sourceSize: sourceSize,
       ),
@@ -68,37 +112,22 @@ class WritingPadState extends State<WritingPad> {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
     final isHanzi = widget.grid == WritingGrid.hanzi;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           children: [
-            SegmentedButton<WritingTool>(
-              segments: const [
-                ButtonSegment(value: WritingTool.pen, icon: Icon(Icons.edit)),
-                ButtonSegment(
-                  value: WritingTool.eraser,
-                  icon: Icon(Icons.cleaning_services_outlined),
-                ),
-              ],
-              selected: {_tool},
-              showSelectedIcon: false,
-              onSelectionChanged: (value) =>
-                  setState(() => _tool = value.first),
-            ),
-            const SizedBox(width: 8),
+            Text('书写区', style: Theme.of(context).textTheme.titleSmall),
+            const SizedBox(width: 30),
             TextButton.icon(
               onPressed: hasWriting ? clear : null,
               icon: const Icon(Icons.delete_outline),
               label: const Text('清空'),
             ),
-            const Spacer(),
-            Text('双击格子放大书写', style: TextStyle(color: colors.onSurfaceVariant)),
           ],
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 6),
         Wrap(
           spacing: isHanzi ? 6 : 10,
           runSpacing: isHanzi ? 6 : 10,
@@ -107,10 +136,11 @@ class WritingPadState extends State<WritingPad> {
               _WritingCell(
                 size: _slotSize(index),
                 grid: widget.grid,
-                tool: _tool,
+                tool: WritingTool.pen,
                 strokes: _slots[index],
-                onChanged: (strokes) => setState(() => _slots[index] = strokes),
-                onDoubleTap: () => _openSlot(index),
+                onChanged: (_) {},
+                readOnly: true,
+                onTap: () => _openSlot(index),
               ),
           ],
         ),
@@ -224,7 +254,8 @@ class _WritingCell extends StatefulWidget {
     required this.tool,
     required this.strokes,
     required this.onChanged,
-    this.onDoubleTap,
+    this.readOnly = false,
+    this.onTap,
   });
 
   final Size size;
@@ -232,7 +263,8 @@ class _WritingCell extends StatefulWidget {
   final WritingTool tool;
   final List<_Stroke> strokes;
   final ValueChanged<List<_Stroke>> onChanged;
-  final VoidCallback? onDoubleTap;
+  final bool readOnly;
+  final VoidCallback? onTap;
 
   @override
   State<_WritingCell> createState() => _WritingCellState();
@@ -275,10 +307,14 @@ class _WritingCellState extends State<_WritingCell> {
     child: ClipRect(
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
-        onPanStart: (details) => _start(details.localPosition),
-        onPanUpdate: (details) => _update(details.localPosition),
-        onPanEnd: (_) => _activeStroke = null,
-        onDoubleTap: widget.onDoubleTap,
+        onPanStart: widget.readOnly
+            ? null
+            : (details) => _start(details.localPosition),
+        onPanUpdate: widget.readOnly
+            ? null
+            : (details) => _update(details.localPosition),
+        onPanEnd: widget.readOnly ? null : (_) => _activeStroke = null,
+        onTap: widget.onTap,
         child: CustomPaint(
           painter: _WritingPainter(
             widget.grid,
@@ -338,31 +374,34 @@ class _WritingPainter extends CustomPainter {
         gridPaint,
       );
     }
-    final ink = Paint()
-      ..color = inkColor
-      ..strokeWidth = math.max(2.2, math.min(size.width, size.height) / 38)
-      ..style = PaintingStyle.stroke
-      ..strokeCap = StrokeCap.round
-      ..strokeJoin = StrokeJoin.round;
-    for (final stroke in strokes) {
-      if (stroke.points.length == 1) {
-        canvas.drawCircle(
-          stroke.points.first,
-          ink.strokeWidth / 2,
-          ink..style = PaintingStyle.fill,
-        );
-        ink.style = PaintingStyle.stroke;
-        continue;
-      }
-      final path = Path()
-        ..moveTo(stroke.points.first.dx, stroke.points.first.dy);
-      for (final point in stroke.points.skip(1)) {
-        path.lineTo(point.dx, point.dy);
-      }
-      canvas.drawPath(path, ink);
-    }
+    _paintInk(canvas, size, strokes, inkColor);
   }
 
   @override
   bool shouldRepaint(covariant _WritingPainter oldDelegate) => true;
+}
+
+void _paintInk(Canvas canvas, Size size, List<_Stroke> strokes, Color color) {
+  final ink = Paint()
+    ..color = color
+    ..strokeWidth = math.max(2.2, math.min(size.width, size.height) / 38)
+    ..style = PaintingStyle.stroke
+    ..strokeCap = StrokeCap.round
+    ..strokeJoin = StrokeJoin.round;
+  for (final stroke in strokes) {
+    if (stroke.points.length == 1) {
+      canvas.drawCircle(
+        stroke.points.first,
+        ink.strokeWidth / 2,
+        ink..style = PaintingStyle.fill,
+      );
+      ink.style = PaintingStyle.stroke;
+      continue;
+    }
+    final path = Path()..moveTo(stroke.points.first.dx, stroke.points.first.dy);
+    for (final point in stroke.points.skip(1)) {
+      path.lineTo(point.dx, point.dy);
+    }
+    canvas.drawPath(path, ink);
+  }
 }

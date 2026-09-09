@@ -57,6 +57,14 @@ pkg_check_modules(GTK REQUIRED IMPORTED_TARGET gtk+-3.0)
 # Application build; see runner/CMakeLists.txt.
 add_subdirectory("runner")
 
+# Native PP-OCRv6 small engine. ncnn and the trimmed OpenCV build are linked
+# statically into libzh_ocr.so, which is loaded from Dart through FFI.
+add_subdirectory(
+  "${CMAKE_CURRENT_SOURCE_DIR}/../native/ocr"
+  "${CMAKE_BINARY_DIR}/zh_ocr"
+)
+add_dependencies(${BINARY_NAME} zh_ocr)
+
 # Run the Flutter tool portions of the build. This must not be removed.
 add_dependencies(${BINARY_NAME} flutter_assemble)
 
@@ -102,6 +110,10 @@ install(FILES "${FLUTTER_ICU_DATA_FILE}" DESTINATION "${INSTALL_BUNDLE_DATA_DIR}
   COMPONENT Runtime)
 
 install(FILES "${FLUTTER_LIBRARY}" DESTINATION "${INSTALL_BUNDLE_LIB_DIR}"
+  COMPONENT Runtime)
+
+install(TARGETS zh_ocr
+  LIBRARY DESTINATION "${INSTALL_BUNDLE_LIB_DIR}"
   COMPONENT Runtime)
 
 foreach(bundled_library ${PLUGIN_BUNDLED_LIBRARIES})
