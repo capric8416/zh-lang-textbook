@@ -71,6 +71,9 @@ cmake -S $OpenCvSource -B (Join-Path $BuildRoot "opencv") @CommonArgs `
   -DWITH_IPP=OFF `
   -DWITH_LAPACK=OFF
 cmake --build (Join-Path $BuildRoot "opencv") --config Release --parallel
+# OpenCV exports the optional ADE target even when G-API is excluded by
+# BUILD_LIST. Build it explicitly so OpenCVModules.cmake has no missing archive.
+cmake --build (Join-Path $BuildRoot "opencv") --config Release --target ade --parallel
 cmake --install (Join-Path $BuildRoot "opencv") --config Release
 
 Write-Host "Static OCR dependencies installed in $VendorRoot"

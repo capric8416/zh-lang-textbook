@@ -116,6 +116,10 @@ cmake -S "${opencv_source}" -B "${build_root}/opencv" \
   -DWITH_IPP=OFF \
   -DWITH_LAPACK=OFF
 cmake --build "${build_root}/opencv" --parallel
+# OpenCV exports the optional ADE target even when G-API is excluded by
+# BUILD_LIST. Build it explicitly so the installed OpenCV CMake package never
+# references a missing lib/opencv4/3rdparty/libade.a archive.
+cmake --build "${build_root}/opencv" --target ade --parallel
 cmake --install "${build_root}/opencv"
 
 echo "Static OCR dependencies installed in ${vendor_root}"
