@@ -20,7 +20,7 @@ void main() {
     expect(progress.lastWrongAt, isNotNull);
   });
 
-  test('两种练习方向独立记录', () async {
+  test('四种练习方向独立记录', () async {
     final store = await PracticeProgressStore.open('grade2b');
     const question = PracticeQuestion(
       id: 'question-1',
@@ -46,6 +46,18 @@ void main() {
     expect(
       store.progress
           .forQuestion(question.attemptId(PracticeDirection.writePinyin))
+          .totalCount,
+      0,
+    );
+    expect(
+      store.progress
+          .forQuestion(question.attemptId(PracticeDirection.listenWriteHanzi))
+          .totalCount,
+      0,
+    );
+    expect(
+      store.progress
+          .forQuestion(question.attemptId(PracticeDirection.readAloud))
           .totalCount,
       0,
     );

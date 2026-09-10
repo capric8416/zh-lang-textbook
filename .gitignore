@@ -221,11 +221,22 @@ __marimo__/
 
 
 
-
-output.zip
-output/
 tools/
+
 app/native/ocr/.build-deps/
 app/native/ocr/build-*/
 app/native/ocr/vendor/
+app/assets/speech/piper-zh_CN-xiao_ya-medium/*
+app/assets/speech/funasr-paraformer-zh/*
+app/assets/speech/funasr-fsmn-vad/*
 
+!app/assets/speech/piper-zh_CN-xiao_ya-medium/
+!app/assets/speech/piper-zh_CN-xiao_ya-medium/.gitkeep
+!app/assets/speech/funasr-paraformer-zh/
+!app/assets/speech/funasr-paraformer-zh/.gitkeep
+!app/assets/speech/funasr-fsmn-vad/
+!app/assets/speech/funasr-fsmn-vad/.gitkeep
+
+app/native/speech/.build-deps/
+app/native/speech/build-*/
+app/native/speech/vendor/

@@ -37,6 +37,9 @@ dependencies:
   ffi: ^2.1.4
   path_provider: ^2.1.5
   shared_preferences: ^2.5.4
+  record: ^7.1.1
+  lpinyin: ^2.0.3
+  flutter_soloud: ^4.1.7
 
 dev_dependencies:
   flutter_test:
@@ -63,6 +66,10 @@ flutter:
   assets:
     - assets/json_reviewed/
     - assets/ocr/
+    - assets/speech/
+    - assets/speech/piper-zh_CN-xiao_ya-medium/
+    - assets/speech/funasr-paraformer-zh/
+    - assets/speech/funasr-fsmn-vad/
 
   # To add assets to your application, add an assets section, like this:
   # assets:

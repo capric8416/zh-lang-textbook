@@ -92,6 +92,8 @@ if(ZH_OCR_USE_OPENMP)
   target_link_libraries(zh_ocr PRIVATE OpenMP::OpenMP_CXX)
 endif()
 
-if(UNIX AND NOT APPLE)
+# Android uses Bionic; pthread and realtime APIs are part of libc and there
+# are no separate libpthread/lib rt archives in the NDK sysroot.
+if(UNIX AND NOT APPLE AND NOT ANDROID)
   target_link_libraries(zh_ocr PRIVATE m pthread rt)
 endif()

@@ -59,6 +59,12 @@ add_subdirectory(
 )
 add_dependencies(${BINARY_NAME} zh_ocr)
 
+add_subdirectory(
+  "${CMAKE_CURRENT_SOURCE_DIR}/../native/speech"
+  "${CMAKE_BINARY_DIR}/zh_speech"
+)
+add_dependencies(${BINARY_NAME} zh_speech)
+
 # Generated plugin build rules, which manage building the plugins and adding
 # them to the application.
 include(flutter/generated_plugins.cmake)
@@ -82,6 +88,9 @@ install(TARGETS ${BINARY_NAME} RUNTIME DESTINATION "${CMAKE_INSTALL_PREFIX}"
   COMPONENT Runtime)
 
 install(TARGETS zh_ocr RUNTIME DESTINATION "${CMAKE_INSTALL_PREFIX}"
+  COMPONENT Runtime)
+
+install(TARGETS zh_speech RUNTIME DESTINATION "${CMAKE_INSTALL_PREFIX}"
   COMPONENT Runtime)
 
 install(FILES "${FLUTTER_ICU_DATA_FILE}" DESTINATION "${INSTALL_BUNDLE_DATA_DIR}"

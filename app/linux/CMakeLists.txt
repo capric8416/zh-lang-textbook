@@ -2,6 +2,12 @@
 cmake_minimum_required(VERSION 3.13)
 project(runner LANGUAGES CXX)
 
+# flutter_soloud enables its native ALSA backend by default on Linux.  The
+# backend requires the distribution-specific ALSA development headers even
+# though MiniAudio is enabled and is sufficient for playback/recording here.
+# Keep the Linux build portable on systems that do not ship alsa/asoundlib.h.
+set(SOLOUD_BACKEND_ALSA OFF CACHE BOOL "Disable the optional SoLoud ALSA backend" FORCE)
+
 # The name of the executable created for the application. Change this to change
 # the on-disk name of your application.
 set(BINARY_NAME "app")
@@ -65,6 +71,14 @@ add_subdirectory(
 )
 add_dependencies(${BINARY_NAME} zh_ocr)
 
+# Piper and FunASR share one statically linked ONNX Runtime inside this FFI
+# library. Models stay as Flutter assets and are extracted on first use.
+add_subdirectory(
+  "${CMAKE_CURRENT_SOURCE_DIR}/../native/speech"
+  "${CMAKE_BINARY_DIR}/zh_speech"
+)
+add_dependencies(${BINARY_NAME} zh_speech)
+
 # Run the Flutter tool portions of the build. This must not be removed.
 add_dependencies(${BINARY_NAME} flutter_assemble)
 
@@ -113,6 +127,10 @@ install(FILES "${FLUTTER_LIBRARY}" DESTINATION "${INSTALL_BUNDLE_LIB_DIR}"
   COMPONENT Runtime)
 
 install(TARGETS zh_ocr
+  LIBRARY DESTINATION "${INSTALL_BUNDLE_LIB_DIR}"
+  COMPONENT Runtime)
+
+install(TARGETS zh_speech
   LIBRARY DESTINATION "${INSTALL_BUNDLE_LIB_DIR}"
   COMPONENT Runtime)
 

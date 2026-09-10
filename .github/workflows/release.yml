@@ -14,6 +14,7 @@ env:
   ANDROID_NDK_VERSION: "28.2.13676358"
   ANDROID_CMAKE_VERSION: "3.22.1"
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+  NO_XIPH_LIBS: "1"
 
 jobs:
   build-linux-android:
@@ -33,7 +34,9 @@ jobs:
           apt-get update
           DEBIAN_FRONTEND=noninteractive apt-get install -y \
             build-essential ca-certificates clang cmake curl git ninja-build \
-            jq pkg-config unzip xz-utils zip libgtk-3-dev liblzma-dev libomp-dev
+            jq pkg-config unzip xz-utils zip libasound2-dev libgtk-3-dev \
+            liblzma-dev libomp-dev python3 python3-pip
+          python3 -m pip install --upgrade cmake==3.31.6
 
       - name: Checkout
         uses: actions/checkout@v4
@@ -68,7 +71,15 @@ jobs:
           path: |
             app/native/ocr/.build-deps
             app/native/ocr/vendor
-          key: ocr-ubuntu20-${{ hashFiles('app/native/ocr/scripts/**', 'app/native/ocr/CMakeLists.txt') }}
+            app/native/speech/.build-deps
+            app/native/speech/vendor
+          key: native-ubuntu20-${{ hashFiles('app/native/ocr/scripts/**', 'app/native/ocr/CMakeLists.txt', 'app/native/speech/scripts/**', 'app/native/speech/CMakeLists.txt', 'app/native/speech/VERSIONS.md') }}
+
+      - name: Cache speech models
+        uses: actions/cache@v4
+        with:
+          path: app/.dart_tool/speech-models-v2
+          key: speech-models-piper-funasr-v1
 
       - name: Get Flutter dependencies
         run: flutter pub get
@@ -78,23 +89,40 @@ jobs:
           flutter analyze
           flutter test
 
+      - name: Download pinned offline speech models
+        run: bash scripts/download_speech_models.sh
+
       - name: Build static Linux OCR dependencies
         run: native/ocr/scripts/build_deps_unix.sh linux-x64
+
+      - name: Build static Linux speech dependencies
+        run: native/speech/scripts/build_deps_unix.sh linux-x64
 
       - name: Build Linux release
         run: flutter build linux --release
 
-      - name: Verify Linux OCR bundle
+      - name: Verify Linux native bundle
         run: |
           test -f build/linux/x64/release/bundle/lib/libzh_ocr.so
+          test -f build/linux/x64/release/bundle/lib/libzh_speech.so
           test -f build/linux/x64/release/bundle/data/flutter_assets/assets/ocr/PP_OCRv6_small_rec.bin
+          test -f build/linux/x64/release/bundle/data/flutter_assets/assets/speech/piper-zh_CN-xiao_ya-medium/model.onnx
+          test -f build/linux/x64/release/bundle/data/flutter_assets/assets/speech/funasr-paraformer-zh/model_quant.onnx
+          test -f build/linux/x64/release/bundle/data/flutter_assets/assets/speech/funasr-fsmn-vad/model_quant.onnx
           if ldd build/linux/x64/release/bundle/lib/libzh_ocr.so | grep -E 'opencv|ncnn'; then
             echo "OpenCV or ncnn was linked dynamically" >&2
+            exit 1
+          fi
+          if ldd build/linux/x64/release/bundle/lib/libzh_speech.so | grep -E 'onnxruntime|piper|funasr'; then
+            echo "Speech dependency was linked dynamically" >&2
             exit 1
           fi
 
       - name: Build static Android OCR dependencies
         run: native/ocr/scripts/build_deps_unix.sh android-arm64-v8a
+
+      - name: Build static Android speech dependencies
+        run: native/speech/scripts/build_deps_unix.sh android-arm64-v8a
 
       - name: Build Android arm64 APK
         run: flutter build apk --release --target-platform android-arm64
@@ -102,6 +130,9 @@ jobs:
       - name: Verify and package artifacts
         run: |
           unzip -l build/app/outputs/flutter-apk/app-release.apk | grep 'lib/arm64-v8a/libzh_ocr.so'
+          unzip -l build/app/outputs/flutter-apk/app-release.apk | grep 'lib/arm64-v8a/libzh_speech.so'
+          unzip -l build/app/outputs/flutter-apk/app-release.apk | grep 'flutter_assets/assets/speech/piper-zh_CN-xiao_ya-medium/model.onnx'
+          unzip -l build/app/outputs/flutter-apk/app-release.apk | grep 'flutter_assets/assets/speech/funasr-paraformer-zh/model_quant.onnx'
           mkdir -p release
           cp build/app/outputs/flutter-apk/app-release.apk release/zh-lang-textbook-android-arm64.apk
           tar -czf release/zh-lang-textbook-linux-x64.tar.gz -C build/linux/x64/release/bundle .
@@ -140,11 +171,27 @@ jobs:
           path: |
             app/native/ocr/.build-deps
             app/native/ocr/vendor
-          key: ocr-windows-${{ hashFiles('app/native/ocr/scripts/**', 'app/native/ocr/CMakeLists.txt') }}
+            app/native/speech/.build-deps
+            app/native/speech/vendor
+          key: native-windows-${{ hashFiles('app/native/ocr/scripts/**', 'app/native/ocr/CMakeLists.txt', 'app/native/speech/scripts/**', 'app/native/speech/CMakeLists.txt', 'app/native/speech/VERSIONS.md') }}
+
+      - name: Cache speech models
+        uses: actions/cache@v4
+        with:
+          path: app/.dart_tool/speech-models-v2
+          key: speech-models-piper-funasr-v1
+
+      - name: Download pinned offline speech models
+        shell: bash
+        run: bash scripts/download_speech_models.sh
 
       - name: Build static OCR dependencies
         shell: pwsh
         run: ./native/ocr/scripts/build_deps_windows.ps1
+
+      - name: Build static speech dependencies
+        shell: pwsh
+        run: ./native/speech/scripts/build_deps_windows.ps1
 
       - name: Get dependencies and build
         shell: pwsh
@@ -157,7 +204,10 @@ jobs:
         run: |
           $Bundle = "build/windows/x64/runner/Release"
           if (-not (Test-Path "$Bundle/zh_ocr.dll")) { throw "zh_ocr.dll is missing" }
+          if (-not (Test-Path "$Bundle/zh_speech.dll")) { throw "zh_speech.dll is missing" }
           if (-not (Test-Path "$Bundle/data/flutter_assets/assets/ocr/PP_OCRv6_small_rec.bin")) { throw "OCR models are missing" }
+          if (-not (Test-Path "$Bundle/data/flutter_assets/assets/speech/piper-zh_CN-xiao_ya-medium/model.onnx")) { throw "Piper model is missing" }
+          if (-not (Test-Path "$Bundle/data/flutter_assets/assets/speech/funasr-paraformer-zh/model_quant.onnx")) { throw "Paraformer model is missing" }
           $UnexpectedDlls = Get-ChildItem $Bundle -Recurse -File | Where-Object { $_.Name -match '^(opencv|ncnn).*\.dll$' }
           if ($UnexpectedDlls) { throw "OpenCV or ncnn was linked dynamically: $($UnexpectedDlls.Name -join ', ')" }
           New-Item -ItemType Directory -Force -Path release | Out-Null
@@ -195,19 +245,35 @@ jobs:
           path: |
             app/native/ocr/.build-deps
             app/native/ocr/vendor
-          key: ocr-apple-${{ runner.arch }}-${{ hashFiles('app/native/ocr/scripts/**', 'app/native/ocr/CMakeLists.txt') }}
+            app/native/speech/.build-deps
+            app/native/speech/vendor
+          key: native-apple-${{ runner.arch }}-${{ hashFiles('app/native/ocr/scripts/**', 'app/native/ocr/CMakeLists.txt', 'app/native/speech/scripts/**', 'app/native/speech/CMakeLists.txt', 'app/native/speech/VERSIONS.md') }}
+
+      - name: Cache speech models
+        uses: actions/cache@v4
+        with:
+          path: app/.dart_tool/speech-models-v2
+          key: speech-models-piper-funasr-v1
+
+      - name: Download pinned offline speech models
+        run: bash scripts/download_speech_models.sh
 
       - name: Get Flutter dependencies
         run: flutter pub get
 
-      - name: Build static macOS dependencies and OCR dylib
+      - name: Build static macOS dependencies and native dylibs
         run: |
           native/ocr/scripts/build_deps_unix.sh "macos-$(uname -m)"
+          native/speech/scripts/build_deps_unix.sh "macos-$(uname -m)"
           cmake -S native/ocr -B native/ocr/build-macos -G Ninja \
             -DCMAKE_BUILD_TYPE=Release \
             -DZH_OCR_USE_OPENMP=OFF \
             -DZH_OCR_VENDOR_ROOT="$PWD/native/ocr/vendor/macos-$(uname -m)"
           cmake --build native/ocr/build-macos --parallel
+          cmake -S native/speech -B native/speech/build-macos -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DZH_SPEECH_VENDOR_ROOT="$PWD/native/speech/vendor/macos-$(uname -m)"
+          cmake --build native/speech/build-macos --parallel
 
       - name: Build and package macOS app
         run: |
@@ -216,9 +282,16 @@ jobs:
           test -n "$mac_app"
           mkdir -p "$mac_app/Contents/Frameworks" release
           cp native/ocr/build-macos/libzh_ocr.dylib "$mac_app/Contents/Frameworks/"
+          cp native/speech/build-macos/libzh_speech.dylib "$mac_app/Contents/Frameworks/"
           test -n "$(find "$mac_app" -path '*/flutter_assets/assets/ocr/PP_OCRv6_small_rec.bin' -print -quit)"
+          test -n "$(find "$mac_app" -path '*/flutter_assets/assets/speech/piper-zh_CN-xiao_ya-medium/model.onnx' -print -quit)"
+          test -n "$(find "$mac_app" -path '*/flutter_assets/assets/speech/funasr-paraformer-zh/model_quant.onnx' -print -quit)"
           if otool -L "$mac_app/Contents/Frameworks/libzh_ocr.dylib" | grep -E 'opencv|ncnn'; then
             echo "OpenCV or ncnn was linked dynamically" >&2
+            exit 1
+          fi
+          if otool -L "$mac_app/Contents/Frameworks/libzh_speech.dylib" | grep -E 'onnxruntime|piper|funasr'; then
+            echo "Speech dependency was linked dynamically" >&2
             exit 1
           fi
           codesign --force --deep --sign - "$mac_app"
@@ -227,6 +300,7 @@ jobs:
       - name: Build static iOS dependencies and combined OCR archive
         run: |
           native/ocr/scripts/build_deps_unix.sh ios-arm64
+          native/speech/scripts/build_deps_unix.sh ios-arm64
           cmake -S native/ocr -B native/ocr/build-ios -G Ninja \
             -DCMAKE_BUILD_TYPE=Release \
             -DCMAKE_SYSTEM_NAME=iOS \
@@ -240,12 +314,27 @@ jobs:
           libtool -static -o native/ocr/build-ios/libzh_ocr_all.a \
             native/ocr/build-ios/libzh_ocr.a \
             $(find native/ocr/vendor/ios-arm64 -name '*.a' -type f)
+          cmake -S native/speech -B native/speech/build-ios -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_SYSTEM_NAME=iOS \
+            -DCMAKE_OSX_SYSROOT=iphoneos \
+            -DCMAKE_OSX_ARCHITECTURES=arm64 \
+            -DCMAKE_OSX_DEPLOYMENT_TARGET=13.0 \
+            -DZH_SPEECH_LIBRARY_TYPE=STATIC \
+            -DZH_SPEECH_VENDOR_ROOT="$PWD/native/speech/vendor/ios-arm64"
+          cmake --build native/speech/build-ios --parallel
+          libtool -static -o native/speech/build-ios/libzh_speech_all.a \
+            native/speech/build-ios/libzh_speech.a \
+            native/speech/vendor/ios-arm64/lib/libzh_speech_deps.a
 
       - name: Build and package unsigned iOS app
         run: |
           flutter build ios --release --no-codesign
           nm -gU build/ios/iphoneos/Runner.app/Runner | grep '_zh_ocr_create'
+          nm -gU build/ios/iphoneos/Runner.app/Runner | grep '_zh_speech_tts_create'
           test -n "$(find build/ios/iphoneos/Runner.app -path '*/flutter_assets/assets/ocr/PP_OCRv6_small_rec.bin' -print -quit)"
+          test -n "$(find build/ios/iphoneos/Runner.app -path '*/flutter_assets/assets/speech/piper-zh_CN-xiao_ya-medium/model.onnx' -print -quit)"
+          test -n "$(find build/ios/iphoneos/Runner.app -path '*/flutter_assets/assets/speech/funasr-paraformer-zh/model_quant.onnx' -print -quit)"
           ditto -c -k --sequesterRsrc --keepParent \
             build/ios/iphoneos/Runner.app \
             release/zh-lang-textbook-ios-arm64-unsigned.zip

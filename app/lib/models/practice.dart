@@ -1,6 +1,6 @@
 import 'textbook.dart';
 
-enum PracticeDirection { writeHanzi, writePinyin }
+enum PracticeDirection { writeHanzi, writePinyin, listenWriteHanzi, readAloud }
 
 class PracticeQuestion {
   const PracticeQuestion({

@@ -4,9 +4,11 @@ import 'package:flutter/material.dart';
 
 import '../models/ocr.dart';
 import '../models/practice.dart';
+import '../models/speech_assessment.dart';
 import '../models/textbook.dart';
 import '../services/ocr_engine.dart';
 import '../services/practice_progress.dart';
+import '../services/speech_engine.dart';
 import '../services/textbook_repository.dart';
 import '../widgets/writing_pad.dart';
 
@@ -38,6 +40,8 @@ class _PracticePageState extends State<PracticePage> {
   bool _graded = false;
   bool _grading = false;
   bool _selecting = false;
+  bool _playing = false;
+  bool _recording = false;
 
   @override
   void initState() {
@@ -48,6 +52,12 @@ class _PracticePageState extends State<PracticePage> {
         .toList(growable: false);
     _selectedChapterId = _chapters.first.id;
     _openProgress();
+  }
+
+  @override
+  void dispose() {
+    if (_recording) SpeechEngine.instance.cancelRecording();
+    super.dispose();
   }
 
   Future<void> _openProgress() async {
@@ -72,22 +82,20 @@ class _PracticePageState extends State<PracticePage> {
     if (catalog == null || store == null || _selecting) return;
     _selecting = true;
     try {
-      var direction = PracticeDirection
-          .values[_random.nextInt(PracticeDirection.values.length)];
-      var selected = await _selectForDirection(
-        catalog.forChapter(_selectedChapterId),
-        direction,
-        store,
-      );
-      if (selected == null) {
-        direction = direction == PracticeDirection.writeHanzi
-            ? PracticeDirection.writePinyin
-            : PracticeDirection.writeHanzi;
-        selected = await _selectForDirection(
+      final directions = PracticeDirection.values.toList()..shuffle(_random);
+      var direction = directions.first;
+      PracticeQuestion? selected;
+      for (final candidateDirection in directions) {
+        final candidate = await _selectForDirection(
           catalog.forChapter(_selectedChapterId),
-          direction,
+          candidateDirection,
           store,
         );
+        if (candidate != null) {
+          direction = candidateDirection;
+          selected = candidate;
+          break;
+        }
       }
       if (!mounted) return;
       setState(() {
@@ -174,7 +182,7 @@ class _PracticePageState extends State<PracticePage> {
     try {
       final images = await writingPad.renderForOcr();
       final recognized = await OcrEngine.instance.recognizeAll(images);
-      final expected = _direction == PracticeDirection.writeHanzi
+      final expected = _direction != PracticeDirection.writePinyin
           ? _hanziSlots(question.answer)
           : _pinyinSlots(question.prompt);
       final comparisons = [
@@ -226,6 +234,80 @@ class _PracticePageState extends State<PracticePage> {
       );
     }
   }
+
+  Future<void> _playDictation() async {
+    final question = _question;
+    if (question == null || _playing) return;
+    setState(() => _playing = true);
+    try {
+      await SpeechEngine.instance.speak(
+        pinyin: question.prompt,
+        cacheKey: '${widget.selection.fileName}:${question.id}',
+      );
+    } catch (error, stackTrace) {
+      debugPrintStack(label: '听写语音播放失败：$error', stackTrace: stackTrace);
+      if (mounted) _showSpeechError('语音播放失败', error);
+    } finally {
+      if (mounted) setState(() => _playing = false);
+    }
+  }
+
+  Future<void> _toggleReadAloud() async {
+    final question = _question;
+    final store = _store;
+    if (question == null || store == null || _graded || _grading) return;
+    if (!_recording) {
+      try {
+        await SpeechEngine.instance.startRecording();
+        if (mounted) setState(() => _recording = true);
+      } catch (error, stackTrace) {
+        debugPrintStack(label: '朗读录音失败：$error', stackTrace: stackTrace);
+        if (mounted) _showSpeechError('无法开始录音', error);
+      }
+      return;
+    }
+
+    setState(() {
+      _recording = false;
+      _grading = true;
+    });
+    try {
+      final assessment = await SpeechEngine.instance.stopAndAssess(
+        expectedPinyin: question.prompt,
+      );
+      if (!mounted) return;
+      final correct = await showDialog<bool>(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => _SpeechReviewDialog(
+          expectedText: question.answer,
+          assessment: assessment,
+        ),
+      );
+      if (correct == null) return;
+      await store.record(question.attemptId(_direction), correct: correct);
+      if (mounted) setState(() => _graded = true);
+    } catch (error, stackTrace) {
+      debugPrintStack(label: '朗读检查失败：$error', stackTrace: stackTrace);
+      if (mounted) _showSpeechError('朗读检查失败', error);
+    } finally {
+      if (mounted) setState(() => _grading = false);
+    }
+  }
+
+  Future<void> _showSpeechError(String title, Object error) => showDialog<void>(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: Text(title),
+      content: Text('$error'),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('关闭'),
+        ),
+      ],
+    ),
+  );
 
   String get _unitName => widget.textbook.index
       .firstWhere(
@@ -355,7 +437,11 @@ class _PracticePageState extends State<PracticePage> {
           writingPadKey: _writingPadKey,
           graded: _graded,
           grading: _grading,
+          playing: _playing,
+          recording: _recording,
           onCorrect: _showCorrection,
+          onPlay: _playDictation,
+          onReadAloud: _toggleReadAloud,
           onNext: _graded ? _chooseQuestion : null,
         ),
     ],
@@ -369,7 +455,11 @@ class _QuestionCard extends StatelessWidget {
     required this.writingPadKey,
     required this.graded,
     required this.grading,
+    required this.playing,
+    required this.recording,
     required this.onCorrect,
+    required this.onPlay,
+    required this.onReadAloud,
     required this.onNext,
   });
 
@@ -378,14 +468,30 @@ class _QuestionCard extends StatelessWidget {
   final GlobalKey<WritingPadState> writingPadKey;
   final bool graded;
   final bool grading;
+  final bool playing;
+  final bool recording;
   final VoidCallback onCorrect;
+  final VoidCallback onPlay;
+  final VoidCallback onReadAloud;
   final VoidCallback? onNext;
 
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
-    final showPinyin = direction == PracticeDirection.writeHanzi;
-    final prompt = showPinyin ? question.promptLines : question.answerLines;
+    final writesHanzi =
+        direction == PracticeDirection.writeHanzi ||
+        direction == PracticeDirection.listenWriteHanzi;
+    final isDictation = direction == PracticeDirection.listenWriteHanzi;
+    final isReadAloud = direction == PracticeDirection.readAloud;
+    final prompt = direction == PracticeDirection.writeHanzi
+        ? question.promptLines
+        : question.answerLines;
+    final title = switch (direction) {
+      PracticeDirection.writeHanzi => '看拼音写汉字',
+      PracticeDirection.writePinyin => '看汉字写拼音',
+      PracticeDirection.listenWriteHanzi => '听音写汉字',
+      PracticeDirection.readAloud => '朗读检查',
+    };
     return Card(
       elevation: 0,
       child: Padding(
@@ -413,14 +519,17 @@ class _QuestionCard extends StatelessWidget {
             Row(
               children: [
                 Icon(
-                  showPinyin ? Icons.translate : Icons.text_fields,
+                  isDictation
+                      ? Icons.hearing
+                      : isReadAloud
+                      ? Icons.mic_outlined
+                      : direction == PracticeDirection.writeHanzi
+                      ? Icons.translate
+                      : Icons.text_fields,
                   size: 20,
                 ),
                 const SizedBox(width: 8),
-                Text(
-                  showPinyin ? '看拼音写汉字' : '看汉字写拼音',
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
+                Text(title, style: Theme.of(context).textTheme.titleMedium),
               ],
             ),
             const SizedBox(height: 14),
@@ -430,21 +539,49 @@ class _QuestionCard extends StatelessWidget {
                 color: colors.primaryContainer.withValues(alpha: 0.35),
                 borderRadius: BorderRadius.circular(14),
               ),
-              child: Text(
-                prompt.join('\n'),
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: showPinyin ? 24 : 30, height: 1.8),
-              ),
+              child: isDictation
+                  ? Center(
+                      child: FilledButton.tonalIcon(
+                        onPressed: playing ? null : onPlay,
+                        icon: playing
+                            ? const SizedBox.square(
+                                dimension: 18,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
+                              )
+                            : const Icon(Icons.volume_up_outlined),
+                        label: Text(playing ? '正在生成并播放…' : '播放听写语音'),
+                      ),
+                    )
+                  : Text(
+                      prompt.join('\n'),
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: direction == PracticeDirection.writeHanzi
+                            ? 24
+                            : 30,
+                        height: 1.8,
+                      ),
+                    ),
             ),
-            const SizedBox(height: 18),
-            WritingPad(
-              key: writingPadKey,
-              grid: showPinyin ? WritingGrid.hanzi : WritingGrid.pinyin,
-              slotLengths: _slotLengths(
-                showPinyin ? question.answer : question.prompt,
-                showPinyin ? WritingGrid.hanzi : WritingGrid.pinyin,
+            if (isReadAloud) ...[
+              const SizedBox(height: 12),
+              Text(
+                '仅检查朗读内容是否匹配，并非严格的发音评分；识别结果需要人工复核。',
+                style: TextStyle(color: colors.onSurfaceVariant),
               ),
-            ),
+            ] else ...[
+              const SizedBox(height: 18),
+              WritingPad(
+                key: writingPadKey,
+                grid: writesHanzi ? WritingGrid.hanzi : WritingGrid.pinyin,
+                slotLengths: _slotLengths(
+                  writesHanzi ? question.answer : question.prompt,
+                  writesHanzi ? WritingGrid.hanzi : WritingGrid.pinyin,
+                ),
+              ),
+            ],
             const SizedBox(height: 18),
             Align(
               alignment: Alignment.centerRight,
@@ -455,14 +592,32 @@ class _QuestionCard extends StatelessWidget {
                       label: const Text('下一题'),
                     )
                   : FilledButton.icon(
-                      onPressed: grading ? null : onCorrect,
+                      onPressed: grading
+                          ? null
+                          : isReadAloud
+                          ? onReadAloud
+                          : onCorrect,
                       icon: grading
                           ? const SizedBox.square(
                               dimension: 18,
                               child: CircularProgressIndicator(strokeWidth: 2),
                             )
-                          : const Icon(Icons.fact_check_outlined),
-                      label: Text(grading ? '识别中…' : '批改'),
+                          : Icon(
+                              isReadAloud
+                                  ? recording
+                                        ? Icons.stop_circle_outlined
+                                        : Icons.mic_outlined
+                                  : Icons.fact_check_outlined,
+                            ),
+                      label: Text(
+                        grading
+                            ? '识别中…'
+                            : isReadAloud
+                            ? recording
+                                  ? '结束并检查'
+                                  : '开始朗读'
+                            : '批改',
+                      ),
                     ),
             ),
           ],
@@ -573,6 +728,115 @@ class _PracticeTocTile extends StatelessWidget {
       ),
     );
   }
+}
+
+class _SpeechReviewDialog extends StatefulWidget {
+  const _SpeechReviewDialog({
+    required this.expectedText,
+    required this.assessment,
+  });
+
+  final String expectedText;
+  final SpeechAssessment assessment;
+
+  @override
+  State<_SpeechReviewDialog> createState() => _SpeechReviewDialogState();
+}
+
+class _SpeechReviewDialogState extends State<_SpeechReviewDialog> {
+  late bool _correct = widget.assessment.automaticallyCorrect;
+
+  @override
+  Widget build(BuildContext context) {
+    final assessment = widget.assessment;
+    final percent = (assessment.matchRate * 100).round();
+    return AlertDialog(
+      title: const Text('朗读检查'),
+      content: SizedBox(
+        width: 620,
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const Text('这是内容匹配结果，不是严格的发音评分。请听者人工复核。'),
+              const SizedBox(height: 16),
+              _SpeechResultRow(label: '朗读内容', value: widget.expectedText),
+              _SpeechResultRow(
+                label: '识别文本',
+                value: assessment.recognizedText.isEmpty
+                    ? '（未识别）'
+                    : assessment.recognizedText,
+              ),
+              _SpeechResultRow(label: '目标拼音', value: assessment.expectedPinyin),
+              _SpeechResultRow(
+                label: '识别拼音',
+                value: assessment.recognizedPinyin.isEmpty
+                    ? '（未识别）'
+                    : assessment.recognizedPinyin,
+              ),
+              const SizedBox(height: 10),
+              Text(
+                '拼音级匹配：${assessment.matchedSyllables}/'
+                '${assessment.totalSyllables}（$percent%）',
+              ),
+              const SizedBox(height: 14),
+              SegmentedButton<bool>(
+                segments: const [
+                  ButtonSegment(
+                    value: true,
+                    icon: Icon(Icons.check_circle_outline),
+                    label: Text('复核为正确'),
+                  ),
+                  ButtonSegment(
+                    value: false,
+                    icon: Icon(Icons.cancel_outlined),
+                    label: Text('需要复习'),
+                  ),
+                ],
+                selected: {_correct},
+                onSelectionChanged: (value) =>
+                    setState(() => _correct = value.single),
+              ),
+            ],
+          ),
+        ),
+      ),
+      actions: [
+        FilledButton(
+          onPressed: () => Navigator.pop(context, _correct),
+          child: const Text('确认'),
+        ),
+      ],
+    );
+  }
+}
+
+class _SpeechResultRow extends StatelessWidget {
+  const _SpeechResultRow({required this.label, required this.value});
+
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.symmetric(vertical: 5),
+    child: Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(
+          width: 76,
+          child: Text(
+            label,
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
+          ),
+        ),
+        Expanded(child: SelectableText(value)),
+      ],
+    ),
+  );
 }
 
 class _CorrectionDialog extends StatefulWidget {
@@ -911,7 +1175,7 @@ List<String> _pinyinSlots(String text) => [
 ];
 
 String _normalizeAnswer(String text, PracticeDirection direction) {
-  final pattern = direction == PracticeDirection.writeHanzi
+  final pattern = direction != PracticeDirection.writePinyin
       ? RegExp(r'[\u4E00-\u9FFF]')
       : RegExp(r'[A-Za-z\u00C0-\u024F]');
   return pattern
