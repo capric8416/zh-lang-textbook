@@ -38,7 +38,7 @@ jobs:
             liblzma-dev libomp-dev python3 python3-pip software-properties-common
           add-apt-repository -y ppa:deadsnakes/ppa
           apt-get update
-          DEBIAN_FRONTEND=noninteractive apt-get install -y python3.12 python3.12-venv
+          DEBIAN_FRONTEND=noninteractive apt-get install -y python3.12
           curl --fail --location https://bootstrap.pypa.io/get-pip.py | python3.12
           ln -sf /usr/bin/python3.12 /usr/local/bin/python
           ln -sf /usr/bin/python3.12 /usr/local/bin/python3
@@ -263,10 +263,10 @@ jobs:
         run: |
           disk_image="$RUNNER_TEMP/zh-speech-build.sparseimage"
           mount_point="$RUNNER_TEMP/zh-speech-build"
-          hdiutil create -quiet -type SPARSE -fs APFSX -size 30g \
+          hdiutil create -type SPARSE -fs 'Case-sensitive APFS' -size 30g \
             -volname zh-speech-build "$disk_image"
           mkdir -p "$mount_point"
-          hdiutil attach -quiet -nobrowse -mountpoint "$mount_point" "$disk_image"
+          hdiutil attach -nobrowse -mountpoint "$mount_point" "$disk_image"
           echo "SPEECH_DEPS_ROOT=$mount_point" >> "$GITHUB_ENV"
 
       - name: Cache native dependency builds
