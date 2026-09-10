@@ -57,7 +57,9 @@ rm -f "$ort_source/cmake/deps.txt.bak"
 # Keep the pinned 1.22.0 source buildable on current Linux distributions.
 optimizer_api="$ort_source/onnxruntime/core/optimizer/transpose_optimization/optimizer_api.h"
 if ! grep -q '^#include <cstdint>$' "$optimizer_api"; then
-  sed -i.bak '/^#include <functional>$/i #include <cstdint>' "$optimizer_api"
+  perl -0pi.bak -e \
+    's/^#include <functional>$/#include <cstdint>\n#include <functional>/m' \
+    "$optimizer_api"
   rm -f "$optimizer_api.bak"
 fi
 
@@ -187,10 +189,12 @@ openfst_bitable="$funasr_work/third_party/openfst/src/include/fst/bi-table.h"
 sed -i.bak 's/new S(table\.s_)/new S(*table.selector_)/' "$openfst_bitable"
 rm -f "$openfst_bitable.bak"
 fbank_rfft="$funasr_work/third_party/kaldi-native-fbank/kaldi-native-fbank/csrc/rfft.h"
-sed -i.bak '/^#include <memory>$/i #include <cstdint>' "$fbank_rfft"
+perl -0pi.bak -e \
+  's/^#include <memory>$/#include <cstdint>\n#include <memory>/m' "$fbank_rfft"
 rm -f "$fbank_rfft.bak"
 funasr_util="$funasr_work/src/util.h"
-sed -i.bak '/^#define UTIL_H$/a #include <cstdint>' "$funasr_util"
+perl -0pi.bak -e \
+  's/^#define UTIL_H$/#define UTIL_H\n#include <cstdint>/m' "$funasr_util"
 rm -f "$funasr_util.bak"
 sed -i.bak 's/add_library(funasr SHARED/add_library(funasr STATIC/' \
   "$funasr_work/src/CMakeLists.txt"

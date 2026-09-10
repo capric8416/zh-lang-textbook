@@ -116,6 +116,7 @@ cmake -S "${opencv_source}" -B "${build_root}/opencv" \
   -DWITH_ITT=OFF \
   -DWITH_IPP=OFF \
   -DWITH_KLEIDICV=OFF \
+  -DWITH_EIGEN=OFF \
   -DWITH_LAPACK=OFF
 cmake --build "${build_root}/opencv" --parallel
 # OpenCV exports the optional ADE target even when G-API is excluded by

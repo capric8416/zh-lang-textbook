@@ -12,22 +12,31 @@ $OrtRevision = "f217402897f40ebba457e2421bc0a4702771968e"
 
 New-Item -ItemType Directory -Force -Path $BuildRoot, $SourceRoot, "$Vendor\include", "$Vendor\lib" | Out-Null
 
+function Resolve-GitCommit([string]$Destination, [string]$Revision) {
+  $PreviousNativeErrorPreference = $PSNativeCommandUseErrorActionPreference
+  try {
+    $PSNativeCommandUseErrorActionPreference = $false
+    $Result = git -C $Destination rev-parse --verify "$Revision^{commit}" 2>$null
+    if ($LASTEXITCODE -eq 0 -and $Result) {
+      return $Result.Trim()
+    }
+    return $null
+  } finally {
+    $PSNativeCommandUseErrorActionPreference = $PreviousNativeErrorPreference
+  }
+}
+
 function Checkout-Revision([string]$Url, [string]$Revision, [string]$Destination) {
   if (-not (Test-Path "$Destination\.git")) {
     git init -q $Destination
     git -C $Destination remote add origin $Url
   }
-  $Current = $null
-  $Expected = $null
-  $Current = git -C $Destination rev-parse --verify HEAD 2>$null
-  if ($LASTEXITCODE -ne 0) { $Current = $null }
-  $Expected = git -C $Destination rev-parse --verify "$Revision^{commit}" 2>$null
-  if ($LASTEXITCODE -ne 0) { $Expected = $null }
+  $Current = Resolve-GitCommit $Destination "HEAD"
+  $Expected = Resolve-GitCommit $Destination $Revision
   if (-not $Expected) {
     git -C $Destination fetch --depth 1 origin $Revision
-    if ($LASTEXITCODE -ne 0) { throw "Failed to fetch revision $Revision" }
-    $Expected = git -C $Destination rev-parse --verify "FETCH_HEAD^{commit}"
-    if ($LASTEXITCODE -ne 0) { throw "Failed to resolve revision $Revision" }
+    $Expected = Resolve-GitCommit $Destination "FETCH_HEAD"
+    if (-not $Expected) { throw "Failed to resolve revision $Revision" }
   }
   if ($Current -ne $Expected) {
     git -C $Destination checkout -q --detach $Expected

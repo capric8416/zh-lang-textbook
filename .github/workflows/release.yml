@@ -34,12 +34,20 @@ jobs:
           apt-get update
           DEBIAN_FRONTEND=noninteractive apt-get install -y \
             build-essential ca-certificates clang cmake curl git ninja-build \
-            jq pkg-config unzip xz-utils zip libasound2-dev libgtk-3-dev \
+            jq perl pkg-config unzip xz-utils zip libasound2-dev libgtk-3-dev \
             liblzma-dev libomp-dev python3 python3-pip
-          python3 -m pip install --upgrade cmake==3.31.6
 
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          architecture: ${{ runner.arch }}
+
+      - name: Install current CMake
+        run: python -m pip install --upgrade cmake==3.31.6
 
       - name: Setup Java
         uses: actions/setup-java@v4
@@ -154,6 +162,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          architecture: ${{ runner.arch }}
+
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
@@ -229,6 +243,12 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          architecture: ${{ runner.arch }}
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
