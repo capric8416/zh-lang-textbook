@@ -1,0 +1,19 @@
+diff --git a/src/chinese_phonemizer.cpp b/src/chinese_phonemizer.cpp
+--- a/src/chinese_phonemizer.cpp
++++ b/src/chinese_phonemizer.cpp
+@@ -276,7 +276,6 @@ ChinesePhonemizer::phonemize_pinyin_text(const std::string &text) {
+   // split by whitespace
+   std::istringstream iss(lower);
+   std::string token;
+-  bool first_syl = true;
+   while (iss >> token) {
+     if (token.empty())
+       continue;
+@@ -321,7 +320,1 @@ ChinesePhonemizer::phonemize_pinyin_text(const std::string &text) {
+-    if (!first_syl) {
+-      // optional short pause between syllables
+-      phonemes.push_back(" ");
+-    }
+-    first_syl = false;
+-
+     if (ini.empty())

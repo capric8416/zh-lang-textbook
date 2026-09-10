@@ -118,6 +118,13 @@ sed -i.bak 's/cmake_minimum_required(VERSION 3.26)/cmake_minimum_required(VERSIO
 sed -i.bak 's/add_library(piper SHARED/add_library(piper STATIC/' \
   "$piper_work/CMakeLists.txt"
 rm -f "$piper_work/CMakeLists.txt.bak"
+patch --batch --forward -p1 -d "$piper_work" \
+  -i "$speech_dir/patches/piper-pinyin-whitespace.patch"
+if grep -q 'phonemes.push_back(" ");' \
+    "$piper_work/src/chinese_phonemizer.cpp"; then
+  echo "Piper pinyin whitespace patch did not take effect" >&2
+  exit 1
+fi
 case "$target" in
   android-*)
     sed -i.bak "/-DCMAKE_BUILD_TYPE=\${CMAKE_BUILD_TYPE}/a\\

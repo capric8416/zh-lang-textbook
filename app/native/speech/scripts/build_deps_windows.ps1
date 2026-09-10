@@ -77,6 +77,16 @@ $PiperCmake = "$PiperWork\CMakeLists.txt"
 (Get-Content $PiperCmake -Raw).Replace(
   "cmake_minimum_required(VERSION 3.26)", "cmake_minimum_required(VERSION 3.16)"
 ).Replace("add_library(piper SHARED", "add_library(piper STATIC") | Set-Content $PiperCmake
+$PiperPhonemizer = Join-Path $PiperWork "src\chinese_phonemizer.cpp"
+$PiperPhonemizerContents = Get-Content $PiperPhonemizer -Raw
+$PatchedPiperPhonemizer = $PiperPhonemizerContents `
+  -replace '(?m)^  bool first_syl = true;\r?\n', '' `
+  -replace '(?ms)^    if \(!first_syl\) \{\r?\n      // optional short pause between syllables\r?\n      phonemes\.push_back\(" "\);\r?\n    \}\r?\n    first_syl = false;\r?\n\r?\n', ''
+if ($PatchedPiperPhonemizer -eq $PiperPhonemizerContents -or
+    $PatchedPiperPhonemizer.Contains('phonemes.push_back(" ");')) {
+  throw "Failed to patch Piper pinyin whitespace handling"
+}
+Set-Content $PiperPhonemizer $PatchedPiperPhonemizer -NoNewline
 cmake -S $PiperWork -B "$BuildRoot\piper" -G Ninja `
   -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF `
   -DCMAKE_POSITION_INDEPENDENT_CODE=ON -DONNXRUNTIME_DIR="$Vendor"
