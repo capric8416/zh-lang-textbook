@@ -19,11 +19,15 @@ function Checkout-Revision([string]$Url, [string]$Revision, [string]$Destination
   }
   $Current = $null
   $Expected = $null
-  try { $Current = git -C $Destination rev-parse HEAD 2>$null } catch {}
-  try { $Expected = git -C $Destination rev-parse "$Revision^{commit}" 2>$null } catch {}
+  $Current = git -C $Destination rev-parse --verify HEAD 2>$null
+  if ($LASTEXITCODE -ne 0) { $Current = $null }
+  $Expected = git -C $Destination rev-parse --verify "$Revision^{commit}" 2>$null
+  if ($LASTEXITCODE -ne 0) { $Expected = $null }
   if (-not $Expected) {
     git -C $Destination fetch --depth 1 origin $Revision
-    $Expected = git -C $Destination rev-parse "FETCH_HEAD^{commit}"
+    if ($LASTEXITCODE -ne 0) { throw "Failed to fetch revision $Revision" }
+    $Expected = git -C $Destination rev-parse --verify "FETCH_HEAD^{commit}"
+    if ($LASTEXITCODE -ne 0) { throw "Failed to resolve revision $Revision" }
   }
   if ($Current -ne $Expected) {
     git -C $Destination checkout -q --detach $Expected

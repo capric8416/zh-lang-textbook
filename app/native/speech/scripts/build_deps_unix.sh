@@ -21,11 +21,12 @@ checkout() {
     git init -q "$destination"
     git -C "$destination" remote add origin "$url"
   fi
-  current="$(git -C "$destination" rev-parse HEAD 2>/dev/null || true)"
-  expected="$(git -C "$destination" rev-parse "$revision^{commit}" 2>/dev/null || true)"
-  if [[ -z "$expected" ]]; then
+  current="$(git -C "$destination" rev-parse --verify HEAD 2>/dev/null || true)"
+  if git -C "$destination" rev-parse --verify --quiet "$revision^{commit}" >/dev/null; then
+    expected="$(git -C "$destination" rev-parse --verify "$revision^{commit}")"
+  else
     git -C "$destination" fetch --depth 1 origin "$revision"
-    expected="$(git -C "$destination" rev-parse 'FETCH_HEAD^{commit}')"
+    expected="$(git -C "$destination" rev-parse --verify 'FETCH_HEAD^{commit}')"
   fi
   if [[ "$current" != "$expected" ]]; then
     git -C "$destination" checkout -q --detach "$expected"
