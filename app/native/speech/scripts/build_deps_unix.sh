@@ -4,8 +4,13 @@ set -euo pipefail
 target="${1:-linux-x64}"
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 speech_dir="$(cd "$script_dir/.." && pwd)"
-build_root="$speech_dir/.build-deps/$target"
-source_root="$speech_dir/.build-deps/sources"
+# macOS's default filesystem is case-insensitive, while espeak-ng contains
+# phoneme files whose names differ only by case. CI can provide a case-
+# sensitive volume through this override so ExternalProject's checkout keeps
+# the complete source tree.
+deps_root="${SPEECH_DEPS_ROOT:-$speech_dir/.build-deps}"
+build_root="$deps_root/$target"
+source_root="$deps_root/sources"
 vendor="$speech_dir/vendor/$target"
 piper_commit=404aefedbd74baa0bd43e451bc407a2b3aace0f5
 funasr_commit=231ec5dda739c83f35e59e875736cde3ef1af161
