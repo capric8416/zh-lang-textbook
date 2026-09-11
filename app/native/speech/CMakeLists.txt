@@ -37,6 +37,12 @@ endif()
 add_library(zh_speech ${ZH_SPEECH_LIBRARY_TYPE} speech_bridge.cpp)
 target_compile_features(zh_speech PRIVATE cxx_std_17)
 target_compile_definitions(zh_speech PRIVATE BUILDING_LIBPIPER)
+if(WIN32)
+  # FunASR's public header defaults to __declspec(dllimport) on Windows.
+  # The Flutter plugin links the static FunASR archive, so suppress DLL
+  # import decorations for this consumer.
+  target_compile_definitions(zh_speech PRIVATE _FUNASR_API_EXPORT)
+endif()
 target_include_directories(zh_speech PRIVATE
   "${CMAKE_CURRENT_SOURCE_DIR}"
   "${ZH_SPEECH_VENDOR_ROOT}/include"
@@ -52,6 +58,11 @@ set_target_properties(zh_speech PROPERTIES
   POSITION_INDEPENDENT_CODE YES
 )
 target_link_libraries(zh_speech PRIVATE "${ZH_SPEECH_DEPS}")
+if(WIN32 AND EXISTS "${ZH_SPEECH_VENDOR_ROOT}/lib/re2.lib")
+  target_link_libraries(zh_speech PRIVATE "${ZH_SPEECH_VENDOR_ROOT}/lib/re2.lib")
+elseif(NOT WIN32 AND EXISTS "${ZH_SPEECH_VENDOR_ROOT}/lib/libre2.a")
+  target_link_libraries(zh_speech PRIVATE "${ZH_SPEECH_VENDOR_ROOT}/lib/libre2.a")
+endif()
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux" OR ANDROID)
   target_link_options(zh_speech PRIVATE "LINKER:-z,noexecstack")
 endif()

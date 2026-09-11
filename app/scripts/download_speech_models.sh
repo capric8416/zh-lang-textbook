@@ -16,7 +16,27 @@ fetch() {
   local cached="$cache_dir/$sha256"
   if [[ ! -f "$cached" ]] || ! echo "$sha256  $cached" | sha256sum -c - >/dev/null 2>&1; then
     rm -f "$cached"
-    curl --fail --location --retry 3 "$url" --output "$cached"
+    local attempt seed delay
+    for attempt in 1 2 3 4 5 6; do
+      seed="$(date +%s%N 2>/dev/null || true)"
+      if [[ "$seed" == *N* || -z "$seed" ]]; then
+        seed="$(perl -MTime::HiRes=time -e 'printf "%.0f\n", time() * 1000000' 2>/dev/null || date +%s)"
+      fi
+      if [[ ! "$seed" =~ ^[0-9]+$ ]]; then
+        seed="$(date +%s)"
+      fi
+      delay=$((seed % 8 + 3))
+      sleep "$delay"
+      if curl --fail --location "$url" --output "$cached"; then
+        break
+      fi
+      rm -f "$cached"
+      if [[ "$attempt" -eq 6 ]]; then
+        echo "Failed to download $url after $attempt attempts" >&2
+        return 1
+      fi
+      sleep $((attempt * 15))
+    done
     echo "$sha256  $cached" | sha256sum -c -
   fi
   cp "$cached" "$target"

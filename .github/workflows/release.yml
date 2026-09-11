@@ -31,11 +31,18 @@ jobs:
       - name: Install native build dependencies
         working-directory: /
         run: |
-          apt-get update
-          DEBIAN_FRONTEND=noninteractive apt-get install -y \
-            build-essential ca-certificates clang cmake curl git ninja-build \
+          # The minimal Ubuntu container has no CA bundle yet, so HTTPS cannot
+          # bootstrap ca-certificates. Keep the initial repository access on
+          # HTTP and let apt retry transient mirror connection failures.
+          sed -i \
+            -e 's|https://archive.ubuntu.com/ubuntu|http://archive.ubuntu.com/ubuntu|g' \
+            -e 's|https://security.ubuntu.com/ubuntu|http://security.ubuntu.com/ubuntu|g' \
+            /etc/apt/sources.list
+          apt-get -o Acquire::Retries=10 update
+          DEBIAN_FRONTEND=noninteractive apt-get -o Acquire::Retries=10 install -y \
+            build-essential ca-certificates clang curl git ninja-build \
             jq perl pkg-config unzip xz-utils zip libasound2-dev libgtk-3-dev \
-            liblzma-dev libomp-dev python3
+            liblzma-dev libomp-dev
 
       - name: Checkout
         uses: actions/checkout@v4
@@ -45,11 +52,9 @@ jobs:
           curl https://mise.run | sh
           export PATH="$HOME/.local/bin:$HOME/.local/share/mise/shims:$PATH"
           mise use -g python@latest
+          mise use -g cmake@3.31.6
           echo "$HOME/.local/bin" >> "$GITHUB_PATH"
           echo "$HOME/.local/share/mise/shims" >> "$GITHUB_PATH"
-
-      - name: Install current CMake
-        run: python -m pip install --upgrade cmake==3.31.6
 
       - name: Setup Java
         uses: actions/setup-java@v4
@@ -60,11 +65,10 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Install Android NDK and CMake
+      - name: Install Android NDK and Gradle CMake
         run: |
           sdkmanager "ndk;${ANDROID_NDK_VERSION}" "cmake;${ANDROID_CMAKE_VERSION}"
           echo "ANDROID_NDK_HOME=${ANDROID_SDK_ROOT}/ndk/${ANDROID_NDK_VERSION}" >> "$GITHUB_ENV"
-          echo "${ANDROID_SDK_ROOT}/cmake/${ANDROID_CMAKE_VERSION}/bin" >> "$GITHUB_PATH"
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
@@ -167,12 +171,25 @@ jobs:
       - name: Setup mise and Python
         shell: pwsh
         run: |
-          winget install --id jdx.mise --exact --accept-source-agreements --accept-package-agreements
-          $env:Path = "$env:LOCALAPPDATA\mise\shims;$env:LOCALAPPDATA\mise\bin;$env:LOCALAPPDATA\mise;$env:Path"
-          mise use -g python@latest
-          Add-Content $env:GITHUB_PATH "$env:LOCALAPPDATA\mise\bin"
-          Add-Content $env:GITHUB_PATH "$env:LOCALAPPDATA\mise"
-          Add-Content $env:GITHUB_PATH "$env:LOCALAPPDATA\mise\shims"
+          $archive = Join-Path $env:RUNNER_TEMP "mise-windows-x64.zip"
+          $install = Join-Path $env:RUNNER_TEMP "mise-bin"
+          $data = Join-Path $env:RUNNER_TEMP "mise-data"
+          Invoke-WebRequest -UseBasicParsing `
+            -Uri "https://github.com/jdx/mise/releases/download/v2026.9.5/mise-v2026.9.5-windows-x64.zip" `
+            -OutFile $archive
+          if (Test-Path $install) { Remove-Item -Recurse -Force $install }
+          Expand-Archive -Path $archive -DestinationPath $install -Force
+          $mise = (Get-ChildItem $install -Recurse -File -Filter "mise.exe" |
+            Select-Object -First 1).FullName
+          if (-not $mise) { throw "mise.exe was not found in the downloaded archive" }
+          $miseDir = Split-Path $mise -Parent
+          $env:MISE_DATA_DIR = $data
+          $env:Path = "$data\shims;$miseDir;$env:Path"
+          & $mise use -g python@latest
+          & $mise use -g cmake@3.31.6
+          Add-Content $env:GITHUB_ENV "MISE_DATA_DIR=$data"
+          Add-Content $env:GITHUB_PATH "$miseDir"
+          Add-Content $env:GITHUB_PATH "$data\shims"
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
@@ -255,6 +272,7 @@ jobs:
           curl https://mise.run | sh
           export PATH="$HOME/.local/bin:$HOME/.local/share/mise/shims:$PATH"
           mise use -g python@latest
+          mise use -g cmake@3.31.6
           echo "$HOME/.local/bin" >> "$GITHUB_PATH"
           echo "$HOME/.local/share/mise/shims" >> "$GITHUB_PATH"
 
@@ -265,7 +283,7 @@ jobs:
           cache: true
 
       - name: Install build dependencies
-        run: brew install cmake ninja
+        run: brew install ninja
 
       - name: Prepare case-sensitive speech build volume
         run: |

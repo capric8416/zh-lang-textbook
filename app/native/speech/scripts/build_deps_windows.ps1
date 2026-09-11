@@ -67,7 +67,8 @@ if ($OptimizerApiContents -notmatch '#include <cstdint>') {
 
 $OrtBuild = Join-Path $BuildRoot "onnxruntime"
 if (-not (Test-Path "$BuildRoot\onnxruntime.done")) {
-  & "$OrtSource\build.bat" --config Release --build_dir $OrtBuild --parallel --skip_tests --compile_no_warning_as_error
+  & "$OrtSource\build.bat" --config Release --build_dir $OrtBuild --parallel --skip_tests `
+    --cmake_extra_defines onnxruntime_BUILD_UNIT_TESTS=OFF onnxruntime_BUILD_BENCHMARKS=OFF
   New-Item -ItemType File -Force "$BuildRoot\onnxruntime.done" | Out-Null
 }
 Copy-Item "$OrtSource\include\onnxruntime\core\session\*.h" "$Vendor\include" -Force
@@ -77,17 +78,29 @@ $OrtLibs = @(Get-ChildItem $OrtBuild -Recurse -File -Filter "*.lib" | Where-Obje
 })
 if ($OrtLibs.Count -eq 0) { throw "No static ONNX Runtime libraries found" }
 & lib.exe /NOLOGO /OUT:"$Vendor\lib\onnxruntime.lib" @($OrtLibs.FullName)
+$Re2Archive = Get-ChildItem "$OrtBuild" -Recurse -File | Where-Object {
+  $_.Name -match '^re2.*\.lib$'
+} | Select-Object -First 1
+if ($Re2Archive) { Copy-Item $Re2Archive.FullName "$Vendor\lib\re2.lib" -Force }
 
 $PiperWork = Join-Path $BuildRoot "piper-source"
 if (Test-Path $PiperWork) { Remove-Item -Recurse -Force $PiperWork }
 Copy-Item "$PiperSource\libpiper" $PiperWork -Recurse
 Copy-Item "$PiperSource\setup.py" "$BuildRoot\setup.py" -Force
 $PiperCmake = "$PiperWork\CMakeLists.txt"
+$PiperBuildBlock = @"
+target_compile_definitions(piper PUBLIC BUILDING_LIBPIPER)
+
+option(BUILD_PIPER_EXECUTABLE "Build the Piper command-line executable" OFF)
+if(BUILD_PIPER_EXECUTABLE)
+  add_subdirectory(src/main)
+endif()
+"@
 $PiperCmakeContents = (Get-Content $PiperCmake -Raw).Replace(
   "cmake_minimum_required(VERSION 3.26)", "cmake_minimum_required(VERSION 3.16)"
 ).Replace("add_library(piper SHARED", "add_library(piper STATIC").Replace(
   "enable_clang_tidy(piper)",
-  "target_compile_definitions(piper PUBLIC BUILDING_LIBPIPER)`r`n`r`noption(BUILD_PIPER_EXECUTABLE \"Build the Piper command-line executable\" OFF)`r`nif(BUILD_PIPER_EXECUTABLE)`r`n  add_subdirectory(src/main)`r`nendif()"
+  $PiperBuildBlock.Trim()
 )
 $PiperCmakeContents = $PiperCmakeContents -replace '(?m)^# ---- piper exe ---\r?\nadd_subdirectory\(src/main\)\r?\n?', ''
 Set-Content $PiperCmake $PiperCmakeContents
@@ -142,7 +155,7 @@ cmake -S $FunAsrWork -B "$BuildRoot\funasr" -G Ninja `
   -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF `
   -DCMAKE_POSITION_INDEPENDENT_CODE=ON `
   -DCMAKE_CXX_STANDARD=17 `
-  -DCMAKE_POLICY_VERSION_MINIMUM=3.5 `
+  "-DCMAKE_POLICY_VERSION_MINIMUM=3.5" `
   -DONNXRUNTIME_DIR="$Vendor" `
   -DENABLE_FFMPEG=OFF -DFUNASR_BUILD_TESTS=OFF
 cmake --build "$BuildRoot\funasr" --target funasr --parallel
@@ -150,6 +163,9 @@ cmake --build "$BuildRoot\funasr" --target funasr --parallel
 Copy-Item "$PiperWork\include\piper.h" "$Vendor\include" -Force
 Copy-Item "$FunAsrWork\include\funasrruntime.h" "$Vendor\include" -Force
 $DependencyLibs = @("$Vendor\lib\onnxruntime.lib")
+$DependencyLibs += @(Get-ChildItem "$OrtBuild" -Recurse -File | Where-Object {
+  $_.Name -match '^re2.*\.lib$'
+} | ForEach-Object { $_.FullName })
 $DependencyLibs += @(Get-ChildItem "$BuildRoot\piper", "$BuildRoot\funasr" -Recurse -File -Filter "*.lib" | Where-Object {
   $_.Name -notmatch "test|benchmark"
 } | ForEach-Object { $_.FullName })

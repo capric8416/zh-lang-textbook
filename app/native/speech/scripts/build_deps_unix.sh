@@ -68,8 +68,26 @@ if ! grep -q '^#include <cstdint>$' "$optimizer_api"; then
   rm -f "$optimizer_api.bak"
 fi
 
-ort_args=(--config Release --parallel --skip_tests --compile_no_warning_as_error)
+# The Ubuntu 20.04 image's clang does not recognize -mavxvnni. ORT's MLAS
+# condition assumes every non-GCC compiler supports it, so restrict that flag
+# to GCC versions known to implement it; AVX2 remains enabled for clang.
+mlas_cmake="$ort_source/cmake/onnxruntime_mlas.cmake"
+sed -i.bak \
+  's/if(NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" OR CMAKE_CXX_COMPILER_VERSION VERSION_GREATER "11")/if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER "11")/' \
+  "$mlas_cmake"
+rm -f "$mlas_cmake.bak"
+
+# --skip_tests prevents test execution, but ONNX Runtime otherwise still adds
+# and compiles the large onnxruntime_test_all target. Disable those targets at
+# CMake configuration time as well; this build only needs the runtime library.
+ort_args=(
+  --config Release --parallel --skip_tests
+  --cmake_extra_defines
+  onnxruntime_BUILD_UNIT_TESTS=OFF
+  onnxruntime_BUILD_BENCHMARKS=OFF
+)
 cmake_platform_args=()
+funasr_platform_args=()
 case "$target" in
   linux-x64)
     ort_args+=(--build_dir "$ort_build")
@@ -78,6 +96,7 @@ case "$target" in
     arch="${target#macos-}"
     ort_args+=(--build_dir "$ort_build" --osx_arch "$arch")
     cmake_platform_args+=("-DCMAKE_OSX_ARCHITECTURES=$arch")
+    funasr_platform_args+=("-DCMAKE_CXX_FLAGS=-Wno-deprecated-declarations")
     ;;
   ios-arm64)
     ort_args+=(--build_dir "$ort_build" --ios --apple_sysroot iphoneos \
@@ -85,6 +104,7 @@ case "$target" in
     cmake_platform_args+=(
       -DCMAKE_SYSTEM_NAME=iOS -DCMAKE_OSX_SYSROOT=iphoneos
       -DCMAKE_OSX_ARCHITECTURES=arm64 -DCMAKE_OSX_DEPLOYMENT_TARGET=13.0)
+    funasr_platform_args+=("-DCMAKE_CXX_FLAGS=-Wno-deprecated-declarations")
     ;;
   android-arm64-v8a)
     : "${ANDROID_NDK_HOME:?ANDROID_NDK_HOME is required}"
@@ -99,6 +119,10 @@ case "$target" in
     ;;
   *) echo "Unsupported target: $target" >&2; exit 2 ;;
 esac
+
+if [[ "$(id -u)" -eq 0 ]]; then
+  ort_args+=(--allow_running_as_root)
+fi
 
 if [[ ! -f "$build_root/onnxruntime.done" ]]; then
   "$ort_source/build.sh" "${ort_args[@]}"
@@ -160,7 +184,8 @@ rm -f "$piper_work/CMakeLists.txt.bak"
 # First combine ORT components so find_library sees a conventional archive.
 ort_archives=()
 while IFS= read -r archive; do ort_archives+=("$archive"); done < <(
-  find "$ort_build" -path '*/Release/*.a' -type f | sort
+  find "$ort_build" -name '*.a' -type f \
+    ! -name '*test*' ! -name '*benchmark*' | sort
 )
 if (( ${#ort_archives[@]} == 0 )); then
   echo "No static ONNX Runtime archives found" >&2
@@ -176,6 +201,12 @@ else
     echo 'end'
   } | (cd "$vendor/lib" && ar -M)
 fi
+re2_archive="$(find "$ort_build" -type f -iname '*re2*.a' | head -n 1)"
+if [[ -z "$re2_archive" ]]; then
+  echo "No static RE2 archive found under $ort_build" >&2
+  exit 1
+fi
+cp "$re2_archive" "$vendor/lib/libre2.a"
 
 cmake -S "$piper_work" -B "$build_root/piper" -G Ninja \
   -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF \
@@ -189,6 +220,22 @@ rm -rf "$funasr_work"
 rm -rf "$build_root/funasr"
 rm -f "$vendor/include/funasrruntime.h"
 cp -R "$funasr_source" "$funasr_work"
+# FunASR's Apple guard accidentally omits MODEL_PARA's definition while
+# compiling OfflineStream. Keep the ITN implementation platform-specific, but
+# make the shared model-type constants available on every platform.
+offline_stream="$funasr_work/include/offline-stream.h"
+perl -0pi.bak -e \
+  's/#if !defined\(__APPLE__\)\n#include "itn-model\.h"\n#include "com-define\.h"\n#endif/#if !defined(__APPLE__)\n#include "itn-model.h"\n#endif\n#include "com-define.h"/' \
+  "$offline_stream"
+rm -f "$offline_stream.bak"
+# libc++ removed the deprecated std::ptr_fun adaptor; this header is compiled
+# as C++17, so use equivalent lambdas for both trim helpers.
+limonp_string_util="$funasr_work/third_party/jieba/include/limonp/StringUtil.hpp"
+sed -i.bak \
+  -e 's/std::not1(std::ptr_fun<unsigned, bool>(IsSpace))/[](unsigned c) { return !IsSpace(c); }/g' \
+  -e 's/std::not1(std::bind2nd(std::equal_to<char>(), x))/[x](char c) { return c != x; }/g' \
+  "$limonp_string_util"
+rm -f "$limonp_string_util.bak"
 openfst_header="$funasr_work/third_party/openfst/src/include/fst/fst.h"
 sed -i.bak \
   -e 's/isymbols_ = impl\.isymbols_ ? impl\.isymbols_->Copy() : nullptr;/isymbols_.reset(impl.isymbols_ ? impl.isymbols_->Copy() : nullptr);/' \
@@ -206,6 +253,14 @@ funasr_util="$funasr_work/src/util.h"
 perl -0pi.bak -e \
   's/^#define UTIL_H$/#define UTIL_H\n#include <cstdint>/m' "$funasr_util"
 rm -f "$funasr_util.bak"
+funasr_tensor="$funasr_work/src/tensor.h"
+sed -i.bak 's/aligned_free(buff)/AlignedFree(buff)/g' "$funasr_tensor"
+rm -f "$funasr_tensor.bak"
+funasr_alignedmem="$funasr_work/src/alignedmem.cpp"
+perl -0pi.bak -e \
+  's/^#include "precomp\.h"/#include "precomp.h"\n#include <cstdint>/m; s/\(size_t\)\(p1\)/(uintptr_t)(p1)/' \
+  "$funasr_alignedmem"
+rm -f "$funasr_alignedmem.bak"
 sed -i.bak 's/add_library(funasr SHARED/add_library(funasr STATIC/' \
   "$funasr_work/src/CMakeLists.txt"
 rm -f "$funasr_work/src/CMakeLists.txt.bak"
@@ -215,7 +270,8 @@ cmake -S "$funasr_work" -B "$build_root/funasr" -G Ninja \
   -DCMAKE_CXX_STANDARD=17 \
   -DONNXRUNTIME_DIR="$vendor" \
   -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
-  -DENABLE_FFMPEG=OFF -DFUNASR_BUILD_TESTS=OFF "${cmake_platform_args[@]}"
+  -DENABLE_FFMPEG=OFF -DFUNASR_BUILD_TESTS=OFF \
+  "${cmake_platform_args[@]}" "${funasr_platform_args[@]}"
 cmake --build "$build_root/funasr" --target funasr --parallel
 
 cp "$piper_work/include/piper.h" "$vendor/include/"
