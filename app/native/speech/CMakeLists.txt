@@ -36,6 +36,7 @@ endif()
 
 add_library(zh_speech ${ZH_SPEECH_LIBRARY_TYPE} speech_bridge.cpp)
 target_compile_features(zh_speech PRIVATE cxx_std_17)
+target_compile_definitions(zh_speech PRIVATE BUILDING_LIBPIPER)
 target_include_directories(zh_speech PRIVATE
   "${CMAKE_CURRENT_SOURCE_DIR}"
   "${ZH_SPEECH_VENDOR_ROOT}/include"
@@ -58,7 +59,9 @@ if(UNIX AND NOT APPLE AND NOT ANDROID)
   target_link_libraries(zh_speech PRIVATE m pthread dl)
 elseif(ANDROID)
   target_link_libraries(zh_speech PRIVATE log android atomic m)
+elseif(WIN32)
+  target_link_libraries(zh_speech PRIVATE dxcore)
 elseif(APPLE)
   target_link_libraries(zh_speech PRIVATE
-    "-framework Foundation" "-framework Accelerate")
+    "-framework Foundation" "-framework CoreFoundation" "-framework Accelerate")
 endif()

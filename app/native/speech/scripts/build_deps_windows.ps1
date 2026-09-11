@@ -83,9 +83,14 @@ if (Test-Path $PiperWork) { Remove-Item -Recurse -Force $PiperWork }
 Copy-Item "$PiperSource\libpiper" $PiperWork -Recurse
 Copy-Item "$PiperSource\setup.py" "$BuildRoot\setup.py" -Force
 $PiperCmake = "$PiperWork\CMakeLists.txt"
-(Get-Content $PiperCmake -Raw).Replace(
+$PiperCmakeContents = (Get-Content $PiperCmake -Raw).Replace(
   "cmake_minimum_required(VERSION 3.26)", "cmake_minimum_required(VERSION 3.16)"
-).Replace("add_library(piper SHARED", "add_library(piper STATIC") | Set-Content $PiperCmake
+).Replace("add_library(piper SHARED", "add_library(piper STATIC").Replace(
+  "enable_clang_tidy(piper)",
+  "target_compile_definitions(piper PUBLIC BUILDING_LIBPIPER)`r`n`r`noption(BUILD_PIPER_EXECUTABLE \"Build the Piper command-line executable\" OFF)`r`nif(BUILD_PIPER_EXECUTABLE)`r`n  add_subdirectory(src/main)`r`nendif()"
+)
+$PiperCmakeContents = $PiperCmakeContents -replace '(?m)^# ---- piper exe ---\r?\nadd_subdirectory\(src/main\)\r?\n?', ''
+Set-Content $PiperCmake $PiperCmakeContents
 $PiperPhonemizer = Join-Path $PiperWork "src\chinese_phonemizer.cpp"
 $PiperPhonemizerContents = Get-Content $PiperPhonemizer -Raw
 $PatchedPiperPhonemizer = $PiperPhonemizerContents `
@@ -97,7 +102,7 @@ if ($PatchedPiperPhonemizer -eq $PiperPhonemizerContents -or
 }
 Set-Content $PiperPhonemizer $PatchedPiperPhonemizer -NoNewline
 cmake -S $PiperWork -B "$BuildRoot\piper" -G Ninja `
-  -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF `
+  -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DBUILD_PIPER_EXECUTABLE=OFF `
   -DCMAKE_POSITION_INDEPENDENT_CODE=ON -DONNXRUNTIME_DIR="$Vendor"
 cmake --build "$BuildRoot\piper" --parallel
 

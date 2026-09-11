@@ -124,6 +124,10 @@ sed -i.bak 's/cmake_minimum_required(VERSION 3.26)/cmake_minimum_required(VERSIO
   "$piper_work/CMakeLists.txt"
 sed -i.bak 's/add_library(piper SHARED/add_library(piper STATIC/' \
   "$piper_work/CMakeLists.txt"
+sed -i.bak 's/enable_clang_tidy(piper)/target_compile_definitions(piper PUBLIC BUILDING_LIBPIPER)\n\noption(BUILD_PIPER_EXECUTABLE "Build the Piper command-line executable" OFF)\nif(BUILD_PIPER_EXECUTABLE)\n  add_subdirectory(src\/main)\nendif()/' \
+  "$piper_work/CMakeLists.txt"
+sed -i.bak '/# ---- piper exe ---/{N; s/# ---- piper exe ---\nadd_subdirectory(src\/main)//;}' \
+  "$piper_work/CMakeLists.txt"
 rm -f "$piper_work/CMakeLists.txt.bak"
 patch --batch --forward -p1 -d "$piper_work" \
   -i "$speech_dir/patches/piper-pinyin-whitespace.patch"
@@ -175,6 +179,7 @@ fi
 
 cmake -S "$piper_work" -B "$build_root/piper" -G Ninja \
   -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF \
+  -DBUILD_PIPER_EXECUTABLE=OFF \
   -DCMAKE_POSITION_INDEPENDENT_CODE=ON \
   -DONNXRUNTIME_DIR="$vendor" "${cmake_platform_args[@]}"
 cmake --build "$build_root/piper" --parallel
