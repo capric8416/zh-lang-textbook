@@ -4,7 +4,12 @@
 
 - Piper (`zh_CN-xiao_ya-medium`) for numeric-pinyin TTS;
 - FunASR Paraformer-large INT8 and FSMN-VAD for the experimental reading check;
-- one statically linked ONNX Runtime shared by both engines.
+- one statically linked ONNX Runtime shared by both engines;
+- ONNX Runtime's RE2 dependency, built and staged as an explicit native node.
+
+The speech dependency order is `ONNX Runtime -> RE2 -> Piper/FunASR ->
+archive -> validate`. `mise run ort` builds both ONNX Runtime and RE2, while
+`mise run re2` can rebuild and validate that dependency node independently.
 
 The final platform library is dynamic (`.so`, `.dll`, `.dylib`) because Dart
 loads it through FFI. Piper, FunASR, ONNX Runtime and their supporting native

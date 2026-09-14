@@ -87,7 +87,7 @@ jobs:
             app/native/ocr/vendor
             app/native/speech/.build-deps
             app/native/speech/vendor
-          key: native-ubuntu20-${{ hashFiles('app/native/ocr/scripts/**', 'app/native/ocr/CMakeLists.txt', 'app/native/speech/scripts/**', 'app/native/speech/CMakeLists.txt', 'app/native/speech/VERSIONS.md') }}
+          key: native-ubuntu20-${{ hashFiles('src/zh_native_build/**', 'pyproject.toml', 'mise.toml', 'app/native/ocr/CMakeLists.txt', 'app/native/speech/CMakeLists.txt') }}
 
       - name: Cache speech models
         uses: actions/cache@v4
@@ -107,10 +107,7 @@ jobs:
         run: bash scripts/download_speech_models.sh
 
       - name: Build static Linux OCR dependencies
-        run: native/ocr/scripts/build_deps_unix.sh linux-x64
-
-      - name: Build static Linux speech dependencies
-        run: native/speech/scripts/build_deps_unix.sh linux-x64
+        run: uv run python -m zh_native_build all --target linux-x64
 
       - name: Build Linux release
         run: flutter build linux --release
@@ -133,10 +130,7 @@ jobs:
           fi
 
       - name: Build static Android OCR dependencies
-        run: native/ocr/scripts/build_deps_unix.sh android-arm64-v8a
-
-      - name: Build static Android speech dependencies
-        run: native/speech/scripts/build_deps_unix.sh android-arm64-v8a
+        run: uv run python -m zh_native_build all --target android-arm64-v8a
 
       - name: Build Android arm64 APK
         run: flutter build apk --release --target-platform android-arm64
@@ -210,7 +204,7 @@ jobs:
             app/native/ocr/vendor
             app/native/speech/.build-deps
             app/native/speech/vendor
-          key: native-windows-${{ hashFiles('app/native/ocr/scripts/**', 'app/native/ocr/CMakeLists.txt', 'app/native/speech/scripts/**', 'app/native/speech/CMakeLists.txt', 'app/native/speech/VERSIONS.md') }}
+          key: native-windows-${{ hashFiles('src/zh_native_build/**', 'pyproject.toml', 'mise.toml', 'app/native/ocr/CMakeLists.txt', 'app/native/speech/CMakeLists.txt') }}
 
       - name: Cache speech models
         uses: actions/cache@v4
@@ -224,11 +218,7 @@ jobs:
 
       - name: Build static OCR dependencies
         shell: pwsh
-        run: ./native/ocr/scripts/build_deps_windows.ps1
-
-      - name: Build static speech dependencies
-        shell: pwsh
-        run: ./native/speech/scripts/build_deps_windows.ps1
+        run: uv run python -m zh_native_build all --target windows-x64
 
       - name: Get dependencies and build
         shell: pwsh
@@ -303,7 +293,7 @@ jobs:
             app/native/ocr/vendor
             app/native/speech/.build-deps
             app/native/speech/vendor
-          key: native-apple-${{ runner.arch }}-${{ hashFiles('app/native/ocr/scripts/**', 'app/native/ocr/CMakeLists.txt', 'app/native/speech/scripts/**', 'app/native/speech/CMakeLists.txt', 'app/native/speech/VERSIONS.md') }}
+          key: native-apple-${{ runner.arch }}-${{ hashFiles('src/zh_native_build/**', 'pyproject.toml', 'mise.toml', 'app/native/ocr/CMakeLists.txt', 'app/native/speech/CMakeLists.txt') }}
 
       - name: Cache speech models
         uses: actions/cache@v4
@@ -319,8 +309,7 @@ jobs:
 
       - name: Build static macOS dependencies and native dylibs
         run: |
-          native/ocr/scripts/build_deps_unix.sh "macos-$(uname -m)"
-          native/speech/scripts/build_deps_unix.sh "macos-$(uname -m)"
+          uv run python -m zh_native_build all --target "macos-$(uname -m)"
           cmake -S native/ocr -B native/ocr/build-macos -G Ninja \
             -DCMAKE_BUILD_TYPE=Release \
             -DZH_OCR_USE_OPENMP=OFF \
@@ -355,8 +344,7 @@ jobs:
 
       - name: Build static iOS dependencies and combined OCR archive
         run: |
-          native/ocr/scripts/build_deps_unix.sh ios-arm64
-          native/speech/scripts/build_deps_unix.sh ios-arm64
+          uv run python -m zh_native_build all --target ios-arm64
           cmake -S native/ocr -B native/ocr/build-ios -G Ninja \
             -DCMAKE_BUILD_TYPE=Release \
             -DCMAKE_SYSTEM_NAME=iOS \

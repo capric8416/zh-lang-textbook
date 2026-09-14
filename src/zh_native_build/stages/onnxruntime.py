@@ -1,0 +1,101 @@
+"""Build the pinned static ONNX Runtime dependency."""
+
+import os
+import platform
+import shutil
+from pathlib import Path
+
+from ..config import BuildConfig
+from ..runner import run
+
+
+ORT_NAME = "onnxruntime-v1.22.0"
+
+
+def _archiver(config: BuildConfig) -> str:
+    if config.target == "android-arm64-v8a":
+        prebuilt = Path(os.environ["ANDROID_NDK_HOME"]) / "toolchains/llvm/prebuilt"
+        candidates = sorted(prebuilt.glob("*/bin/llvm-ar"))
+        if not candidates:
+            raise RuntimeError(f"Android llvm-ar not found under {prebuilt}")
+        return str(candidates[0])
+    return shutil.which("ar") or "ar"
+
+
+def _component_archives(config: BuildConfig, release: Path) -> list[Path]:
+    if config.target == "windows-x64":
+        return sorted(
+            path for path in release.rglob("onnxruntime*.lib")
+            if "test" not in path.name.lower()
+        )
+    return sorted(release.glob("libonnxruntime_*.a"))
+
+
+def build(config: BuildConfig) -> Path:
+    source = config.speech / ".build-deps" / "sources" / ORT_NAME
+    build_dir = config.speech / ".build-deps" / config.target / "onnxruntime"
+    done = build_dir.parent / "onnxruntime.done"
+    release = build_dir / "Release"
+    staged_name = "onnxruntime.lib" if config.target == "windows-x64" else "libonnxruntime.a"
+    staged = config.speech_vendor / "lib" / staged_name
+    if done.exists() and _component_archives(config, release) and staged.exists():
+        return build_dir
+    if done.exists():
+        done.unlink()
+
+    command = [
+        source / ("build.bat" if config.target == "windows-x64" else "build.sh"),
+        "--config", "Release", "--build_dir", build_dir,
+        "--skip_tests",
+        "--cmake_extra_defines",
+        "onnxruntime_BUILD_UNIT_TESTS=OFF",
+        "onnxruntime_BUILD_BENCHMARKS=OFF",
+    ]
+    if config.target == "android-arm64-v8a":
+        command[5:5] = ["--parallel", "2"]
+    else:
+        command[5:5] = ["--parallel"]
+    if config.target == "windows-x64":
+        command += ["--cmake_generator", "Visual Studio 17 2022"]
+    elif config.target.startswith("macos-"):
+        command += ["--osx_arch", config.target.removeprefix("macos-")]
+    elif config.target == "ios-arm64":
+        command += ["--ios", "--apple_sysroot", "iphoneos", "--osx_arch", "arm64",
+                    "--apple_deploy_target", "13.0"]
+    elif config.target == "android-arm64-v8a":
+        command += ["--android", "--android_sdk_path", os.environ["ANDROID_SDK_ROOT"],
+                    "--android_ndk_path", os.environ["ANDROID_NDK_HOME"],
+                    "--android_abi", "arm64-v8a", "--android_api", "24"]
+    elif config.target != "linux-x64":
+        raise ValueError(f"unsupported target: {config.target}")
+
+    if platform.system() == "Linux" and os.geteuid() == 0:
+        command.append("--allow_running_as_root")
+    run(command, cwd=source)
+    # Stage a single ORT archive for Piper/FunASR consumers.
+    archives = _component_archives(config, release)
+    if not archives:
+        raise RuntimeError(f"ONNX Runtime produced no static archives under {release}")
+    vendor = config.speech_vendor
+    (vendor / "lib").mkdir(parents=True, exist_ok=True)
+    (vendor / "include").mkdir(parents=True, exist_ok=True)
+    if config.target == "windows-x64":
+        run(["lib.exe", "/NOLOGO", f"/OUT:{staged}", *archives], cwd=config.app)
+    else:
+        script = "create " + str(staged) + "\n" + "\n".join(f"addlib {p}" for p in archives) + "\nsave\nend\n"
+        run([_archiver(config), "-M"], cwd=config.app, input_text=script)
+    for header in release.glob("*.h"):
+        shutil.copy2(header, vendor / "include" / header.name)
+    for header in (source / "include").glob("*.h"):
+        target = vendor / "include" / header.name
+        if not target.exists():
+            shutil.copy2(header, target)
+    fallback = config.speech / "vendor/linux-x64/include"
+    if config.target == "android-arm64-v8a" and fallback.exists():
+        for header in fallback.glob("*.h"):
+            target = vendor / "include" / header.name
+            if not target.exists():
+                shutil.copy2(header, target)
+    done.parent.mkdir(parents=True, exist_ok=True)
+    done.touch()
+    return build_dir

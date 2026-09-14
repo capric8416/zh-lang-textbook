@@ -72,7 +72,8 @@ if(NCNN_CONFIGS AND OPENCV_CONFIGS)
   find_package(OpenCV 4.11 CONFIG REQUIRED COMPONENTS core imgproc imgcodecs
     NO_DEFAULT_PATH PATHS "${OpenCV_DIR}")
   target_include_directories(zh_ocr PRIVATE ${OpenCV_INCLUDE_DIRS})
-  target_link_libraries(zh_ocr PRIVATE ncnn ${OpenCV_LIBS} ${CMAKE_DL_LIBS})
+  target_link_libraries(zh_ocr PRIVATE ncnn ${OpenCV_LIBS}
+    "${ZH_OCR_VENDOR_ROOT}/lib/libtegra_hal.a" ${CMAKE_DL_LIBS})
 else()
   # Backward-compatible fallback for the original manually copied Linux bundle.
   target_link_libraries(zh_ocr PRIVATE

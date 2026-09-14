@@ -17,10 +17,10 @@ ignored by Git.
 Run from the `app` directory:
 
 ```sh
-native/ocr/scripts/build_deps_unix.sh linux-x64
-native/ocr/scripts/build_deps_unix.sh android-arm64-v8a
-native/ocr/scripts/build_deps_unix.sh macos-x86_64 # or macos-arm64
-native/ocr/scripts/build_deps_unix.sh ios-arm64
+uv run python -m zh_native_build ocrdeps --target linux-x64
+uv run python -m zh_native_build ocrdeps --target android-arm64-v8a
+uv run python -m zh_native_build ocrdeps --target macos-x86_64 # or macos-arm64
+uv run python -m zh_native_build ocrdeps --target ios-arm64
 ```
 
 Android requires `ANDROID_NDK_HOME`. The CI build uses NDK 28.2.13676358 and
@@ -32,7 +32,7 @@ left to the distributor.
 From a Visual Studio 2022 PowerShell environment:
 
 ```powershell
-./native/ocr/scripts/build_deps_windows.ps1
+uv run python -m zh_native_build ocrdeps --target windows-x64
 ```
 
 The Flutter Linux and Windows CMake projects build and bundle the OCR shared

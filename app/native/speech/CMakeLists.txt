@@ -31,7 +31,7 @@ endif()
 if(NOT EXISTS "${ZH_SPEECH_DEPS}")
   message(FATAL_ERROR
     "Static speech dependencies are missing at ${ZH_SPEECH_DEPS}. "
-    "Run native/speech/scripts/build_deps_* first.")
+    "Run TARGET=android-arm64-v8a mise run native (or the matching target) first.")
 endif()
 
 add_library(zh_speech ${ZH_SPEECH_LIBRARY_TYPE} speech_bridge.cpp)
@@ -58,11 +58,6 @@ set_target_properties(zh_speech PROPERTIES
   POSITION_INDEPENDENT_CODE YES
 )
 target_link_libraries(zh_speech PRIVATE "${ZH_SPEECH_DEPS}")
-if(WIN32 AND EXISTS "${ZH_SPEECH_VENDOR_ROOT}/lib/re2.lib")
-  target_link_libraries(zh_speech PRIVATE "${ZH_SPEECH_VENDOR_ROOT}/lib/re2.lib")
-elseif(NOT WIN32 AND EXISTS "${ZH_SPEECH_VENDOR_ROOT}/lib/libre2.a")
-  target_link_libraries(zh_speech PRIVATE "${ZH_SPEECH_VENDOR_ROOT}/lib/libre2.a")
-endif()
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux" OR ANDROID)
   target_link_options(zh_speech PRIVATE "LINKER:-z,noexecstack")
 endif()

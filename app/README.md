@@ -36,3 +36,25 @@ flutter run -d linux
 ```
 
 Windows 应用需在 Windows 上构建；macOS 和 iOS 应用需在 macOS 上构建。
+
+## 全量清理并重建
+
+原生依赖由仓库根目录的 Python adapter 管理。清理命令只删除指定目标的
+编译输出、vendor 归档和 Flutter 生成物，默认保留源码 checkout 与语音模型缓存：
+
+```bash
+cd ..
+TARGET=android-arm64-v8a mise run clean
+TARGET=android-arm64-v8a mise run native
+```
+
+可用 `MODULE=speech`、`MODULE=ocr` 或 `MODULE=flutter` 只清理一个模块；
+需要连依赖源码一起删除时，直接调用：
+
+```bash
+uv run python -m zh_native_build clean \
+  --target linux-x64 --module all --purge-sources
+```
+
+清理脚本覆盖 Linux、Windows、macOS、Android 和 iOS adapter 的目标目录，
+不会删除 `.dart_tool/speech-models-v2` 中已下载的语音模型。

@@ -11,7 +11,7 @@ set(VENDOR_ROOT "${SPEECH_ROOT}/vendor/linux-x64" CACHE PATH
 set(SPEECH_DEPS "${VENDOR_ROOT}/lib/libzh_speech_deps.a")
 if(NOT EXISTS "${SPEECH_DEPS}")
   message(FATAL_ERROR
-    "Missing ${SPEECH_DEPS}; run native/speech/scripts/build_deps_unix.sh linux-x64")
+    "Missing ${SPEECH_DEPS}; run: uv run python -m zh_native_build speech --target linux-x64")
 endif()
 
 find_package(Threads REQUIRED)

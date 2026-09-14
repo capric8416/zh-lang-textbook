@@ -5,10 +5,11 @@
 - FunASR: `modelscope/FunASR` commit
   `231ec5dda739c83f35e59e875736cde3ef1af161` (MIT)
 - ONNX Runtime: `v1.22.0` (MIT)
+- RE2: revision pinned transitively by ONNX Runtime `v1.22.0` (BSD-3-Clause)
 - Piper voice: `zh_CN-xiao_ya-medium` (non-commercial dataset; see the bundled
   `MODEL_CARD`)
 - ASR: `funasr/Paraformer-large`, quantized ONNX (Apache-2.0)
 - VAD: `funasr/fsmn-vad-onnx` (model license is bundled with the model)
 
-The dependency build scripts consume only these revisions. Updating any entry
+The Python dependency adapters consume only these revisions. Updating any entry
 requires rebuilding every target archive and checking the licenses again.
