@@ -66,6 +66,14 @@ def build(config: BuildConfig) -> Path:
                     destination.unlink()
             shutil.move(str(item), str(destination))
         lib64.rmdir()
+    # The installed ncnn/OpenCV package files contain absolute paths produced
+    # before the lib64 -> lib normalization. Keep those imported targets in
+    # sync with the portable layout consumed by the Flutter CMake project.
+    for cmake_file in vendor.rglob("*.cmake"):
+        text = cmake_file.read_text()
+        normalized = text.replace("/lib64/", "/lib/")
+        if normalized != text:
+            cmake_file.write_text(normalized)
     # Android OpenCV installs its archives below sdk/native/staticlibs; the
     # Flutter OCR CMakeLists consumes the portable vendor/lib layout.
     android_lib = vendor / "sdk" / "native" / "staticlibs" / "arm64-v8a"

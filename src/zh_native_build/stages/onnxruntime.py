@@ -31,6 +31,26 @@ def _component_archives(config: BuildConfig, release: Path) -> list[Path]:
     return sorted(release.glob("libonnxruntime_*.a"))
 
 
+def _stage_headers(config: BuildConfig, source: Path, release: Path) -> None:
+    """Stage the public ORT headers in the flat layout expected by consumers.
+
+    The ORT source tree keeps the C/C++ API below
+    ``include/onnxruntime/core/session`` while Piper includes
+    ``<onnxruntime_cxx_api.h>`` directly.  Official ORT packages flatten these
+    public session headers, so reproduce that layout in our vendor directory.
+    """
+    vendor_include = config.speech_vendor / "include"
+    vendor_include.mkdir(parents=True, exist_ok=True)
+    for header in release.glob("*.h"):
+        shutil.copy2(header, vendor_include / header.name)
+    source_include = source / "include"
+    for header in source_include.glob("*.h"):
+        shutil.copy2(header, vendor_include / header.name)
+    session_include = source_include / "onnxruntime/core/session"
+    for header in session_include.glob("*.h"):
+        shutil.copy2(header, vendor_include / header.name)
+
+
 def build(config: BuildConfig) -> Path:
     source = config.speech / ".build-deps" / "sources" / ORT_NAME
     build_dir = config.speech / ".build-deps" / config.target / "onnxruntime"
@@ -39,6 +59,7 @@ def build(config: BuildConfig) -> Path:
     staged_name = "onnxruntime.lib" if config.target == "windows-x64" else "libonnxruntime.a"
     staged = config.speech_vendor / "lib" / staged_name
     if done.exists() and _component_archives(config, release) and staged.exists():
+        _stage_headers(config, source, release)
         return build_dir
     if done.exists():
         done.unlink()
@@ -90,12 +111,7 @@ def build(config: BuildConfig) -> Path:
     else:
         script = "create " + str(staged) + "\n" + "\n".join(f"addlib {p}" for p in archives) + "\nsave\nend\n"
         run([_archiver(config), "-M"], cwd=config.app, input_text=script)
-    for header in release.glob("*.h"):
-        shutil.copy2(header, vendor / "include" / header.name)
-    for header in (source / "include").glob("*.h"):
-        target = vendor / "include" / header.name
-        if not target.exists():
-            shutil.copy2(header, target)
+    _stage_headers(config, source, release)
     fallback = config.speech / "vendor/linux-x64/include"
     if config.target == "android-arm64-v8a" and fallback.exists():
         for header in fallback.glob("*.h"):

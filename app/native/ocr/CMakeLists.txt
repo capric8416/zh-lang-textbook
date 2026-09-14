@@ -72,8 +72,12 @@ if(NCNN_CONFIGS AND OPENCV_CONFIGS)
   find_package(OpenCV 4.11 CONFIG REQUIRED COMPONENTS core imgproc imgcodecs
     NO_DEFAULT_PATH PATHS "${OpenCV_DIR}")
   target_include_directories(zh_ocr PRIVATE ${OpenCV_INCLUDE_DIRS})
-  target_link_libraries(zh_ocr PRIVATE ncnn ${OpenCV_LIBS}
-    "${ZH_OCR_VENDOR_ROOT}/lib/libtegra_hal.a" ${CMAKE_DL_LIBS})
+  target_link_libraries(zh_ocr PRIVATE ncnn ${OpenCV_LIBS} ${CMAKE_DL_LIBS})
+  # OpenCV's Android package may provide the Tegra HAL, but Linux and other
+  # desktop packages do not. It is optional and must not be a hard dependency.
+  if(EXISTS "${ZH_OCR_VENDOR_ROOT}/lib/libtegra_hal.a")
+    target_link_libraries(zh_ocr PRIVATE "${ZH_OCR_VENDOR_ROOT}/lib/libtegra_hal.a")
+  endif()
 else()
   # Backward-compatible fallback for the original manually copied Linux bundle.
   target_link_libraries(zh_ocr PRIVATE
