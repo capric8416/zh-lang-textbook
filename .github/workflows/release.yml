@@ -52,6 +52,7 @@ jobs:
           curl https://mise.run | sh
           export PATH="$HOME/.local/bin:$HOME/.local/share/mise/shims:$PATH"
           mise use -g python@latest
+          mise use -g uv@latest
           mise use -g cmake@3.31.6
           echo "$HOME/.local/bin" >> "$GITHUB_PATH"
           echo "$HOME/.local/share/mise/shims" >> "$GITHUB_PATH"
@@ -180,6 +181,7 @@ jobs:
           $env:MISE_DATA_DIR = $data
           $env:Path = "$data\shims;$miseDir;$env:Path"
           & $mise use -g python@latest
+          & $mise use -g uv@latest
           & $mise use -g cmake@3.31.6
           Add-Content $env:GITHUB_ENV "MISE_DATA_DIR=$data"
           Add-Content $env:GITHUB_PATH "$miseDir"
@@ -262,6 +264,7 @@ jobs:
           curl https://mise.run | sh
           export PATH="$HOME/.local/bin:$HOME/.local/share/mise/shims:$PATH"
           mise use -g python@latest
+          mise use -g uv@latest
           mise use -g cmake@3.31.6
           echo "$HOME/.local/bin" >> "$GITHUB_PATH"
           echo "$HOME/.local/share/mise/shims" >> "$GITHUB_PATH"

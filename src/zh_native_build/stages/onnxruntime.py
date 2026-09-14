@@ -55,6 +55,12 @@ def build(config: BuildConfig) -> Path:
         command[5:5] = ["--parallel", "2"]
     else:
         command[5:5] = ["--parallel"]
+        # ORT's GCC build enables -Werror by default.  GCC 14 reports a
+        # maybe-uninitialized diagnostic in the upstream NCHWc optimizer;
+        # this is a third-party warning and must not fail the dependency build.
+        # Android is excluded because its bundled CMake 3.22 does not support
+        # the flag emitted by ORT's build.py.
+        command += ["--compile_no_warning_as_error"]
     if config.target == "windows-x64":
         command += ["--cmake_generator", "Visual Studio 17 2022"]
     elif config.target.startswith("macos-"):
