@@ -57,7 +57,8 @@ def patch_piper(source: Path, work: Path) -> None:
             "    \"-DCMAKE_SYSTEM_NAME=iOS\"\n"
             "    \"-DCMAKE_OSX_SYSROOT=${CMAKE_OSX_SYSROOT}\"\n"
             "    \"-DCMAKE_OSX_ARCHITECTURES=${CMAKE_OSX_ARCHITECTURES}\"\n"
-            "    \"-DCMAKE_OSX_DEPLOYMENT_TARGET=${CMAKE_OSX_DEPLOYMENT_TARGET}\")\n"
+            "    \"-DCMAKE_OSX_DEPLOYMENT_TARGET=${CMAKE_OSX_DEPLOYMENT_TARGET}\"\n"
+            "    \"-DCMAKE_MACOSX_BUNDLE=OFF\")\n"
             "endif()\n\n"
             "ExternalProject_Add(espeak_ng_external", required=False)
     replace(work / "CMakeLists.txt",
