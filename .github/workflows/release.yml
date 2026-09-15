@@ -107,8 +107,8 @@ jobs:
       - name: Download pinned offline speech models
         run: bash scripts/download_speech_models.sh
 
-      - name: Build static Linux OCR dependencies
-        run: uv run python -m zh_native_build all --target linux-x64
+      - name: Build static Linux native dependencies
+        run: TARGET=linux-x64 mise run native
 
       - name: Build Linux release
         run: flutter build linux --release
@@ -130,8 +130,8 @@ jobs:
             exit 1
           fi
 
-      - name: Build static Android OCR dependencies
-        run: uv run python -m zh_native_build all --target android-arm64-v8a
+      - name: Build static Android native dependencies
+        run: TARGET=android-arm64-v8a mise run native
 
       - name: Build Android arm64 APK
         run: flutter build apk --release --target-platform android-arm64
@@ -218,9 +218,11 @@ jobs:
         shell: bash
         run: bash scripts/download_speech_models.sh
 
-      - name: Build static OCR dependencies
+      - name: Build static Windows native dependencies
         shell: pwsh
-        run: uv run python -m zh_native_build all --target windows-x64
+        run: |
+          $env:TARGET = "windows-x64"
+          mise run native
 
       - name: Get dependencies and build
         shell: pwsh
@@ -312,7 +314,7 @@ jobs:
 
       - name: Build static macOS dependencies and native dylibs
         run: |
-          uv run python -m zh_native_build all --target "macos-$(uname -m)"
+          TARGET="macos-$(uname -m)" mise run native
           cmake -S native/ocr -B native/ocr/build-macos -G Ninja \
             -DCMAKE_BUILD_TYPE=Release \
             -DZH_OCR_USE_OPENMP=OFF \
@@ -347,7 +349,7 @@ jobs:
 
       - name: Build static iOS dependencies and combined OCR archive
         run: |
-          uv run python -m zh_native_build all --target ios-arm64
+          TARGET=ios-arm64 mise run native
           cmake -S native/ocr -B native/ocr/build-ios -G Ninja \
             -DCMAKE_BUILD_TYPE=Release \
             -DCMAKE_SYSTEM_NAME=iOS \
