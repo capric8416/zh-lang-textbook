@@ -65,6 +65,10 @@ jobs:
 
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
+        with:
+          # The action's historical default includes the removed `tools`
+          # package, which makes sdkmanager fail on current repositories.
+          packages: "platform-tools"
 
       - name: Install Android NDK and Gradle CMake
         run: |

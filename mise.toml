@@ -5,52 +5,52 @@ cmake = "3.31.6"
 
 [tasks.native]
 description = "Build native OCR and speech dependencies"
-run = "uv run python -m zh_native_build all --target ${TARGET:-linux-x64}"
+run = "uv run python -m zh_native_build all --target {{ get_env(name='TARGET', default='linux-x64') }}"
 
 [tasks.clean]
 description = "Remove native and Flutter build outputs for a target"
-run = "uv run python -m zh_native_build clean --target ${TARGET:-linux-x64} --module ${MODULE:-all}"
+run = "uv run python -m zh_native_build clean --target {{ get_env(name='TARGET', default='linux-x64') }} --module {{ get_env(name='MODULE', default='all') }}"
 
 [tasks.checkout]
 description = "Checkout pinned native dependency sources"
-run = "uv run python -m zh_native_build checkout --target ${TARGET:-linux-x64}"
+run = "uv run python -m zh_native_build checkout --target {{ get_env(name='TARGET', default='linux-x64') }}"
 
 [tasks.patches]
 description = "Apply native dependency source patches"
-run = "uv run python -m zh_native_build patches --target ${TARGET:-linux-x64}"
+run = "uv run python -m zh_native_build patches --target {{ get_env(name='TARGET', default='linux-x64') }}"
 
 [tasks.ort]
 description = "Build static ONNX Runtime and its RE2 dependency"
-run = "uv run python -m zh_native_build ort --target ${TARGET:-linux-x64}"
+run = "uv run python -m zh_native_build ort --target {{ get_env(name='TARGET', default='linux-x64') }}"
 
 [tasks.re2]
 description = "Build and stage ONNX Runtime's static RE2 dependency"
-run = "uv run python -m zh_native_build re2 --target ${TARGET:-linux-x64}"
+run = "uv run python -m zh_native_build re2 --target {{ get_env(name='TARGET', default='linux-x64') }}"
 
 [tasks.piper]
 description = "Build static Piper"
-run = "uv run python -m zh_native_build piper --target ${TARGET:-linux-x64}"
+run = "uv run python -m zh_native_build piper --target {{ get_env(name='TARGET', default='linux-x64') }}"
 
 [tasks.funasr]
 description = "Build static FunASR"
-run = "uv run python -m zh_native_build funasr --target ${TARGET:-linux-x64}"
+run = "uv run python -m zh_native_build funasr --target {{ get_env(name='TARGET', default='linux-x64') }}"
 
 [tasks.ocrdeps]
 description = "Build static ncnn and OpenCV OCR dependencies"
-run = "uv run python -m zh_native_build ocrdeps --target ${TARGET:-linux-x64}"
+run = "uv run python -m zh_native_build ocrdeps --target {{ get_env(name='TARGET', default='linux-x64') }}"
 
 [tasks.archive]
 description = "Merge native static archives and write a manifest"
-run = "uv run python -m zh_native_build archive --target ${TARGET:-linux-x64}"
+run = "uv run python -m zh_native_build archive --target {{ get_env(name='TARGET', default='linux-x64') }}"
 
 [tasks.validate]
 description = "Validate native archives and exported symbols"
-run = "uv run python -m zh_native_build validate --target ${TARGET:-linux-x64}"
+run = "uv run python -m zh_native_build validate --target {{ get_env(name='TARGET', default='linux-x64') }}"
 
 [tasks.ocr]
 description = "Build OCR dependencies"
-run = "uv run python -m zh_native_build ocr --target ${TARGET:-linux-x64}"
+run = "uv run python -m zh_native_build ocr --target {{ get_env(name='TARGET', default='linux-x64') }}"
 
 [tasks.speech]
 description = "Build speech dependencies"
-run = "uv run python -m zh_native_build speech --target ${TARGET:-linux-x64}"
+run = "uv run python -m zh_native_build speech --target {{ get_env(name='TARGET', default='linux-x64') }}"

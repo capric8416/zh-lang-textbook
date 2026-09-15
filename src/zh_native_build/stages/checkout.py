@@ -34,9 +34,14 @@ def checkout_sources(root: Path) -> dict[str, str]:
             ["git", "-C", path, "rev-parse", "--verify", f"{source.revision}^{{commit}}"],
             text=True, capture_output=True,
         )
-        if result.returncode != 0:
+        fetched = result.returncode != 0
+        if fetched:
             run(["git", "-C", path, "fetch", "--depth", "1", "origin", source.revision])
-        checkout_ref = "FETCH_HEAD" if source.revision.startswith("v") else source.revision
+        # A shallow fetch of a tag/revision updates FETCH_HEAD but does not
+        # necessarily create a local tag or branch (notably OpenCV 4.11.0).
+        # Checkout FETCH_HEAD immediately after fetching; use the named ref
+        # only when it was already present locally.
+        checkout_ref = "FETCH_HEAD" if fetched else source.revision
         run(["git", "-C", path, "checkout", "-q", "--detach", checkout_ref])
         # FunASR and ONNX Runtime keep required headers/libraries in submodules.
         # Initialize them explicitly because this lightweight checkout does not
