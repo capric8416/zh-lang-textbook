@@ -28,16 +28,25 @@ def _component_archives(config: BuildConfig, release: Path) -> list[Path]:
             path for path in release.rglob("onnxruntime*.lib")
             if "test" not in path.name.lower()
         )
-    return sorted(release.glob("libonnxruntime_*.a"))
+    # Single-config generators place these archives directly in ``release``;
+    # Xcode uses configuration/platform subdirectories (for example
+    # ``Release-iphoneos``).  Search recursively so the iOS adapter can use
+    # the Xcode generator required by ORT's Apple build logic.
+    return sorted(
+        path for path in release.rglob("libonnxruntime_*.a")
+        if "test" not in path.name.lower()
+    )
 
 
 def _stage_headers(config: BuildConfig, source: Path, release: Path) -> None:
-    """Stage the public ORT headers in the flat layout expected by consumers.
+    """Stage the public ORT headers in both layouts expected by consumers.
 
     The ORT source tree keeps the C/C++ API below
     ``include/onnxruntime/core/session`` while Piper includes
     ``<onnxruntime_cxx_api.h>`` directly.  Official ORT packages flatten these
     public session headers, so reproduce that layout in our vendor directory.
+    FunASR's Apple branch instead includes
+    ``<onnxruntime/onnxruntime_cxx_api.h>``, so retain a namespaced copy too.
     """
     vendor_include = config.speech_vendor / "include"
     vendor_include.mkdir(parents=True, exist_ok=True)
@@ -47,8 +56,11 @@ def _stage_headers(config: BuildConfig, source: Path, release: Path) -> None:
     for header in source_include.glob("*.h"):
         shutil.copy2(header, vendor_include / header.name)
     session_include = source_include / "onnxruntime/core/session"
+    namespaced_include = vendor_include / "onnxruntime"
+    namespaced_include.mkdir(parents=True, exist_ok=True)
     for header in session_include.glob("*.h"):
         shutil.copy2(header, vendor_include / header.name)
+        shutil.copy2(header, namespaced_include / header.name)
 
 
 def build(config: BuildConfig) -> Path:
@@ -87,7 +99,8 @@ def build(config: BuildConfig) -> Path:
     elif config.target.startswith("macos-"):
         command += ["--osx_arch", config.target.removeprefix("macos-")]
     elif config.target == "ios-arm64":
-        command += ["--ios", "--apple_sysroot", "iphoneos", "--osx_arch", "arm64",
+        command += ["--cmake_generator", "Xcode", "--ios",
+                    "--apple_sysroot", "iphoneos", "--osx_arch", "arm64",
                     "--apple_deploy_target", "13.0"]
     elif config.target == "android-arm64-v8a":
         command += ["--android", "--android_sdk_path", os.environ["ANDROID_SDK_ROOT"],
