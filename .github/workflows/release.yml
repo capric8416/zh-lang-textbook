@@ -15,6 +15,7 @@ env:
   ANDROID_CMAKE_VERSION: "3.22.1"
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
   NO_XIPH_LIBS: "1"
+  SPEECH_MODEL_ARCHIVE_URL: "https://github.com/${{ github.repository }}/releases/download/models/zh-lang-textbook-models.tar.xz"
 
 jobs:
   build-linux-android:
@@ -94,12 +95,6 @@ jobs:
             app/native/speech/vendor
           key: native-ubuntu20-${{ hashFiles('src/zh_native_build/**', 'pyproject.toml', 'mise.toml', 'app/native/ocr/CMakeLists.txt', 'app/native/speech/CMakeLists.txt') }}
 
-      - name: Cache speech models
-        uses: actions/cache@v4
-        with:
-          path: app/.dart_tool/speech-models-v2
-          key: speech-models-piper-funasr-v1
-
       - name: Get Flutter dependencies
         run: flutter pub get
 
@@ -108,8 +103,11 @@ jobs:
           flutter analyze
           flutter test
 
-      - name: Download pinned offline speech models
-        run: bash scripts/download_speech_models.sh
+      - name: Download pinned OCR and speech models archive
+        run: |
+          archive="$RUNNER_TEMP/zh-lang-textbook-models.tar.xz"
+          curl --fail --location "$SPEECH_MODEL_ARCHIVE_URL" --output "$archive"
+          tar -xJf "$archive" -C assets
 
       - name: Build static Linux native dependencies
         run: TARGET=linux-x64 mise run native
@@ -212,15 +210,12 @@ jobs:
             app/native/speech/vendor
           key: native-windows-${{ hashFiles('src/zh_native_build/**', 'pyproject.toml', 'mise.toml', 'app/native/ocr/CMakeLists.txt', 'app/native/speech/CMakeLists.txt') }}
 
-      - name: Cache speech models
-        uses: actions/cache@v4
-        with:
-          path: app/.dart_tool/speech-models-v2
-          key: speech-models-piper-funasr-v1
-
-      - name: Download pinned offline speech models
+      - name: Download pinned OCR and speech models archive
         shell: bash
-        run: bash scripts/download_speech_models.sh
+        run: |
+          archive="$RUNNER_TEMP/zh-lang-textbook-models.tar.xz"
+          curl --fail --location "$SPEECH_MODEL_ARCHIVE_URL" --output "$archive"
+          tar -xJf "$archive" -C assets
 
       - name: Build static Windows native dependencies
         shell: pwsh
@@ -304,14 +299,11 @@ jobs:
             app/native/speech/vendor
           key: native-apple-${{ runner.arch }}-${{ hashFiles('src/zh_native_build/**', 'pyproject.toml', 'mise.toml', 'app/native/ocr/CMakeLists.txt', 'app/native/speech/CMakeLists.txt') }}
 
-      - name: Cache speech models
-        uses: actions/cache@v4
-        with:
-          path: app/.dart_tool/speech-models-v2
-          key: speech-models-piper-funasr-v1
-
-      - name: Download pinned offline speech models
-        run: bash scripts/download_speech_models.sh
+      - name: Download pinned OCR and speech models archive
+        run: |
+          archive="$RUNNER_TEMP/zh-lang-textbook-models.tar.xz"
+          curl --fail --location "$SPEECH_MODEL_ARCHIVE_URL" --output "$archive"
+          tar -xJf "$archive" -C assets
 
       - name: Get Flutter dependencies
         run: flutter pub get

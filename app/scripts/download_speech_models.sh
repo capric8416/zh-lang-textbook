@@ -11,6 +11,48 @@ vad_dir="$asset_dir/funasr-fsmn-vad"
 
 mkdir -p "$cache_dir" "$tts_dir" "$asr_dir" "$vad_dir"
 
+download_archive() {
+  local url="$1" target="$2"
+  if [[ -s "$target" ]]; then
+    return
+  fi
+  rm -f "$target"
+  local attempt seed delay
+  for attempt in 1 2 3 4 5 6; do
+    seed="$(date +%s%N 2>/dev/null || true)"
+    if [[ "$seed" == *N* || -z "$seed" || ! "$seed" =~ ^[0-9]+$ ]]; then
+      seed="$(date +%s)"
+    fi
+    delay=$((seed % 8 + 3))
+    sleep "$delay"
+    if curl --fail --location "$url" --output "$target"; then
+      return
+    fi
+    rm -f "$target"
+    if [[ "$attempt" -lt 6 ]]; then
+      sleep $((attempt * 15))
+    fi
+  done
+  echo "Failed to download model archive $url after 6 attempts" >&2
+  return 1
+}
+
+# CI can use a single archive uploaded to the `models` GitHub Release. Keeping
+# this as an opt-in environment variable preserves the per-file fallback for
+# local development and mirrors the same asset layout after extraction.
+if [[ -n "${SPEECH_MODEL_ARCHIVE_URL:-}" ]]; then
+  archive="$cache_dir/speech-models.tar.xz"
+  download_archive "$SPEECH_MODEL_ARCHIVE_URL" "$archive"
+  # The archive contains both `speech/` and `ocr/` at the assets root.
+  tar -xJf "$archive" -C "$app_dir/assets"
+  test -s "$tts_dir/model.onnx"
+  test -s "$asr_dir/model_quant.onnx"
+  test -s "$vad_dir/model_quant.onnx"
+  test -s "$app_dir/assets/ocr/PP_OCRv6_small_det.bin"
+  test -s "$app_dir/assets/ocr/PP_OCRv6_small_rec.bin"
+  exit 0
+fi
+
 fetch() {
   local url="$1" sha256="$2" target="$3"
   local cached="$cache_dir/$sha256"
