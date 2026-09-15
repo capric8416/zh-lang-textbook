@@ -108,6 +108,10 @@ def build(config: BuildConfig) -> Path:
     (vendor / "include").mkdir(parents=True, exist_ok=True)
     if config.target == "windows-x64":
         run(["lib.exe", "/NOLOGO", f"/OUT:{staged}", *archives], cwd=config.app)
+    elif config.target.startswith(("macos-", "ios-")):
+        # Apple ships BSD ar, which has no GNU MRI (-M) mode.  libtool is the
+        # native static archive combiner on macOS and iOS.
+        run(["libtool", "-static", "-o", staged, *archives], cwd=config.app)
     else:
         script = "create " + str(staged) + "\n" + "\n".join(f"addlib {p}" for p in archives) + "\nsave\nend\n"
         run([_archiver(config), "-M"], cwd=config.app, input_text=script)
