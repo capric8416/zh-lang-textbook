@@ -97,6 +97,16 @@ def patch_funasr(source: Path, work: Path) -> None:
     replace(work / "third_party/jieba/include/limonp/StringUtil.hpp",
             "std::find_if(s.rbegin(), s.rend(), std::not1(std::bind2nd(std::equal_to<char>(), x)))",
             "std::find_if(s.rbegin(), s.rend(), [x](char c) { return c != x; })", required=False)
+    # OpenFST forcibly enables its host command-line binaries on every
+    # non-Windows platform.  Under an iOS toolchain CMake treats those
+    # executables as application bundles, while OpenFST's legacy install rule
+    # has no BUNDLE DESTINATION.  FunASR only consumes libfst, so omit the
+    # script/tool layer when cross-compiling for iOS.
+    replace(work / "third_party/openfst/CMakeLists.txt",
+            "if (WIN32)\n    set(HAVE_BIN OFF CACHE BOOL \"Build the fst binaries\" FORCE)",
+            "if (WIN32 OR CMAKE_SYSTEM_NAME STREQUAL \"iOS\")\n"
+            "    set(HAVE_BIN OFF CACHE BOOL \"Build the fst binaries\" FORCE)",
+            required=False)
     replace(work / "src/tensor.h", "aligned_free(buff)", "AlignedFree(buff)", required=False)
     # Compatibility fixes for current libc++/libstdc++ and newer clang.
     replace(work / "third_party/openfst/src/include/fst/fst.h",
