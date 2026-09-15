@@ -9,6 +9,10 @@ from ..runner import run
 
 
 def _platform_args(config: BuildConfig) -> list[str]:
+    if config.target == "windows-x64":
+        # Keep the generated static OpenCV/ncnn archives and their consumer
+        # on the same CRT.  The Windows vendor bundle is /MT-based.
+        return ["-DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded"]
     if config.target == "android-arm64-v8a":
         return [f"-DCMAKE_TOOLCHAIN_FILE={os.environ['ANDROID_NDK_HOME']}/build/cmake/android.toolchain.cmake",
                 "-DANDROID_ABI=arm64-v8a", "-DANDROID_PLATFORM=android-23", "-DANDROID_STL=c++_static"]

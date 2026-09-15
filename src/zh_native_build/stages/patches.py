@@ -52,6 +52,12 @@ def patch_piper(source: Path, work: Path) -> None:
             "    \"-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}\"\n"
             "    \"-DANDROID_ABI=${ANDROID_ABI}\"\n"
             "    \"-DANDROID_PLATFORM=${ANDROID_PLATFORM}\")\n"
+            "elseif(APPLE AND CMAKE_SYSTEM_NAME STREQUAL \"iOS\")\n"
+            "  list(APPEND ESPEAKNG_TOOLCHAIN_ARGS\n"
+            "    \"-DCMAKE_SYSTEM_NAME=iOS\"\n"
+            "    \"-DCMAKE_OSX_SYSROOT=${CMAKE_OSX_SYSROOT}\"\n"
+            "    \"-DCMAKE_OSX_ARCHITECTURES=${CMAKE_OSX_ARCHITECTURES}\"\n"
+            "    \"-DCMAKE_OSX_DEPLOYMENT_TARGET=${CMAKE_OSX_DEPLOYMENT_TARGET}\")\n"
             "endif()\n\n"
             "ExternalProject_Add(espeak_ng_external", required=False)
     replace(work / "CMakeLists.txt",
