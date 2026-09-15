@@ -231,7 +231,7 @@ jobs:
         run: |
           archive="$RUNNER_TEMP/zh-lang-textbook-models.tar.xz"
           curl --fail --location "$SPEECH_MODEL_ARCHIVE_URL" --output "$archive"
-          tar -xJf "$archive" -C assets
+          tar -xJf "$(cygpath -u "$archive")" -C assets
 
       - name: Build static Windows native dependencies
         shell: bash
@@ -239,7 +239,7 @@ jobs:
           archive="$RUNNER_TEMP/native-windows-x64.tar.xz"
           url="https://github.com/${GITHUB_REPOSITORY}/releases/download/natives/native-windows-x64.tar.xz"
           if curl --fail --location "$url" --output "$archive"; then
-            tar -xJf "$archive" -C .
+            tar -xJf "$(cygpath -u "$archive")" -C .
           else
             rm -f "$archive"
             export TARGET=windows-x64
