@@ -32,7 +32,15 @@ def build(config: BuildConfig) -> Path:
         )
 
     parallel = "2" if config.target == "android-arm64-v8a" else ""
-    command = ["cmake", "--build", release, "--config", "Release",
+    target_build = release
+    if config.target == "windows-x64":
+        # With the Visual Studio generator FetchContent's RE2 project is
+        # emitted only in its nested build tree, not as re2.vcxproj in ORT's
+        # top-level solution.
+        nested = release / "_deps" / "re2-build"
+        if nested.exists() and not any(release.glob("re2.vcxproj")):
+            target_build = nested
+    command = ["cmake", "--build", target_build, "--config", "Release",
                "--target", "re2", "--parallel"]
     if parallel:
         command.append(parallel)
