@@ -1,0 +1,40 @@
+name: build native - macOS arm64
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+jobs:
+  build:
+    runs-on: macos-latest
+    defaults:
+      run:
+        working-directory: app
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup mise, Python, uv and CMake
+        run: |
+          curl https://mise.run | sh
+          export PATH="$HOME/.local/bin:$HOME/.local/share/mise/shims:$PATH"
+          mise use -g python@latest
+          mise use -g uv@latest
+          mise use -g cmake@3.31.6
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+          echo "$HOME/.local/share/mise/shims" >> "$GITHUB_PATH"
+      - name: Install build dependencies
+        run: brew install ninja
+      - name: Prepare case-sensitive speech build volume
+        run: |
+          disk_image="$RUNNER_TEMP/zh-speech-build.sparseimage"
+          mount_point="$RUNNER_TEMP/zh-speech-build"
+          hdiutil create -quiet -type SPARSE -fs 'Case-sensitive APFS' -size 30g -volname zh-speech-build "$disk_image"
+          mkdir -p "$mount_point"
+          hdiutil attach -quiet -nobrowse -mountpoint "$mount_point" "$disk_image"
+          echo "SPEECH_DEPS_ROOT=$mount_point" >> "$GITHUB_ENV"
+      - name: Build and publish archive
+        run: bash ../.github/scripts/build_native_archive.sh macos-$(uname -m)

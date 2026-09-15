@@ -1,0 +1,44 @@
+name: build native - Windows x64
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+jobs:
+  build:
+    runs-on: windows-2022
+    defaults:
+      run:
+        working-directory: app
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup mise, Python, uv and CMake
+        shell: pwsh
+        run: |
+          $archive = Join-Path $env:RUNNER_TEMP "mise-windows-x64.zip"
+          $install = Join-Path $env:RUNNER_TEMP "mise-bin"
+          $data = Join-Path $env:RUNNER_TEMP "mise-data"
+          Invoke-WebRequest -UseBasicParsing -Uri "https://github.com/jdx/mise/releases/download/v2026.9.5/mise-v2026.9.5-windows-x64.zip" -OutFile $archive
+          if (Test-Path $install) { Remove-Item -Recurse -Force $install }
+          Expand-Archive -Path $archive -DestinationPath $install -Force
+          $mise = (Get-ChildItem $install -Recurse -File -Filter "mise.exe" | Select-Object -First 1).FullName
+          $miseDir = Split-Path $mise -Parent
+          $env:MISE_DATA_DIR = $data
+          $env:Path = "$data\shims;$miseDir;$env:Path"
+          & $mise use -g python@latest
+          & $mise use -g uv@latest
+          & $mise use -g cmake@3.31.6
+          Add-Content $env:GITHUB_ENV "MISE_DATA_DIR=$data"
+          Add-Content $env:GITHUB_PATH "$miseDir"
+          Add-Content $env:GITHUB_PATH "$data\shims"
+      - uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+      - name: Build and publish archive
+        shell: bash
+        run: bash ../.github/scripts/build_native_archive.sh windows-x64
