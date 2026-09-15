@@ -110,7 +110,15 @@ jobs:
           tar -xJf "$archive" -C assets
 
       - name: Build static Linux native dependencies
-        run: TARGET=linux-x64 mise run native
+        run: |
+          archive="$RUNNER_TEMP/native-linux-x64.tar.xz"
+          url="https://github.com/${GITHUB_REPOSITORY}/releases/download/natives/native-linux-x64.tar.xz"
+          if curl --fail --location "$url" --output "$archive"; then
+            tar -xJf "$archive" -C .
+          else
+            rm -f "$archive"
+            TARGET=linux-x64 mise run native
+          fi
 
       - name: Build Linux release
         run: flutter build linux --release
@@ -133,7 +141,15 @@ jobs:
           fi
 
       - name: Build static Android native dependencies
-        run: TARGET=android-arm64-v8a mise run native
+        run: |
+          archive="$RUNNER_TEMP/native-android-arm64-v8a.tar.xz"
+          url="https://github.com/${GITHUB_REPOSITORY}/releases/download/natives/native-android-arm64-v8a.tar.xz"
+          if curl --fail --location "$url" --output "$archive"; then
+            tar -xJf "$archive" -C .
+          else
+            rm -f "$archive"
+            TARGET=android-arm64-v8a mise run native
+          fi
 
       - name: Build Android arm64 APK
         run: flutter build apk --release --target-platform android-arm64
@@ -218,10 +234,17 @@ jobs:
           tar -xJf "$archive" -C assets
 
       - name: Build static Windows native dependencies
-        shell: pwsh
+        shell: bash
         run: |
-          $env:TARGET = "windows-x64"
-          mise run native
+          archive="$RUNNER_TEMP/native-windows-x64.tar.xz"
+          url="https://github.com/${GITHUB_REPOSITORY}/releases/download/natives/native-windows-x64.tar.xz"
+          if curl --fail --location "$url" --output "$archive"; then
+            tar -xJf "$archive" -C .
+          else
+            rm -f "$archive"
+            export TARGET=windows-x64
+            mise run native
+          fi
 
       - name: Get dependencies and build
         shell: pwsh
@@ -310,7 +333,15 @@ jobs:
 
       - name: Build static macOS dependencies and native dylibs
         run: |
-          TARGET="macos-$(uname -m)" mise run native
+          target="macos-$(uname -m)"
+          archive="$RUNNER_TEMP/native-$target.tar.xz"
+          url="https://github.com/${GITHUB_REPOSITORY}/releases/download/natives/native-$target.tar.xz"
+          if curl --fail --location "$url" --output "$archive"; then
+            tar -xJf "$archive" -C .
+          else
+            rm -f "$archive"
+            TARGET="$target" mise run native
+          fi
           cmake -S native/ocr -B native/ocr/build-macos -G Ninja \
             -DCMAKE_BUILD_TYPE=Release \
             -DZH_OCR_USE_OPENMP=OFF \
@@ -345,7 +376,14 @@ jobs:
 
       - name: Build static iOS dependencies and combined OCR archive
         run: |
-          TARGET=ios-arm64 mise run native
+          archive="$RUNNER_TEMP/native-ios-arm64.tar.xz"
+          url="https://github.com/${GITHUB_REPOSITORY}/releases/download/natives/native-ios-arm64.tar.xz"
+          if curl --fail --location "$url" --output "$archive"; then
+            tar -xJf "$archive" -C .
+          else
+            rm -f "$archive"
+            TARGET=ios-arm64 mise run native
+          fi
           cmake -S native/ocr -B native/ocr/build-ios -G Ninja \
             -DCMAKE_BUILD_TYPE=Release \
             -DCMAKE_SYSTEM_NAME=iOS \

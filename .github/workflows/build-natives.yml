@@ -1,0 +1,151 @@
+name: build and publish native archives
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  ANDROID_NDK_VERSION: "28.2.13676358"
+  ANDROID_CMAKE_VERSION: "3.22.1"
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+jobs:
+  linux-android:
+    name: Linux x64 and Android arm64 native archives
+    runs-on: ubuntu-latest
+    container: ubuntu:20.04
+    defaults:
+      run:
+        working-directory: app
+    env:
+      CC: clang
+      CXX: clang++
+    steps:
+      - name: Install native build dependencies
+        working-directory: /
+        run: |
+          sed -i \
+            -e 's|https://archive.ubuntu.com/ubuntu|http://archive.ubuntu.com/ubuntu|g' \
+            -e 's|https://security.ubuntu.com/ubuntu|http://security.ubuntu.com/ubuntu|g' \
+            /etc/apt/sources.list
+          apt-get -o Acquire::Retries=10 update
+          DEBIAN_FRONTEND=noninteractive apt-get -o Acquire::Retries=10 install -y \
+            build-essential ca-certificates clang curl git jq ninja-build \
+            pkg-config unzip xz-utils zip libasound2-dev libgtk-3-dev \
+            liblzma-dev libomp-dev
+      - uses: actions/checkout@v4
+      - name: Setup mise, Python, uv and CMake
+        run: |
+          curl https://mise.run | sh
+          export PATH="$HOME/.local/bin:$HOME/.local/share/mise/shims:$PATH"
+          mise use -g python@latest
+          mise use -g uv@latest
+          mise use -g cmake@3.31.6
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+          echo "$HOME/.local/share/mise/shims" >> "$GITHUB_PATH"
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+        with:
+          packages: "platform-tools"
+      - name: Install Android NDK and CMake
+        run: |
+          sdkmanager "ndk;${ANDROID_NDK_VERSION}" "cmake;${ANDROID_CMAKE_VERSION}"
+          echo "ANDROID_NDK_HOME=${ANDROID_SDK_ROOT}/ndk/${ANDROID_NDK_VERSION}" >> "$GITHUB_ENV"
+      - name: Build and publish Linux native archive
+        run: |
+          TARGET=linux-x64 mise run native
+          archive="$RUNNER_TEMP/native-linux-x64.tar.xz"
+          tar -cJf "$archive" -C . native/ocr/vendor/linux-x64 native/speech/vendor/linux-x64
+          python ../.github/scripts/upload_release_asset.py natives "$archive"
+      - name: Build and publish Android native archive
+        run: |
+          TARGET=android-arm64-v8a mise run native
+          archive="$RUNNER_TEMP/native-android-arm64-v8a.tar.xz"
+          tar -cJf "$archive" -C . native/ocr/vendor/android-arm64-v8a native/speech/vendor/android-arm64-v8a
+          python ../.github/scripts/upload_release_asset.py natives "$archive"
+
+  windows:
+    name: Windows x64 native archive
+    runs-on: windows-2022
+    defaults:
+      run:
+        working-directory: app
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup mise, Python, uv and CMake
+        shell: pwsh
+        run: |
+          $archive = Join-Path $env:RUNNER_TEMP "mise-windows-x64.zip"
+          $install = Join-Path $env:RUNNER_TEMP "mise-bin"
+          $data = Join-Path $env:RUNNER_TEMP "mise-data"
+          Invoke-WebRequest -UseBasicParsing -Uri "https://github.com/jdx/mise/releases/download/v2026.9.5/mise-v2026.9.5-windows-x64.zip" -OutFile $archive
+          if (Test-Path $install) { Remove-Item -Recurse -Force $install }
+          Expand-Archive -Path $archive -DestinationPath $install -Force
+          $mise = (Get-ChildItem $install -Recurse -File -Filter "mise.exe" | Select-Object -First 1).FullName
+          $miseDir = Split-Path $mise -Parent
+          $env:MISE_DATA_DIR = $data
+          $env:Path = "$data\shims;$miseDir;$env:Path"
+          & $mise use -g python@latest
+          & $mise use -g uv@latest
+          & $mise use -g cmake@3.31.6
+          Add-Content $env:GITHUB_ENV "MISE_DATA_DIR=$data"
+          Add-Content $env:GITHUB_PATH "$miseDir"
+          Add-Content $env:GITHUB_PATH "$data\shims"
+      - uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+      - name: Build and publish Windows native archive
+        shell: pwsh
+        run: |
+          $env:TARGET = "windows-x64"
+          mise run native
+          $archive = Join-Path $env:RUNNER_TEMP "native-windows-x64.tar.xz"
+          tar -cJf $archive -C . native/ocr/vendor/windows-x64 native/speech/vendor/windows-x64
+          python ../.github/scripts/upload_release_asset.py natives $archive
+
+  apple:
+    name: macOS and iOS native archives
+    runs-on: macos-latest
+    defaults:
+      run:
+        working-directory: app
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup mise, Python, uv and CMake
+        run: |
+          curl https://mise.run | sh
+          export PATH="$HOME/.local/bin:$HOME/.local/share/mise/shims:$PATH"
+          mise use -g python@latest
+          mise use -g uv@latest
+          mise use -g cmake@3.31.6
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+          echo "$HOME/.local/share/mise/shims" >> "$GITHUB_PATH"
+      - name: Install build dependencies
+        run: brew install ninja
+      - name: Prepare case-sensitive speech build volume
+        run: |
+          disk_image="$RUNNER_TEMP/zh-speech-build.sparseimage"
+          mount_point="$RUNNER_TEMP/zh-speech-build"
+          hdiutil create -quiet -type SPARSE -fs 'Case-sensitive APFS' -size 30g -volname zh-speech-build "$disk_image"
+          mkdir -p "$mount_point"
+          hdiutil attach -quiet -nobrowse -mountpoint "$mount_point" "$disk_image"
+          echo "SPEECH_DEPS_ROOT=$mount_point" >> "$GITHUB_ENV"
+      - name: Build and publish macOS native archive
+        run: |
+          target="macos-$(uname -m)"
+          TARGET="$target" mise run native
+          archive="$RUNNER_TEMP/native-$target.tar.xz"
+          tar -cJf "$archive" -C . "native/ocr/vendor/$target" "native/speech/vendor/$target"
+          python ../.github/scripts/upload_release_asset.py natives "$archive"
+      - name: Build and publish iOS native archive
+        run: |
+          TARGET=ios-arm64 mise run native
+          archive="$RUNNER_TEMP/native-ios-arm64.tar.xz"
+          tar -cJf "$archive" -C . native/ocr/vendor/ios-arm64 native/speech/vendor/ios-arm64
+          python ../.github/scripts/upload_release_asset.py natives "$archive"
