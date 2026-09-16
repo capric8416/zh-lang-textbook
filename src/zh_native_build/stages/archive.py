@@ -39,6 +39,17 @@ def build(config: BuildConfig) -> Path:
     funasr = _find(root / "funasr", ext)
     if not ort or not piper or not funasr or not re2.exists():
         raise RuntimeError("missing ONNX Runtime, RE2, Piper, or FunASR static archive")
+    # Piper's espeak ExternalProject leaves both its build-tree archive and
+    # the installed archive in the staging tree. They contain the same
+    # objects; adding both causes duplicate symbols when the iOS archive is
+    # force-loaded (and is also unnecessary on other platforms).
+    espeak_name = "espeak-ng.lib" if ext == ".lib" else "libespeak-ng.a"
+    espeak_archives = [p for p in piper if p.name.lower() == espeak_name.lower()]
+    if espeak_archives:
+        installed = [p for p in espeak_archives if "espeak_ng-install" in p.parts]
+        keep_espeak = sorted(installed or espeak_archives)[0]
+        piper = [p for p in piper if p.name.lower() != espeak_name.lower()]
+        piper.append(keep_espeak)
     key = lambda p: p.name.lower()
     ort_main = next((p for p in ort if "onnxruntime" in key(p)), ort[0])
     staged_ort = vendor / "lib" / ("onnxruntime.lib" if ext == ".lib" else "libonnxruntime.a")

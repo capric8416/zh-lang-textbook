@@ -412,7 +412,7 @@ jobs:
 
       - name: Build and package unsigned iOS app
         run: |
-          flutter build ios --release --no-codesign
+          flutter build ios --release --no-codesign -v
           nm -gU build/ios/iphoneos/Runner.app/Runner | grep '_zh_ocr_create'
           nm -gU build/ios/iphoneos/Runner.app/Runner | grep '_zh_speech_tts_create'
           test -n "$(find build/ios/iphoneos/Runner.app -path '*/flutter_assets/assets/ocr/PP_OCRv6_small_rec.bin' -print -quit)"
