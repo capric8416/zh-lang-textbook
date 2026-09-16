@@ -66,7 +66,7 @@ if(UNIX AND NOT APPLE AND NOT ANDROID)
 elseif(ANDROID)
   target_link_libraries(zh_speech PRIVATE log android atomic m)
 elseif(WIN32)
-  target_link_libraries(zh_speech PRIVATE dxcore)
+  target_link_libraries(zh_speech PRIVATE dxcore shlwapi)
 elseif(APPLE)
   target_link_libraries(zh_speech PRIVATE
     "-framework Foundation" "-framework CoreFoundation" "-framework Accelerate")

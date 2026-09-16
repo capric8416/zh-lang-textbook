@@ -77,6 +77,11 @@ def patch_funasr(source: Path, work: Path) -> None:
         shutil.rmtree(work)
     shutil.copytree(source, work)
     replace(work / "src/CMakeLists.txt", "add_library(funasr SHARED", "add_library(funasr STATIC", required=False)
+    # Bundled yaml-cpp 0.6 uses YAML_CPP_DLL (not YAML_CPP_STATIC_DEFINE)
+    # to select DLL imports. Our static build must not define this macro.
+    replace(work / "src/CMakeLists.txt",
+            "target_compile_definitions(funasr PUBLIC -D_FUNASR_API_EXPORT -DNOMINMAX -DYAML_CPP_DLL)",
+            "target_compile_definitions(funasr PUBLIC -D_FUNASR_API_EXPORT -DNOMINMAX)")
     runtime_header = work / "include/funasrruntime.h"
     if runtime_header.exists():
         header_text = runtime_header.read_text()
