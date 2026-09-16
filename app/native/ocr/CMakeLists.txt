@@ -37,11 +37,11 @@ set(OCR_SOURCES
 add_library(zh_ocr ${ZH_OCR_LIBRARY_TYPE} ${OCR_SOURCES})
 target_compile_features(zh_ocr PRIVATE cxx_std_17)
 if(MSVC)
-  # The bundled Windows OpenCV/ncnn archives are built with the static MSVC
-  # runtime (/MT). Match that runtime for this DLL's own objects; mixing it
-  # with Flutter's default /MD objects produces LNK2038 RuntimeLibrary errors.
+  # Match Flutter's Windows targets, which use the dynamic MSVC runtime (/MD).
+  # The OCR dependencies are built with the same runtime to avoid linker
+  # conflicts between libcpmt (static CRT) and msvcprt (dynamic CRT).
   set_property(TARGET zh_ocr PROPERTY
-    MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+    MSVC_RUNTIME_LIBRARY "MultiThreadedDLL$<$<CONFIG:Debug>:Debug>")
 endif()
 if(MSVC)
   set_source_files_properties(${OCR_SOURCES} PROPERTIES COMPILE_OPTIONS /EHsc)
