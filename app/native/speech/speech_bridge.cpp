@@ -28,7 +28,7 @@ struct AsrHandle {
   std::mutex mutex;
   ~AsrHandle() {
     if (vad != nullptr) FsmnVadUninit(vad);
-    if (asr != nullptr) FunASRUninit(asr);
+    if (asr != nullptr) FunOfflineUninit(asr);
   }
 };
 
@@ -212,7 +212,7 @@ void *zh_speech_asr_create(const char *paraformer_model_dir,
         {"model-dir", paraformer_model_dir}, {"quantize", "true"}};
     std::map<std::string, std::string> vad_paths{
         {"model-dir", vad_model_dir}, {"quantize", "true"}};
-    handle->asr = FunASRInit(asr_paths, 2, ASR_OFFLINE);
+    handle->asr = FunOfflineInit(asr_paths, 2, false, 1);
     handle->vad = FsmnVadInit(vad_paths, 1);
     return handle->asr == nullptr || handle->vad == nullptr ? nullptr
                                                             : handle.release();
@@ -241,8 +241,8 @@ int32_t zh_speech_asr_recognize_wav(void *handle, const char *wav_path,
     FsmnVadFreeResult(vad_result);
     if (!has_speech) return -3;
 
-    FUNASR_RESULT result =
-        FunASRInfer(speech->asr, wav_path, RASRM_CTC_GREEDY_SEARCH, nullptr);
+    FUNASR_RESULT result = FunOfflineInfer(
+        speech->asr, wav_path, RASR_NONE, nullptr, {{0.0f}}, 16000, false, nullptr);
     if (result == nullptr) return -4;
     const char *recognized = FunASRGetResult(result, 0);
     const std::string text = recognized == nullptr ? "" : recognized;

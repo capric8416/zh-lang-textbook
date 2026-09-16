@@ -54,3 +54,15 @@ run = "uv run python -m zh_native_build ocr --target {{ get_env(name='TARGET', d
 [tasks.speech]
 description = "Build speech dependencies"
 run = "uv run python -m zh_native_build speech --target {{ get_env(name='TARGET', default='linux-x64') }}"
+
+[tasks.speech-roundtrip]
+description = "Test Piper TTS to FunASR recognition and pinyin comparison"
+run = "uv run python -m zh_native_build.speech_roundtrip"
+
+[tasks.speech-roundtrip-compare]
+description = "Build speech bridge and test TTS to FunASR recognition (Linux)"
+run = [
+  "cmake -S app/native/speech -B app/build/speech-roundtrip/bridge -DCMAKE_BUILD_TYPE=Release",
+  "cmake --build app/build/speech-roundtrip/bridge --parallel",
+  "uv run python -m zh_native_build.speech_roundtrip --library app/build/speech-roundtrip/bridge/libzh_speech.so",
+]
