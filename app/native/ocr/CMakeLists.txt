@@ -41,7 +41,7 @@ if(MSVC)
   # The OCR dependencies are built with the same runtime to avoid linker
   # conflicts between libcpmt (static CRT) and msvcprt (dynamic CRT).
   set_property(TARGET zh_ocr PROPERTY
-    MSVC_RUNTIME_LIBRARY "MultiThreadedDLL$<$<CONFIG:Debug>:Debug>")
+    MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
 endif()
 if(MSVC)
   set_source_files_properties(${OCR_SOURCES} PROPERTIES COMPILE_OPTIONS /EHsc)

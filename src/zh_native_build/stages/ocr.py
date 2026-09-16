@@ -44,7 +44,10 @@ def build(config: BuildConfig) -> Path:
     run(["cmake", "--build", ncnn_build, "--parallel"], cwd=config.app)
     run(["cmake", "--install", ncnn_build], cwd=config.app)
     opencv_build = root / "opencv"
-    run(["cmake", "-S", opencv, "-B", opencv_build, *common, *platform_args,
+    # OpenCV defaults to a static CRT and overrides CMAKE_MSVC_RUNTIME_LIBRARY
+    # for static builds unless its own CRT switch is disabled explicitly.
+    opencv_args = ["-DBUILD_WITH_STATIC_CRT=OFF"] if config.target == "windows-x64" else []
+    run(["cmake", "-S", opencv, "-B", opencv_build, *common, *platform_args, *opencv_args,
          "-DBUILD_LIST=core,imgproc,imgcodecs", "-DBUILD_TESTS=OFF", "-DBUILD_PERF_TESTS=OFF",
          "-DBUILD_EXAMPLES=OFF", "-DBUILD_ANDROID_EXAMPLES=OFF", "-DBUILD_ANDROID_PROJECTS=OFF",
          "-DBUILD_DOCS=OFF", "-DBUILD_opencv_apps=OFF",
