@@ -25,6 +25,16 @@ class PracticeQuestion {
 
   String get prompt => promptLines.join('\n');
 
+  bool supportsDirection(PracticeDirection direction) {
+    if (direction != PracticeDirection.listenWriteHanzi &&
+        direction != PracticeDirection.readAloud) {
+      return true;
+    }
+    const speechCategories = {'词', '引用句子', '诗词'};
+    if (!speechCategories.contains(category)) return false;
+    return RegExp(r'[\u4E00-\u9FFF]').allMatches(answer).length >= 2;
+  }
+
   String attemptId(PracticeDirection direction) => '$id:${direction.name}';
 }
 

@@ -77,4 +77,53 @@ void main() {
     );
     expect(questions.any((question) => question.category == '诗词'), isTrue);
   });
+
+  test('语音听写和朗读检查只使用词语与句子', () {
+    final source = File(
+      '../json_reviewed/zh-lang-grade2b-textbook-struct.json',
+    ).readAsStringSync();
+    final catalog = PracticeCatalog.fromTextbook(
+      Textbook.fromJsonString(source),
+    );
+
+    for (final direction in const [
+      PracticeDirection.listenWriteHanzi,
+      PracticeDirection.readAloud,
+    ]) {
+      final speechQuestions = catalog.questions.where(
+        (question) => question.supportsDirection(direction),
+      );
+      expect(speechQuestions, isNotEmpty);
+      expect(
+        speechQuestions.every(
+          (question) => {'词', '引用句子', '诗词'}.contains(question.category),
+        ),
+        isTrue,
+      );
+      expect(
+        speechQuestions.every(
+          (question) =>
+              RegExp(r'[\u4E00-\u9FFF]').allMatches(question.answer).length >=
+              2,
+        ),
+        isTrue,
+      );
+    }
+
+    final singleCharacter = catalog.questions.firstWhere(
+      (question) => question.category == '字',
+    );
+    expect(
+      singleCharacter.supportsDirection(PracticeDirection.listenWriteHanzi),
+      isFalse,
+    );
+    expect(
+      singleCharacter.supportsDirection(PracticeDirection.readAloud),
+      isFalse,
+    );
+    expect(
+      singleCharacter.supportsDirection(PracticeDirection.writeHanzi),
+      isTrue,
+    );
+  });
 }

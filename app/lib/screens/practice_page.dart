@@ -117,7 +117,9 @@ class _PracticePageState extends State<PracticePage> {
     final now = DateTime.now();
     final candidates = questions
         .where(
-          (question) => !store.isBlocked(question.attemptId(direction), now),
+          (question) =>
+              question.supportsDirection(direction) &&
+              !store.isBlocked(question.attemptId(direction), now),
         )
         .toList();
     while (candidates.isNotEmpty) {
