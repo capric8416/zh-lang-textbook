@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 
+import '../models/pet.dart';
 import '../models/practice.dart';
 import '../models/textbook.dart';
+import '../services/learning_mastery.dart';
+import '../services/pet_growth.dart';
 import '../services/practice_progress.dart';
 import '../services/textbook_repository.dart';
+import '../widgets/pet_growth_card.dart';
 import 'practice_page.dart';
 import 'review_page.dart';
 
@@ -19,20 +23,32 @@ class ModePage extends StatefulWidget {
 
 class _ModePageState extends State<ModePage> {
   int? _wrongCount;
+  PetProfile? _petProfile;
+  TextbookMastery? _mastery;
 
   @override
   void initState() {
     super.initState();
-    _loadWrongCount();
+    _loadDashboard();
   }
 
-  Future<void> _loadWrongCount() async {
+  Future<void> _loadDashboard() async {
     final store = await PracticeProgressStore.open(widget.selection.fileName);
     final catalog = PracticeCatalog.fromTextbook(widget.textbook);
+    final petStore = await PetGrowthStore.open();
+    final pet = await petStore.synchronize(
+      textbookKey: widget.selection.fileName,
+      textbook: widget.textbook,
+      catalog: catalog,
+      progress: store.progress,
+      emitCelebrations: false,
+    );
     if (mounted) {
-      setState(
-        () => _wrongCount = store.progress.wrongCountFor(catalog.questions),
-      );
+      setState(() {
+        _wrongCount = store.progress.wrongCountFor(catalog.questions);
+        _petProfile = pet.profile;
+        _mastery = pet.mastery;
+      });
     }
   }
 
@@ -46,7 +62,7 @@ class _ModePageState extends State<ModePage> {
         ),
       ),
     );
-    await _loadWrongCount();
+    await _loadDashboard();
   }
 
   @override
@@ -66,6 +82,11 @@ class _ModePageState extends State<ModePage> {
                     fontWeight: FontWeight.w700,
                   ),
                 ),
+                const SizedBox(height: 20),
+                if (_petProfile != null && _mastery != null)
+                  PetGrowthCard(profile: _petProfile!, mastery: _mastery!)
+                else
+                  const LinearProgressIndicator(),
                 const SizedBox(height: 28),
                 LayoutBuilder(
                   builder: (context, constraints) {

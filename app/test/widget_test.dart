@@ -106,6 +106,8 @@ void main() {
 
     expect(find.text('错题专项'), findsOneWidget);
     expect(find.textContaining('1 道当前错题'), findsOneWidget);
+    expect(find.byKey(const ValueKey('pet-growth-card')), findsOneWidget);
+    expect(find.textContaining('成长值'), findsOneWidget);
   });
 
   testWidgets('练习页可以从错题数量快捷进入专项模式', (WidgetTester tester) async {

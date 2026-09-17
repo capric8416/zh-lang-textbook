@@ -7,10 +7,12 @@ import '../models/practice.dart';
 import '../models/speech_assessment.dart';
 import '../models/textbook.dart';
 import '../services/ocr_engine.dart';
+import '../services/pet_growth.dart';
 import '../services/practice_progress.dart';
 import '../services/speech_engine.dart';
 import '../services/textbook_repository.dart';
 import '../widgets/writing_pad.dart';
+import '../widgets/pet_celebration.dart';
 
 class PracticePage extends StatefulWidget {
   const PracticePage({
@@ -37,6 +39,7 @@ class _PracticePageState extends State<PracticePage> {
   late final List<TocChapter> _chapters;
   PracticeCatalog? _catalog;
   PracticeProgressStore? _store;
+  PetGrowthStore? _petStore;
   PracticeQuestion? _question;
   Object? _loadError;
   late String _selectedChapterId;
@@ -72,10 +75,19 @@ class _PracticePageState extends State<PracticePage> {
     try {
       final catalog = PracticeCatalog.fromTextbook(widget.textbook);
       final store = await PracticeProgressStore.open(widget.selection.fileName);
+      final petStore = await PetGrowthStore.open();
+      await petStore.synchronize(
+        textbookKey: widget.selection.fileName,
+        textbook: widget.textbook,
+        catalog: catalog,
+        progress: store.progress,
+        emitCelebrations: false,
+      );
       if (!mounted) return;
       setState(() {
         _catalog = catalog;
         _store = store;
+        _petStore = petStore;
       });
       await _chooseQuestion();
     } catch (error, stackTrace) {
@@ -246,6 +258,7 @@ class _PracticePageState extends State<PracticePage> {
         _graded = true;
         _grading = false;
       });
+      await _syncPetGrowth();
     } catch (error, stackTrace) {
       debugPrintStack(label: 'OCR 批改失败：$error', stackTrace: stackTrace);
       if (!mounted) return;
@@ -318,7 +331,10 @@ class _PracticePageState extends State<PracticePage> {
       );
       if (correct == null) return;
       await store.record(question.attemptId(_direction), correct: correct);
-      if (mounted) setState(() => _graded = true);
+      if (mounted) {
+        setState(() => _graded = true);
+        await _syncPetGrowth();
+      }
     } catch (error, stackTrace) {
       debugPrintStack(label: '朗读检查失败：$error', stackTrace: stackTrace);
       if (mounted) _showSpeechError('朗读检查失败', error);
@@ -340,6 +356,23 @@ class _PracticePageState extends State<PracticePage> {
       ],
     ),
   );
+
+  Future<void> _syncPetGrowth() async {
+    final store = _store;
+    final petStore = _petStore;
+    final catalog = _catalog;
+    if (store == null || petStore == null || catalog == null) return;
+    final result = await petStore.synchronize(
+      textbookKey: widget.selection.fileName,
+      textbook: widget.textbook,
+      catalog: catalog,
+      progress: store.progress,
+      emitCelebrations: true,
+    );
+    if (mounted && result.celebrations.isNotEmpty) {
+      await showPetCelebrations(context, result.celebrations);
+    }
+  }
 
   String get _unitName => widget.textbook.index
       .firstWhere(
