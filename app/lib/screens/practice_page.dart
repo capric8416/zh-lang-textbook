@@ -275,6 +275,7 @@ class _PracticePageState extends State<PracticePage> {
     });
     try {
       final assessment = await SpeechEngine.instance.stopAndAssess(
+        expectedText: question.answer,
         expectedPinyin: question.prompt,
       );
       if (!mounted) return;
@@ -779,7 +780,7 @@ class _SpeechReviewDialogState extends State<_SpeechReviewDialog> {
               ),
               const SizedBox(height: 10),
               Text(
-                '拼音级匹配：${assessment.matchedSyllables}/'
+                '汉字/拼音匹配：${assessment.matchedSyllables}/'
                 '${assessment.totalSyllables}（$percent%）',
               ),
               const SizedBox(height: 14),

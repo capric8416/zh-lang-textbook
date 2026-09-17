@@ -89,6 +89,7 @@ class SpeechEngine {
   }
 
   Future<SpeechAssessment> stopAndAssess({
+    required String expectedText,
     required String expectedPinyin,
   }) async {
     final path = await _recorder.stop() ?? _recordingPath;
@@ -100,6 +101,7 @@ class SpeechEngine {
       final text = SpeechNative.instance.recognizeWav(path).trim();
       if (text.isEmpty) throw StateError('没有识别到朗读内容');
       return SpeechAssessment.compare(
+        expectedText: expectedText,
         expectedPinyin: expectedPinyin,
         recognizedText: text,
       );
