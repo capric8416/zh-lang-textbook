@@ -199,6 +199,20 @@ void main() {
     final unlocked = PetGrowthEngine.breedsForStage(legacy.majorStage);
     expect(unlocked, containsAll(<String>['default', 'shiba', 'corgi']));
     expect(PetGrowthEngine.decorationsForStage(2), contains('red-scarf'));
+    expect(legacy.selectedRoom, 'living-room');
+    expect(legacy.unlockedFurniture, isEmpty);
+    expect(
+      PetGrowthEngine.furnitureForStage(2),
+      containsAll(<String>[
+        'pet-bed',
+        'soft-rug',
+        'toy-box',
+        'study-desk',
+        'desk-lamp',
+        'shade-tree',
+        'flower-pot',
+      ]),
+    );
   });
 
   test('宠物之家选择只允许已解锁项目并可持久化', () async {
@@ -216,9 +230,12 @@ void main() {
     expect(await store.selectBreed('corgi'), isFalse);
     expect(await store.selectBreed('shiba'), isTrue);
     expect(await store.selectDecoration('blue-collar'), isTrue);
+    expect(await store.selectRoom('unknown-room'), isFalse);
+    expect(await store.selectRoom('study-room'), isTrue);
     final reopened = await PetGrowthStore.open();
     expect(reopened.profile.breed, 'shiba');
     expect(reopened.profile.selectedDecoration, 'blue-collar');
+    expect(reopened.profile.selectedRoom, 'study-room');
   });
 }
 

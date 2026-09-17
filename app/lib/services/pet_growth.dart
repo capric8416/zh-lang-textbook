@@ -35,6 +35,10 @@ class PetGrowthEngine {
       .where((d) => d.unlockStage <= stage)
       .map((d) => d.id)
       .toSet();
+  static Set<String> furnitureForStage(int stage) => petFurniture
+      .where((item) => item.unlockStage <= stage)
+      .map((item) => item.id)
+      .toSet();
 
   static PetGrowthSyncResult synchronize({
     required PetProfile profile,
@@ -107,6 +111,10 @@ class PetGrowthEngine {
       ...profile.unlockedDecorations,
       ...decorationsForStage(majorStage),
     };
+    final unlockedFurniture = {
+      ...profile.unlockedFurniture,
+      ...furnitureForStage(majorStage),
+    };
     final normalizedBreed = unlockedBreeds.contains(profile.breed)
         ? profile.breed
         : 'default';
@@ -114,12 +122,18 @@ class PetGrowthEngine {
         unlockedDecorations.contains(profile.selectedDecoration)
         ? profile.selectedDecoration
         : 'none';
+    final normalizedRoom =
+        petRooms.any((room) => room.id == profile.selectedRoom)
+        ? profile.selectedRoom
+        : 'living-room';
     changed =
         changed ||
         unlockedBreeds.length != profile.unlockedBreeds.length ||
         unlockedDecorations.length != profile.unlockedDecorations.length ||
+        unlockedFurniture.length != profile.unlockedFurniture.length ||
         normalizedBreed != profile.breed ||
-        normalizedDecoration != profile.selectedDecoration;
+        normalizedDecoration != profile.selectedDecoration ||
+        normalizedRoom != profile.selectedRoom;
     return PetGrowthSyncResult(
       profile: profile.copyWith(
         growthPoints: points,
@@ -129,6 +143,8 @@ class PetGrowthEngine {
         unlockedDecorations: unlockedDecorations,
         breed: normalizedBreed,
         selectedDecoration: normalizedDecoration,
+        selectedRoom: normalizedRoom,
+        unlockedFurniture: unlockedFurniture,
       ),
       mastery: mastery,
       celebrations: [...lessonCelebrations, ...unitCelebrations],
@@ -159,9 +175,15 @@ class PetGrowthStore {
     return _save();
   }
 
+  Future<bool> selectRoom(String id) async {
+    if (!petRooms.any((room) => room.id == id)) return false;
+    _profile = _profile.copyWith(selectedRoom: id);
+    return _save();
+  }
+
   Future<bool> _save() async => _preferences.setString(
     _key,
-    jsonEncode({'version': 2, 'profile': _profile.toJson()}),
+    jsonEncode({'version': 3, 'profile': _profile.toJson()}),
   );
 
   static Future<PetGrowthStore> open() async {

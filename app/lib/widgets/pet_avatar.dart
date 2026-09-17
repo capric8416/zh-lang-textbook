@@ -114,12 +114,13 @@ class _DogPainter extends CustomPainter {
     final dark = Paint()
       ..color = const Color(0xff3d2b1f)
       ..strokeCap = StrokeCap.round;
-    if (decoration.background != 0)
+    if (decoration.background != 0) {
       canvas.drawCircle(
         const Offset(50, 51),
         44,
         Paint()..color = Color(decoration.background),
       );
+    }
 
     final earDrop = appearance.earDrop * 12;
     canvas.drawOval(

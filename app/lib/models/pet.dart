@@ -4,6 +4,104 @@ enum PetExpression { happy, wink, starry, radiant }
 
 enum PetCelebrationType { lesson, unit }
 
+class PetRoom {
+  const PetRoom({required this.id, required this.name});
+
+  final String id;
+  final String name;
+}
+
+class PetFurniture {
+  const PetFurniture({
+    required this.id,
+    required this.name,
+    required this.roomId,
+    required this.slot,
+    required this.unlockStage,
+  });
+
+  final String id;
+  final String name;
+  final String roomId;
+  final String slot;
+  final int unlockStage;
+}
+
+const petRooms = <PetRoom>[
+  PetRoom(id: 'living-room', name: '客厅'),
+  PetRoom(id: 'study-room', name: '书房'),
+  PetRoom(id: 'yard', name: '庭院'),
+];
+
+const petFurniture = <PetFurniture>[
+  PetFurniture(
+    id: 'pet-bed',
+    name: '宠物窝',
+    roomId: 'living-room',
+    slot: 'left-floor',
+    unlockStage: 0,
+  ),
+  PetFurniture(
+    id: 'soft-rug',
+    name: '软地毯',
+    roomId: 'living-room',
+    slot: 'center-floor',
+    unlockStage: 1,
+  ),
+  PetFurniture(
+    id: 'toy-box',
+    name: '玩具箱',
+    roomId: 'living-room',
+    slot: 'right-floor',
+    unlockStage: 2,
+  ),
+  PetFurniture(
+    id: 'study-desk',
+    name: '学习桌',
+    roomId: 'study-room',
+    slot: 'left-floor',
+    unlockStage: 0,
+  ),
+  PetFurniture(
+    id: 'desk-lamp',
+    name: '小台灯',
+    roomId: 'study-room',
+    slot: 'left-wall',
+    unlockStage: 1,
+  ),
+  PetFurniture(
+    id: 'bookcase',
+    name: '小书柜',
+    roomId: 'study-room',
+    slot: 'right-floor',
+    unlockStage: 3,
+  ),
+  PetFurniture(
+    id: 'shade-tree',
+    name: '绿荫树',
+    roomId: 'yard',
+    slot: 'left-wall',
+    unlockStage: 0,
+  ),
+  PetFurniture(
+    id: 'flower-pot',
+    name: '小花盆',
+    roomId: 'yard',
+    slot: 'right-floor',
+    unlockStage: 2,
+  ),
+  PetFurniture(
+    id: 'garden-swing',
+    name: '花园秋千',
+    roomId: 'yard',
+    slot: 'left-floor',
+    unlockStage: 4,
+  ),
+];
+
+PetRoom petRoom(String id) =>
+    petRooms.firstWhere((room) => room.id == id, orElse: () => petRooms.first);
+
 class PetBreed {
   const PetBreed({
     required this.id,
@@ -126,6 +224,8 @@ class PetProfile {
     this.unlockedBreeds = const {'default'},
     this.unlockedDecorations = const {'none'},
     this.selectedDecoration = 'none',
+    this.selectedRoom = 'living-room',
+    this.unlockedFurniture = const {},
   });
 
   factory PetProfile.fromJson(Map<String, dynamic> json) => PetProfile(
@@ -156,6 +256,12 @@ class PetProfile {
     selectedDecoration: json['selected_decoration'] is String
         ? json['selected_decoration'] as String
         : 'none',
+    selectedRoom: json['selected_room'] is String
+        ? json['selected_room'] as String
+        : 'living-room',
+    unlockedFurniture: json['unlocked_furniture'] is List
+        ? (json['unlocked_furniture'] as List).whereType<String>().toSet()
+        : const {},
   );
 
   final PetSpecies species;
@@ -166,6 +272,8 @@ class PetProfile {
   final Set<String> unlockedBreeds;
   final Set<String> unlockedDecorations;
   final String selectedDecoration;
+  final String selectedRoom;
+  final Set<String> unlockedFurniture;
 
   Map<String, dynamic> toJson() => {
     'species': species.name,
@@ -176,6 +284,8 @@ class PetProfile {
     'unlocked_breeds': unlockedBreeds.toList()..sort(),
     'unlocked_decorations': unlockedDecorations.toList()..sort(),
     'selected_decoration': selectedDecoration,
+    'selected_room': selectedRoom,
+    'unlocked_furniture': unlockedFurniture.toList()..sort(),
   };
 
   PetProfile copyWith({
@@ -187,6 +297,8 @@ class PetProfile {
     Set<String>? unlockedBreeds,
     Set<String>? unlockedDecorations,
     String? selectedDecoration,
+    String? selectedRoom,
+    Set<String>? unlockedFurniture,
   }) => PetProfile(
     species: species ?? this.species,
     breed: breed ?? this.breed,
@@ -196,6 +308,8 @@ class PetProfile {
     unlockedBreeds: unlockedBreeds ?? this.unlockedBreeds,
     unlockedDecorations: unlockedDecorations ?? this.unlockedDecorations,
     selectedDecoration: selectedDecoration ?? this.selectedDecoration,
+    selectedRoom: selectedRoom ?? this.selectedRoom,
+    unlockedFurniture: unlockedFurniture ?? this.unlockedFurniture,
   );
 }
 

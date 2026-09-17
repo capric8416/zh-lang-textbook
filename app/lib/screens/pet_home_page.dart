@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/pet.dart';
 import '../services/pet_growth.dart';
-import '../widgets/pet_avatar.dart';
+import '../widgets/pet_room_scene.dart';
 
 class PetHomePage extends StatefulWidget {
   const PetHomePage({super.key});
@@ -30,24 +30,41 @@ class _PetHomePageState extends State<PetHomePage> {
   @override
   Widget build(BuildContext context) {
     final store = _store;
-    if (store == null)
+    if (store == null) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
     final profile = store.profile;
     return Scaffold(
       appBar: AppBar(title: const Text('宠物之家')),
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [
+          Text('选择房间', style: Theme.of(context).textTheme.titleLarge),
+          const SizedBox(height: 8),
+          Wrap(
+            spacing: 8,
+            children: [
+              for (final room in petRooms)
+                ChoiceChip(
+                  key: ValueKey('room-${room.id}'),
+                  avatar: const Icon(Icons.home_outlined, size: 18),
+                  label: Text(room.name),
+                  selected: profile.selectedRoom == room.id,
+                  onSelected: (_) async {
+                    await store.selectRoom(room.id);
+                    if (mounted) setState(() {});
+                  },
+                ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          PetRoomScene(profile: profile),
+          const SizedBox(height: 12),
           Card(
             child: Padding(
               padding: const EdgeInsets.all(20),
               child: Column(
                 children: [
-                  PetAvatar(
-                    size: 170,
-                    appearance: PetAppearance.fromBreed(profile.breed),
-                    decoration: petDecoration(profile.selectedDecoration),
-                  ),
                   Text(
                     _message,
                     style: Theme.of(context).textTheme.titleMedium,
@@ -76,6 +93,33 @@ class _PetHomePageState extends State<PetHomePage> {
               ),
             ),
           ),
+          const SizedBox(height: 16),
+          Text('房间家具', style: Theme.of(context).textTheme.titleLarge),
+          const SizedBox(height: 8),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              for (final item in petFurniture.where(
+                (item) => item.roomId == profile.selectedRoom,
+              ))
+                Chip(
+                  key: ValueKey('furniture-status-${item.id}'),
+                  avatar: Icon(
+                    profile.unlockedFurniture.contains(item.id)
+                        ? Icons.check_circle_outline
+                        : Icons.lock_outline,
+                    size: 18,
+                  ),
+                  label: Text(
+                    profile.unlockedFurniture.contains(item.id)
+                        ? item.name
+                        : '${item.name}（大阶段${item.unlockStage}解锁）',
+                  ),
+                ),
+            ],
+          ),
+          const SizedBox(height: 16),
           Text('选择伙伴', style: Theme.of(context).textTheme.titleLarge),
           Wrap(
             spacing: 8,
