@@ -90,12 +90,12 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "CompanyName", "com.zhtextbook" "\0"
-            VALUE "FileDescription", "zh-lang-textbook" "\0"
+            VALUE "FileDescription", "语文基础" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
             VALUE "InternalName", "zh-lang-textbook" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2026 com.zhtextbook. All rights reserved." "\0"
             VALUE "OriginalFilename", "zh-lang-textbook.exe" "\0"
-            VALUE "ProductName", "zh-lang-textbook" "\0"
+            VALUE "ProductName", "语文基础" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END
