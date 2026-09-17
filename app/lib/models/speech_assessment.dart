@@ -160,8 +160,12 @@ List<_Pair> _align(
       column++;
     }
   }
-  while (row < expectedChars.length) result.add(_Pair(row++, null));
-  while (column < recognizedChars.length) result.add(_Pair(null, column++));
+  while (row < expectedChars.length) {
+    result.add(_Pair(row++, null));
+  }
+  while (column < recognizedChars.length) {
+    result.add(_Pair(null, column++));
+  }
   return result;
 }
 

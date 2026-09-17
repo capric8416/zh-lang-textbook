@@ -1,20 +1,58 @@
 import 'package:flutter/material.dart';
 
+import '../models/practice.dart';
 import '../models/textbook.dart';
+import '../services/practice_progress.dart';
 import '../services/textbook_repository.dart';
 import 'practice_page.dart';
 import 'review_page.dart';
 
-class ModePage extends StatelessWidget {
+class ModePage extends StatefulWidget {
   const ModePage({super.key, required this.selection, required this.textbook});
 
   final TextbookSelection selection;
   final Textbook textbook;
 
   @override
+  State<ModePage> createState() => _ModePageState();
+}
+
+class _ModePageState extends State<ModePage> {
+  int? _wrongCount;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadWrongCount();
+  }
+
+  Future<void> _loadWrongCount() async {
+    final store = await PracticeProgressStore.open(widget.selection.fileName);
+    final catalog = PracticeCatalog.fromTextbook(widget.textbook);
+    if (mounted) {
+      setState(
+        () => _wrongCount = store.progress.wrongCountFor(catalog.questions),
+      );
+    }
+  }
+
+  Future<void> _openPractice({required bool mistakesOnly}) async {
+    await Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => PracticePage(
+          selection: widget.selection,
+          textbook: widget.textbook,
+          mistakesOnly: mistakesOnly,
+        ),
+      ),
+    );
+    await _loadWrongCount();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(selection.label)),
+      appBar: AppBar(title: Text(widget.selection.label)),
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
@@ -39,8 +77,8 @@ class ModePage extends StatelessWidget {
                         onTap: () => Navigator.of(context).push(
                           MaterialPageRoute<void>(
                             builder: (_) => ReviewPage(
-                              selection: selection,
-                              textbook: textbook,
+                              selection: widget.selection,
+                              textbook: widget.textbook,
                             ),
                           ),
                         ),
@@ -48,23 +86,30 @@ class ModePage extends StatelessWidget {
                       _ModeCard(
                         icon: Icons.edit_note_outlined,
                         title: '练习',
-                        description: '看拼音写汉字，或看汉字写拼音；支持错题练习。',
-                        onTap: () => Navigator.of(context).push(
-                          MaterialPageRoute<void>(
-                            builder: (_) => PracticePage(
-                              selection: selection,
-                              textbook: textbook,
-                            ),
-                          ),
-                        ),
+                        description: '看拼音写汉字、听写或朗读，按课文综合练习。',
+                        onTap: () => _openPractice(mistakesOnly: false),
+                      ),
+                      _ModeCard(
+                        icon: Icons.assignment_late_outlined,
+                        title: '错题专项',
+                        description: _wrongCount == null
+                            ? '正在读取错题…'
+                            : _wrongCount == 0
+                            ? '目前没有错题，先去综合练习看看。'
+                            : '集中练习整本教材的 $_wrongCount 道当前错题。',
+                        onTap: _wrongCount == null || _wrongCount == 0
+                            ? null
+                            : () => _openPractice(mistakesOnly: true),
                       ),
                     ];
-                    if (constraints.maxWidth < 620) {
+                    if (constraints.maxWidth < 760) {
                       return Column(
                         children: [
                           cards[0],
                           const SizedBox(height: 16),
                           cards[1],
+                          const SizedBox(height: 16),
+                          cards[2],
                         ],
                       );
                     }
@@ -74,6 +119,8 @@ class ModePage extends StatelessWidget {
                         Expanded(child: cards[0]),
                         const SizedBox(width: 18),
                         Expanded(child: cards[1]),
+                        const SizedBox(width: 18),
+                        Expanded(child: cards[2]),
                       ],
                     );
                   },

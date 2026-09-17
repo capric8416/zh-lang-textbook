@@ -12,9 +12,12 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:zh_textbook/main.dart';
+import 'package:zh_textbook/models/practice.dart';
 import 'package:zh_textbook/models/textbook.dart';
+import 'package:zh_textbook/screens/mode_page.dart';
 import 'package:zh_textbook/screens/practice_page.dart';
 import 'package:zh_textbook/services/numeric_pinyin.dart';
+import 'package:zh_textbook/services/practice_progress.dart';
 import 'package:zh_textbook/services/textbook_repository.dart';
 
 void main() {
@@ -71,5 +74,71 @@ void main() {
     );
     expect(find.text('下一题'), findsNothing);
     expect(find.textContaining(RegExp(r'批改|开始朗读')), findsOneWidget);
+  });
+
+  testWidgets('模式页显示错题专项入口和当前错题数', (WidgetTester tester) async {
+    SharedPreferences.setMockInitialValues({});
+    final source = File(
+      '../json_reviewed/zh-lang-grade2b-textbook-struct.json',
+    ).readAsStringSync();
+    final textbook = Textbook.fromJsonString(source);
+    final question = PracticeCatalog.fromTextbook(textbook).questions.first;
+    final store = await PracticeProgressStore.open(
+      const TextbookSelection(grade: 2, semester: Semester.second).fileName,
+    );
+    await store.record(
+      question.attemptId(PracticeDirection.writeHanzi),
+      correct: false,
+    );
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: ModePage(
+          selection: const TextbookSelection(
+            grade: 2,
+            semester: Semester.second,
+          ),
+          textbook: textbook,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('错题专项'), findsOneWidget);
+    expect(find.textContaining('1 道当前错题'), findsOneWidget);
+  });
+
+  testWidgets('练习页可以从错题数量快捷进入专项模式', (WidgetTester tester) async {
+    SharedPreferences.setMockInitialValues({});
+    final source = File(
+      '../json_reviewed/zh-lang-grade2b-textbook-struct.json',
+    ).readAsStringSync();
+    final textbook = Textbook.fromJsonString(source);
+    final question = PracticeCatalog.fromTextbook(textbook).questions.first;
+    final store = await PracticeProgressStore.open(
+      const TextbookSelection(grade: 2, semester: Semester.second).fileName,
+    );
+    await store.record(
+      question.attemptId(PracticeDirection.writeHanzi),
+      correct: false,
+    );
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: PracticePage(
+          selection: const TextbookSelection(
+            grade: 2,
+            semester: Semester.second,
+          ),
+          textbook: textbook,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('当前错题 1'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('整本教材错题专项'), findsOneWidget);
+    expect(find.text('返回综合练习'), findsOneWidget);
   });
 }

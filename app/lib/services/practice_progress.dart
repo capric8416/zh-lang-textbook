@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../models/practice.dart';
+
 class QuestionProgress {
   const QuestionProgress({
     this.correctCount = 0,
@@ -38,10 +40,9 @@ class QuestionProgress {
 
   int get totalCount => correctCount + wrongCount;
 
-  bool get isWrong =>
-      wrongCount > 0 &&
-      (lastCorrectAt == null ||
-          (lastWrongAt?.isAfter(lastCorrectAt!) ?? false));
+  /// A mistaken attempt remains in focused practice until it has been
+  /// answered correctly more than three times for every wrong answer.
+  bool get isWrong => wrongCount > 0 && correctCount <= wrongCount * 3;
 
   Map<String, dynamic> toJson() => {
     'correct_count': correctCount,
@@ -77,6 +78,18 @@ class PracticeProgress {
       questions.values.where((item) => item.totalCount > 0).length;
 
   int get wrongCount => questions.values.where((item) => item.isWrong).length;
+
+  int wrongCountFor(Iterable<PracticeQuestion> availableQuestions) =>
+      availableQuestions.fold(0, (count, question) {
+        return count +
+            PracticeDirection.values
+                .where(question.supportsDirection)
+                .where(
+                  (direction) =>
+                      forQuestion(question.attemptId(direction)).isWrong,
+                )
+                .length;
+      });
 }
 
 class PracticeProgressStore {

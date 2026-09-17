@@ -17,16 +17,20 @@ class PracticePage extends StatefulWidget {
     super.key,
     required this.selection,
     required this.textbook,
+    this.mistakesOnly = false,
   });
 
   final TextbookSelection selection;
   final Textbook textbook;
+  final bool mistakesOnly;
 
   @override
   State<PracticePage> createState() => _PracticePageState();
 }
 
 class _PracticePageState extends State<PracticePage> {
+  static const _allMistakes = '__all_mistakes__';
+
   final _random = Random();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   final _writingPadKey = GlobalKey<WritingPadState>();
@@ -36,6 +40,8 @@ class _PracticePageState extends State<PracticePage> {
   PracticeQuestion? _question;
   Object? _loadError;
   late String _selectedChapterId;
+  late String _regularChapterId;
+  late bool _mistakesOnly;
   PracticeDirection _direction = PracticeDirection.writeHanzi;
   bool _graded = false;
   bool _grading = false;
@@ -50,7 +56,9 @@ class _PracticePageState extends State<PracticePage> {
         .where((unit) => unit.id != 'appendix')
         .expand((unit) => unit.chapters)
         .toList(growable: false);
-    _selectedChapterId = _chapters.first.id;
+    _regularChapterId = _chapters.first.id;
+    _mistakesOnly = widget.mistakesOnly;
+    _selectedChapterId = _mistakesOnly ? _allMistakes : _regularChapterId;
     _openProgress();
   }
 
@@ -83,11 +91,14 @@ class _PracticePageState extends State<PracticePage> {
     _selecting = true;
     try {
       final directions = PracticeDirection.values.toList()..shuffle(_random);
+      final questions = _selectedChapterId == _allMistakes
+          ? catalog.questions
+          : catalog.forChapter(_selectedChapterId);
       var direction = directions.first;
       PracticeQuestion? selected;
       for (final candidateDirection in directions) {
         final candidate = await _selectForDirection(
-          catalog.forChapter(_selectedChapterId),
+          questions,
           candidateDirection,
           store,
         );
@@ -119,12 +130,17 @@ class _PracticePageState extends State<PracticePage> {
         .where(
           (question) =>
               question.supportsDirection(direction) &&
-              !store.isBlocked(question.attemptId(direction), now),
+              (_mistakesOnly
+                  ? store.progress
+                        .forQuestion(question.attemptId(direction))
+                        .isWrong
+                  : !store.isBlocked(question.attemptId(direction), now)),
         )
         .toList();
     while (candidates.isNotEmpty) {
       final selected = _weightedChoice(candidates, direction, store);
-      if (await store.consumeSkip(selected.attemptId(direction), now)) {
+      if (!_mistakesOnly &&
+          await store.consumeSkip(selected.attemptId(direction), now)) {
         candidates.remove(selected);
         continue;
       }
@@ -155,7 +171,7 @@ class _PracticePageState extends State<PracticePage> {
     String chapterId, {
     required bool closeDrawer,
   }) async {
-    if (!_graded && _question != null) {
+    if (!_mistakesOnly && !_graded && _question != null) {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(const SnackBar(content: Text('请先批改当前题目，再切换课文。')));
@@ -164,8 +180,21 @@ class _PracticePageState extends State<PracticePage> {
     if (closeDrawer) _scaffoldKey.currentState?.closeDrawer();
     setState(() {
       _selectedChapterId = chapterId;
+      if (chapterId != _allMistakes) _regularChapterId = chapterId;
       _question = null;
     });
+    await _chooseQuestion();
+  }
+
+  Future<void> _setMistakesOnly(bool value) async {
+    if (_mistakesOnly == value) return;
+    setState(() {
+      _mistakesOnly = value;
+      _selectedChapterId = value ? _allMistakes : _regularChapterId;
+      _question = null;
+      _graded = false;
+    });
+    _writingPadKey.currentState?.clear();
     await _chooseQuestion();
   }
 
@@ -338,6 +367,8 @@ class _PracticePageState extends State<PracticePage> {
         final toc = _PracticeToc(
           textbook: widget.textbook,
           catalog: catalog,
+          progress: store.progress,
+          mistakesOnly: _mistakesOnly,
           selectedChapterId: _selectedChapterId,
           onSelect: (id) => _selectChapter(id, closeDrawer: !wide),
         );
@@ -374,7 +405,7 @@ class _PracticePageState extends State<PracticePage> {
             ),
             title: Row(
               children: [
-                const Text('语文基础练习'),
+                Text(_mistakesOnly ? '错题专项' : '语文基础练习'),
                 const SizedBox(width: 8),
                 Padding(
                   padding: const EdgeInsets.only(top: 3),
@@ -404,14 +435,20 @@ class _PracticePageState extends State<PracticePage> {
     padding: const EdgeInsets.all(24),
     children: [
       Text(
-        _unitName,
+        _mistakesOnly
+            ? _selectedChapterId == _allMistakes
+                  ? widget.selection.label
+                  : _unitName
+            : _unitName,
         style: Theme.of(context).textTheme.labelLarge?.copyWith(
           color: Theme.of(context).colorScheme.primary,
         ),
       ),
       const SizedBox(height: 8),
       Text(
-        _chapter.name,
+        _mistakesOnly && _selectedChapterId == _allMistakes
+            ? '整本教材错题专项'
+            : _chapter.name,
         style: Theme.of(
           context,
         ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700),
@@ -419,18 +456,35 @@ class _PracticePageState extends State<PracticePage> {
       const SizedBox(height: 8),
       Wrap(
         spacing: 12,
+        runSpacing: 8,
+        crossAxisAlignment: WrapCrossAlignment.center,
         children: [
           Text('已练习 ${store.progress.completedCount}'),
-          Text('当前错题 ${store.progress.wrongCount}'),
-          Text('本课题目 ${_catalog!.forChapter(_selectedChapterId).length}'),
+          ActionChip(
+            avatar: const Icon(Icons.assignment_late_outlined, size: 18),
+            label: Text(
+              '当前错题 ${store.progress.wrongCountFor(_catalog!.questions)}',
+            ),
+            onPressed: _mistakesOnly ? null : () => _setMistakesOnly(true),
+          ),
+          if (_mistakesOnly)
+            ActionChip(
+              avatar: const Icon(Icons.edit_note_outlined, size: 18),
+              label: const Text('返回综合练习'),
+              onPressed: () => _setMistakesOnly(false),
+            )
+          else
+            Text('本课题目 ${_catalog!.forChapter(_selectedChapterId).length}'),
         ],
       ),
       const SizedBox(height: 20),
       if (_question == null)
-        const Card(
+        Card(
           child: Padding(
-            padding: EdgeInsets.all(28),
-            child: Text('本课没有可练习题目，或题目尚未到复习时间。'),
+            padding: const EdgeInsets.all(28),
+            child: Text(
+              _mistakesOnly ? '当前范围没有错题，去综合练习看看。' : '本课没有可练习题目，或题目尚未到复习时间。',
+            ),
           ),
         )
       else
@@ -640,16 +694,25 @@ class _QuestionCard extends StatelessWidget {
   }
 }
 
+int _wrongCountForQuestions(
+  Iterable<PracticeQuestion> questions,
+  PracticeProgress progress,
+) => progress.wrongCountFor(questions);
+
 class _PracticeToc extends StatelessWidget {
   const _PracticeToc({
     required this.textbook,
     required this.catalog,
+    required this.progress,
+    required this.mistakesOnly,
     required this.selectedChapterId,
     required this.onSelect,
   });
 
   final Textbook textbook;
   final PracticeCatalog catalog;
+  final PracticeProgress progress;
+  final bool mistakesOnly;
   final String selectedChapterId;
   final ValueChanged<String> onSelect;
 
@@ -661,10 +724,32 @@ class _PracticeToc extends StatelessWidget {
       child: ListView(
         padding: const EdgeInsets.fromLTRB(8, 12, 8, 24),
         children: [
-          const ListTile(
-            leading: CircleAvatar(child: Icon(Icons.edit_note_outlined)),
-            title: Text('练习目录', style: TextStyle(fontWeight: FontWeight.w700)),
+          ListTile(
+            leading: const CircleAvatar(child: Icon(Icons.edit_note_outlined)),
+            title: Text(
+              mistakesOnly ? '错题目录' : '练习目录',
+              style: const TextStyle(fontWeight: FontWeight.w700),
+            ),
           ),
+          if (mistakesOnly)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(12, 0, 8, 8),
+              child: Material(
+                color: selectedChapterId == _PracticePageState._allMistakes
+                    ? colors.primaryContainer
+                    : Colors.transparent,
+                borderRadius: BorderRadius.circular(10),
+                child: ListTile(
+                  dense: true,
+                  leading: const Icon(Icons.library_books_outlined),
+                  title: const Text('全部错题'),
+                  trailing: Text(
+                    '${progress.wrongCountFor(catalog.questions)}',
+                  ),
+                  onTap: () => onSelect(_PracticePageState._allMistakes),
+                ),
+              ),
+            ),
           for (final unit in textbook.index.where(
             (item) => item.id != 'appendix',
           ))
@@ -681,7 +766,12 @@ class _PracticeToc extends StatelessWidget {
                 for (final chapter in unit.chapters)
                   _PracticeTocTile(
                     chapter: chapter,
-                    count: catalog.forChapter(chapter.id).length,
+                    count: mistakesOnly
+                        ? _wrongCountForQuestions(
+                            catalog.forChapter(chapter.id),
+                            progress,
+                          )
+                        : catalog.forChapter(chapter.id).length,
                     selected: chapter.id == selectedChapterId,
                     onTap: () => onSelect(chapter.id),
                   ),
