@@ -29,6 +29,13 @@ class PetGrowthEngine {
   static const unitPoints = 100;
   static const milestonePoints = {60: 30, 80: 20, 90: 20, 100: 30};
 
+  static Set<String> breedsForStage(int stage) =>
+      petBreeds.where((b) => b.unlockStage <= stage).map((b) => b.id).toSet();
+  static Set<String> decorationsForStage(int stage) => petDecorations
+      .where((d) => d.unlockStage <= stage)
+      .map((d) => d.id)
+      .toSet();
+
   static PetGrowthSyncResult synchronize({
     required PetProfile profile,
     required String textbookKey,
@@ -92,11 +99,36 @@ class PetGrowthEngine {
       }
     }
 
+    final unlockedBreeds = {
+      ...profile.unlockedBreeds,
+      ...breedsForStage(majorStage),
+    };
+    final unlockedDecorations = {
+      ...profile.unlockedDecorations,
+      ...decorationsForStage(majorStage),
+    };
+    final normalizedBreed = unlockedBreeds.contains(profile.breed)
+        ? profile.breed
+        : 'default';
+    final normalizedDecoration =
+        unlockedDecorations.contains(profile.selectedDecoration)
+        ? profile.selectedDecoration
+        : 'none';
+    changed =
+        changed ||
+        unlockedBreeds.length != profile.unlockedBreeds.length ||
+        unlockedDecorations.length != profile.unlockedDecorations.length ||
+        normalizedBreed != profile.breed ||
+        normalizedDecoration != profile.selectedDecoration;
     return PetGrowthSyncResult(
       profile: profile.copyWith(
         growthPoints: points,
         majorStage: majorStage,
         claimedEvents: claimed,
+        unlockedBreeds: unlockedBreeds,
+        unlockedDecorations: unlockedDecorations,
+        breed: normalizedBreed,
+        selectedDecoration: normalizedDecoration,
       ),
       mastery: mastery,
       celebrations: [...lessonCelebrations, ...unitCelebrations],
@@ -113,6 +145,24 @@ class PetGrowthStore {
   PetProfile _profile;
 
   PetProfile get profile => _profile;
+
+  Future<bool> selectBreed(String id) async {
+    if (!_profile.unlockedBreeds.contains(id)) return false;
+    final breed = petBreed(id);
+    _profile = _profile.copyWith(breed: breed.id, species: breed.species);
+    return _save();
+  }
+
+  Future<bool> selectDecoration(String id) async {
+    if (!_profile.unlockedDecorations.contains(id)) return false;
+    _profile = _profile.copyWith(selectedDecoration: id);
+    return _save();
+  }
+
+  Future<bool> _save() async => _preferences.setString(
+    _key,
+    jsonEncode({'version': 2, 'profile': _profile.toJson()}),
+  );
 
   static Future<PetGrowthStore> open() async {
     final preferences = await SharedPreferences.getInstance();
@@ -151,12 +201,7 @@ class PetGrowthStore {
       emitCelebrations: emitCelebrations,
     );
     _profile = result.profile;
-    if (result.changed) {
-      await _preferences.setString(
-        _key,
-        jsonEncode({'version': 1, 'profile': _profile.toJson()}),
-      );
-    }
+    if (result.changed) await _save();
     return result;
   }
 }

@@ -10,6 +10,7 @@ import '../services/textbook_repository.dart';
 import '../widgets/pet_growth_card.dart';
 import 'practice_page.dart';
 import 'review_page.dart';
+import 'pet_home_page.dart';
 
 class ModePage extends StatefulWidget {
   const ModePage({super.key, required this.selection, required this.textbook});
@@ -84,7 +85,18 @@ class _ModePageState extends State<ModePage> {
                 ),
                 const SizedBox(height: 20),
                 if (_petProfile != null && _mastery != null)
-                  PetGrowthCard(profile: _petProfile!, mastery: _mastery!)
+                  PetGrowthCard(
+                    profile: _petProfile!,
+                    mastery: _mastery!,
+                    onOpenHome: () async {
+                      await Navigator.of(context).push(
+                        MaterialPageRoute<void>(
+                          builder: (_) => const PetHomePage(),
+                        ),
+                      );
+                      await _loadDashboard();
+                    },
+                  )
                 else
                   const LinearProgressIndicator(),
                 const SizedBox(height: 28),

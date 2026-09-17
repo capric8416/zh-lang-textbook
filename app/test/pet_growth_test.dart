@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
@@ -184,6 +185,40 @@ void main() {
       const PetCelebration.lesson(title: '课文', threshold: 100).expression,
       PetExpression.radiant,
     );
+  });
+
+  test('v1 档案迁移出默认解锁并按阶段补齐解锁', () {
+    final legacy = PetProfile.fromJson({
+      'species': 'dog',
+      'breed': 'default',
+      'growth_points': 10,
+      'major_stage': 2,
+      'claimed_events': <String>[],
+    });
+    expect(legacy.unlockedBreeds, {'default'});
+    final unlocked = PetGrowthEngine.breedsForStage(legacy.majorStage);
+    expect(unlocked, containsAll(<String>['default', 'shiba', 'corgi']));
+    expect(PetGrowthEngine.decorationsForStage(2), contains('red-scarf'));
+  });
+
+  test('宠物之家选择只允许已解锁项目并可持久化', () async {
+    SharedPreferences.setMockInitialValues({
+      'pet_growth_profile': jsonEncode({
+        'version': 2,
+        'profile': const PetProfile(
+          majorStage: 1,
+          unlockedBreeds: {'default', 'shiba'},
+          unlockedDecorations: {'none', 'blue-collar'},
+        ).toJson(),
+      }),
+    });
+    final store = await PetGrowthStore.open();
+    expect(await store.selectBreed('corgi'), isFalse);
+    expect(await store.selectBreed('shiba'), isTrue);
+    expect(await store.selectDecoration('blue-collar'), isTrue);
+    final reopened = await PetGrowthStore.open();
+    expect(reopened.profile.breed, 'shiba');
+    expect(reopened.profile.selectedDecoration, 'blue-collar');
   });
 }
 

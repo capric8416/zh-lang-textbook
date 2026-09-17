@@ -9,10 +9,12 @@ class PetGrowthCard extends StatelessWidget {
     super.key,
     required this.profile,
     required this.mastery,
+    this.onOpenHome,
   });
 
   final PetProfile profile;
   final TextbookMastery mastery;
+  final VoidCallback? onOpenHome;
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +29,11 @@ class PetGrowthCard extends StatelessWidget {
         padding: const EdgeInsets.all(18),
         child: Row(
           children: [
-            const PetAvatar(size: 88),
+            PetAvatar(
+              size: 88,
+              appearance: PetAppearance.fromBreed(profile.breed),
+              decoration: petDecoration(profile.selectedDecoration),
+            ),
             const SizedBox(width: 18),
             Expanded(
               child: Column(
@@ -37,10 +43,15 @@ class PetGrowthCard extends StatelessWidget {
                     children: [
                       Expanded(
                         child: Text(
-                          '小狗成长伙伴',
+                          '${petBreed(profile.breed).name}成长伙伴',
                           style: Theme.of(context).textTheme.titleMedium
                               ?.copyWith(fontWeight: FontWeight.w800),
                         ),
+                      ),
+                      IconButton(
+                        onPressed: onOpenHome,
+                        tooltip: '打开宠物之家',
+                        icon: const Icon(Icons.home_outlined),
                       ),
                       Text(
                         '大阶段 ${profile.majorStage}',

@@ -12,6 +12,16 @@ class PetAppearance {
     required this.earDrop,
   });
 
+  factory PetAppearance.fromBreed(String id) {
+    final breed = petBreed(id);
+    return PetAppearance(
+      coat: Color(breed.coat),
+      muzzle: const Color(0xffffe0b2),
+      marking: Color(breed.marking),
+      earDrop: breed.earDrop,
+    );
+  }
+
   static const defaultDog = PetAppearance(
     coat: Color(0xffd89955),
     muzzle: Color(0xffffe0b2),
@@ -38,6 +48,11 @@ class PetAvatar extends StatelessWidget {
     this.size = 96,
     this.expression = PetExpression.happy,
     this.appearance = PetAppearance.defaultDog,
+    this.decoration = const PetDecoration(
+      id: 'none',
+      name: '清爽',
+      unlockStage: 0,
+    ),
     this.showAura = true,
   });
 
@@ -45,10 +60,11 @@ class PetAvatar extends StatelessWidget {
   final PetExpression expression;
   final PetAppearance appearance;
   final bool showAura;
+  final PetDecoration decoration;
 
   @override
   Widget build(BuildContext context) => Semantics(
-    label: '小狗成长伙伴',
+    label: '宠物成长伙伴',
     image: true,
     child: CustomPaint(
       key: const ValueKey('pet-avatar'),
@@ -57,6 +73,7 @@ class PetAvatar extends StatelessWidget {
         expression: expression,
         appearance: appearance,
         auraColor: showAura ? petAuraColor(expression) : Colors.transparent,
+        decoration: decoration,
       ),
     ),
   );
@@ -67,11 +84,13 @@ class _DogPainter extends CustomPainter {
     required this.expression,
     required this.appearance,
     required this.auraColor,
+    required this.decoration,
   });
 
   final PetExpression expression;
   final PetAppearance appearance;
   final Color auraColor;
+  final PetDecoration decoration;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -95,6 +114,12 @@ class _DogPainter extends CustomPainter {
     final dark = Paint()
       ..color = const Color(0xff3d2b1f)
       ..strokeCap = StrokeCap.round;
+    if (decoration.background != 0)
+      canvas.drawCircle(
+        const Offset(50, 51),
+        44,
+        Paint()..color = Color(decoration.background),
+      );
 
     final earDrop = appearance.earDrop * 12;
     canvas.drawOval(
@@ -144,6 +169,18 @@ class _DogPainter extends CustomPainter {
       Rect.fromCenter(center: const Offset(50, 69), width: 8, height: 6),
       Paint()..color = const Color(0xffff7597),
     );
+    if (decoration.color != 0) {
+      final accent = Paint()..color = Color(decoration.color);
+      canvas.drawArc(
+        const Rect.fromLTWH(29, 65, 42, 18),
+        0,
+        math.pi,
+        false,
+        accent
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 5,
+      );
+    }
 
     canvas.restore();
   }
@@ -225,5 +262,6 @@ class _DogPainter extends CustomPainter {
   bool shouldRepaint(_DogPainter oldDelegate) =>
       expression != oldDelegate.expression ||
       appearance != oldDelegate.appearance ||
+      decoration != oldDelegate.decoration ||
       auraColor != oldDelegate.auraColor;
 }
