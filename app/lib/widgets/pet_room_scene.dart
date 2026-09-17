@@ -4,9 +4,16 @@ import '../models/pet.dart';
 import 'pet_avatar.dart';
 
 class PetRoomScene extends StatelessWidget {
-  const PetRoomScene({super.key, required this.profile});
+  const PetRoomScene({
+    super.key,
+    required this.profile,
+    this.onFurnitureTap,
+    this.actionDescription,
+  });
 
   final PetProfile profile;
+  final ValueChanged<PetFurniture>? onFurnitureTap;
+  final String? Function(PetFurniture)? actionDescription;
 
   @override
   Widget build(BuildContext context) {
@@ -45,9 +52,15 @@ class PetRoomScene extends StatelessWidget {
               ),
               for (final item in items)
                 Align(
-                  key: ValueKey('furniture-${item.id}'),
                   alignment: _alignment(item.slot),
-                  child: _FurnitureTile(item: item),
+                  child: _FurnitureTile(
+                    key: ValueKey('furniture-${item.id}'),
+                    item: item,
+                    onTap: actionDescription?.call(item) == null
+                        ? null
+                        : () => onFurnitureTap?.call(item),
+                    actionDescription: actionDescription?.call(item),
+                  ),
                 ),
               Align(
                 alignment: const Alignment(0, 0.3),
@@ -100,14 +113,20 @@ class PetRoomScene extends StatelessWidget {
 }
 
 class _FurnitureTile extends StatelessWidget {
-  const _FurnitureTile({required this.item});
+  const _FurnitureTile({
+    super.key,
+    required this.item,
+    required this.onTap,
+    required this.actionDescription,
+  });
 
   final PetFurniture item;
+  final VoidCallback? onTap;
+  final String? actionDescription;
 
   @override
-  Widget build(BuildContext context) => Semantics(
-    label: item.name,
-    child: Container(
+  Widget build(BuildContext context) {
+    final tile = Container(
       width: 74,
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 7),
       decoration: BoxDecoration(
@@ -126,8 +145,24 @@ class _FurnitureTile extends StatelessWidget {
           ),
         ],
       ),
-    ),
-  );
+    );
+    return Semantics(
+      button: onTap != null,
+      label: actionDescription == null
+          ? item.name
+          : '${item.name}，$actionDescription',
+      child: onTap == null
+          ? tile
+          : Material(
+              color: Colors.transparent,
+              child: InkWell(
+                borderRadius: BorderRadius.circular(14),
+                onTap: onTap,
+                child: tile,
+              ),
+            ),
+    );
+  }
 
   IconData _icon(String id) => switch (id) {
     'pet-bed' => Icons.bed_outlined,

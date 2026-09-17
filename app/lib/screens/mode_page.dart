@@ -91,7 +91,10 @@ class _ModePageState extends State<ModePage> {
                     onOpenHome: () async {
                       await Navigator.of(context).push(
                         MaterialPageRoute<void>(
-                          builder: (_) => const PetHomePage(),
+                          builder: (_) => PetHomePage(
+                            selection: widget.selection,
+                            textbook: widget.textbook,
+                          ),
                         ),
                       );
                       await _loadDashboard();

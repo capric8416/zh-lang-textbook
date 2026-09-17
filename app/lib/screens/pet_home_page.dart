@@ -1,16 +1,28 @@
 import 'package:flutter/material.dart';
 import '../models/pet.dart';
+import '../models/practice.dart';
+import '../models/textbook.dart';
 import '../services/pet_growth.dart';
+import '../services/practice_progress.dart';
+import '../services/quick_practice.dart';
+import '../services/textbook_repository.dart';
 import '../widgets/pet_room_scene.dart';
+import 'practice_page.dart';
 
 class PetHomePage extends StatefulWidget {
-  const PetHomePage({super.key});
+  const PetHomePage({super.key, this.selection, this.textbook});
+
+  final TextbookSelection? selection;
+  final Textbook? textbook;
+
   @override
   State<PetHomePage> createState() => _PetHomePageState();
 }
 
 class _PetHomePageState extends State<PetHomePage> {
   PetGrowthStore? _store;
+  PracticeProgressStore? _progressStore;
+  PracticeCatalog? _catalog;
   String _message = '选一个喜欢的伙伴吧';
   @override
   void initState() {
@@ -20,12 +32,94 @@ class _PetHomePageState extends State<PetHomePage> {
 
   Future<void> _open() async {
     final store = await PetGrowthStore.open();
-    if (mounted) setState(() => _store = store);
+    final selection = widget.selection;
+    final textbook = widget.textbook;
+    final progressStore = selection == null
+        ? null
+        : await PracticeProgressStore.open(selection.fileName);
+    final catalog = textbook == null
+        ? null
+        : PracticeCatalog.fromTextbook(textbook);
+    if (!mounted) return;
+    setState(() {
+      _store = store;
+      _progressStore = progressStore;
+      _catalog = catalog;
+    });
   }
 
   Future<void> _interact(String text) async {
     setState(() => _message = text);
   }
+
+  Future<void> _activateFurniture(PetFurniture furniture) async {
+    final selection = widget.selection;
+    final textbook = widget.textbook;
+    if (selection == null || textbook == null) {
+      _showUnavailable('请从教材学习页进入宠物之家');
+      return;
+    }
+    if (furniture.id == 'study-desk') {
+      await Navigator.of(context).push<void>(
+        MaterialPageRoute(
+          builder: (_) =>
+              PracticePage(selection: selection, textbook: textbook),
+        ),
+      );
+      await _refreshAfterPractice(completed: false);
+      return;
+    }
+    final action = quickPracticeActionForFurniture(furniture.id);
+    if (action == null) return;
+    final catalog = _catalog;
+    final progressStore = _progressStore;
+    if (catalog == null || progressStore == null) {
+      _showUnavailable('练习内容还在准备中，请稍后再试');
+      return;
+    }
+    final result = QuickPracticeSelector.select(
+      catalog: catalog,
+      progress: progressStore.progress,
+      action: action,
+    );
+    if (!result.isAvailable) {
+      _showUnavailable(result.reason ?? '当前无法开始三题陪练');
+      return;
+    }
+    final completed = await Navigator.of(context).push<bool>(
+      MaterialPageRoute(
+        builder: (_) => PracticePage(
+          selection: selection,
+          textbook: textbook,
+          quickSession: result.session,
+        ),
+      ),
+    );
+    await _refreshAfterPractice(completed: completed == true);
+  }
+
+  Future<void> _refreshAfterPractice({required bool completed}) async {
+    await _open();
+    if (mounted && completed) {
+      setState(() => _message = '三题陪练完成，真棒！');
+    }
+  }
+
+  void _showUnavailable(String message) {
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
+  }
+
+  String? _furnitureActionDescription(PetFurniture furniture) =>
+      switch (furniture.id) {
+        'study-desk' => '继续综合练习',
+        'bookcase' => '开始三题综合复习',
+        'toy-box' => '开始三题错题优先练习',
+        'desk-lamp' => '开始三题汉字拼音练习',
+        'flower-pot' => '开始三题朗读检查',
+        _ => null,
+      };
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +152,11 @@ class _PetHomePageState extends State<PetHomePage> {
             ],
           ),
           const SizedBox(height: 12),
-          PetRoomScene(profile: profile),
+          PetRoomScene(
+            profile: profile,
+            onFurnitureTap: _activateFurniture,
+            actionDescription: _furnitureActionDescription,
+          ),
           const SizedBox(height: 12),
           Card(
             child: Padding(

@@ -4,11 +4,13 @@ import 'package:flutter/material.dart';
 
 import '../models/ocr.dart';
 import '../models/practice.dart';
+import '../models/quick_practice.dart';
 import '../models/speech_assessment.dart';
 import '../models/textbook.dart';
 import '../services/ocr_engine.dart';
 import '../services/pet_growth.dart';
 import '../services/practice_progress.dart';
+import '../services/quick_practice.dart';
 import '../services/speech_engine.dart';
 import '../services/textbook_repository.dart';
 import '../widgets/writing_pad.dart';
@@ -20,11 +22,13 @@ class PracticePage extends StatefulWidget {
     required this.selection,
     required this.textbook,
     this.mistakesOnly = false,
+    this.quickSession,
   });
 
   final TextbookSelection selection;
   final Textbook textbook;
   final bool mistakesOnly;
+  final QuickPracticeSession? quickSession;
 
   @override
   State<PracticePage> createState() => _PracticePageState();
@@ -51,6 +55,7 @@ class _PracticePageState extends State<PracticePage> {
   bool _selecting = false;
   bool _playing = false;
   bool _recording = false;
+  int _quickIndex = 0;
 
   @override
   void initState() {
@@ -102,6 +107,21 @@ class _PracticePageState extends State<PracticePage> {
     if (catalog == null || store == null || _selecting) return;
     _selecting = true;
     try {
+      final quickSession = widget.quickSession;
+      if (quickSession != null) {
+        final attempt = quickSession.attempts[_quickIndex];
+        final selected = catalog.questions
+            .where((question) => question.id == attempt.questionId)
+            .firstOrNull;
+        if (!mounted) return;
+        setState(() {
+          _direction = attempt.direction;
+          _question = selected;
+          _graded = false;
+        });
+        _writingPadKey.currentState?.clear();
+        return;
+      }
       final directions = PracticeDirection.values.toList()..shuffle(_random);
       final questions = _selectedChapterId == _allMistakes
           ? catalog.questions
@@ -374,6 +394,20 @@ class _PracticePageState extends State<PracticePage> {
     }
   }
 
+  Future<void> _advanceQuickPractice() async {
+    final session = widget.quickSession;
+    if (session == null) {
+      await _chooseQuestion();
+      return;
+    }
+    if (_quickIndex == session.attempts.length - 1) {
+      if (mounted) Navigator.of(context).pop(true);
+      return;
+    }
+    setState(() => _quickIndex += 1);
+    await _chooseQuestion();
+  }
+
   String get _unitName => widget.textbook.index
       .firstWhere(
         (unit) =>
@@ -397,6 +431,7 @@ class _PracticePageState extends State<PracticePage> {
     return LayoutBuilder(
       builder: (context, constraints) {
         final wide = constraints.maxWidth >= 900;
+        final quick = widget.quickSession != null;
         final toc = _PracticeToc(
           textbook: widget.textbook,
           catalog: catalog,
@@ -407,10 +442,12 @@ class _PracticePageState extends State<PracticePage> {
         );
         return Scaffold(
           key: _scaffoldKey,
-          drawer: wide ? null : Drawer(width: 320, child: SafeArea(child: toc)),
+          drawer: wide || quick
+              ? null
+              : Drawer(width: 320, child: SafeArea(child: toc)),
           appBar: AppBar(
             toolbarHeight: 48,
-            leadingWidth: wide ? 56 : 88,
+            leadingWidth: wide || quick ? 56 : 88,
             leading: Row(
               children: [
                 IconButton(
@@ -423,7 +460,7 @@ class _PracticePageState extends State<PracticePage> {
                   icon: const Icon(Icons.arrow_back),
                   onPressed: () => Navigator.of(context).maybePop(),
                 ),
-                if (!wide)
+                if (!wide && !quick)
                   IconButton(
                     tooltip: '打开目录',
                     padding: EdgeInsets.zero,
@@ -438,7 +475,13 @@ class _PracticePageState extends State<PracticePage> {
             ),
             title: Row(
               children: [
-                Text(_mistakesOnly ? '错题专项' : '语文基础练习'),
+                Text(
+                  quick
+                      ? '宠物三题陪练'
+                      : _mistakesOnly
+                      ? '错题专项'
+                      : '语文基础练习',
+                ),
                 const SizedBox(width: 8),
                 Padding(
                   padding: const EdgeInsets.only(top: 3),
@@ -450,7 +493,7 @@ class _PracticePageState extends State<PracticePage> {
               ],
             ),
           ),
-          body: wide
+          body: wide && !quick
               ? Row(
                   children: [
                     SizedBox(width: 300, child: toc),
@@ -468,7 +511,9 @@ class _PracticePageState extends State<PracticePage> {
     padding: const EdgeInsets.all(24),
     children: [
       Text(
-        _mistakesOnly
+        widget.quickSession != null
+            ? widget.selection.label
+            : _mistakesOnly
             ? _selectedChapterId == _allMistakes
                   ? widget.selection.label
                   : _unitName
@@ -479,7 +524,9 @@ class _PracticePageState extends State<PracticePage> {
       ),
       const SizedBox(height: 8),
       Text(
-        _mistakesOnly && _selectedChapterId == _allMistakes
+        widget.quickSession != null
+            ? quickPracticeActionLabel(widget.quickSession!.action)
+            : _mistakesOnly && _selectedChapterId == _allMistakes
             ? '整本教材错题专项'
             : _chapter.name,
         style: Theme.of(
@@ -492,22 +539,30 @@ class _PracticePageState extends State<PracticePage> {
         runSpacing: 8,
         crossAxisAlignment: WrapCrossAlignment.center,
         children: [
-          Text('已练习 ${store.progress.completedCount}'),
-          ActionChip(
-            avatar: const Icon(Icons.assignment_late_outlined, size: 18),
-            label: Text(
-              '当前错题 ${store.progress.wrongCountFor(_catalog!.questions)}',
-            ),
-            onPressed: _mistakesOnly ? null : () => _setMistakesOnly(true),
-          ),
-          if (_mistakesOnly)
-            ActionChip(
-              avatar: const Icon(Icons.edit_note_outlined, size: 18),
-              label: const Text('返回综合练习'),
-              onPressed: () => _setMistakesOnly(false),
+          if (widget.quickSession != null)
+            QuickPracticeProgressIndicator(
+              current: _quickIndex + 1,
+              total: widget.quickSession!.attempts.length,
             )
           else
-            Text('本课题目 ${_catalog!.forChapter(_selectedChapterId).length}'),
+            Text('已练习 ${store.progress.completedCount}'),
+          if (widget.quickSession == null) ...[
+            ActionChip(
+              avatar: const Icon(Icons.assignment_late_outlined, size: 18),
+              label: Text(
+                '当前错题 ${store.progress.wrongCountFor(_catalog!.questions)}',
+              ),
+              onPressed: _mistakesOnly ? null : () => _setMistakesOnly(true),
+            ),
+            if (_mistakesOnly)
+              ActionChip(
+                avatar: const Icon(Icons.edit_note_outlined, size: 18),
+                label: const Text('返回综合练习'),
+                onPressed: () => _setMistakesOnly(false),
+              )
+            else
+              Text('本课题目 ${_catalog!.forChapter(_selectedChapterId).length}'),
+          ],
         ],
       ),
       const SizedBox(height: 20),
@@ -532,9 +587,32 @@ class _PracticePageState extends State<PracticePage> {
           onCorrect: _showCorrection,
           onPlay: _playDictation,
           onReadAloud: _toggleReadAloud,
-          onNext: _graded ? _chooseQuestion : null,
+          nextLabel:
+              widget.quickSession != null &&
+                  _quickIndex == widget.quickSession!.attempts.length - 1
+              ? '完成陪练'
+              : '下一题',
+          onNext: _graded ? _advanceQuickPractice : null,
         ),
     ],
+  );
+}
+
+class QuickPracticeProgressIndicator extends StatelessWidget {
+  const QuickPracticeProgressIndicator({
+    super.key,
+    required this.current,
+    required this.total,
+  });
+
+  final int current;
+  final int total;
+
+  @override
+  Widget build(BuildContext context) => Chip(
+    key: const ValueKey('quick-practice-progress'),
+    avatar: const Icon(Icons.pets_outlined, size: 18),
+    label: Text('$current/$total'),
   );
 }
 
@@ -551,6 +629,7 @@ class _QuestionCard extends StatelessWidget {
     required this.onPlay,
     required this.onReadAloud,
     required this.onNext,
+    required this.nextLabel,
   });
 
   final PracticeQuestion question;
@@ -564,6 +643,7 @@ class _QuestionCard extends StatelessWidget {
   final VoidCallback onPlay;
   final VoidCallback onReadAloud;
   final VoidCallback? onNext;
+  final String nextLabel;
 
   @override
   Widget build(BuildContext context) {
@@ -679,7 +759,7 @@ class _QuestionCard extends StatelessWidget {
                   ? FilledButton.icon(
                       onPressed: onNext,
                       icon: const Icon(Icons.arrow_forward),
-                      label: const Text('下一题'),
+                      label: Text(nextLabel),
                     )
                   : FilledButton.icon(
                       onPressed: grading
