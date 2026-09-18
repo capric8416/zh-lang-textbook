@@ -9,7 +9,7 @@ enum PetMissionKind {
   tidyToys,
 }
 
-enum PetMissionSource { invitation, furniture }
+enum PetMissionSource { invitation, goal, furniture }
 
 class PetCompanionMission {
   const PetCompanionMission({
@@ -27,6 +27,7 @@ class PetCompanionMission {
     required String petName,
     String? furnitureId,
     Set<String>? unlockedFurniture,
+    PetMissionSource? source,
   }) {
     var kind = _kindFor(furnitureId, action);
     if (furnitureId == null &&
@@ -35,13 +36,15 @@ class PetCompanionMission {
       kind = PetMissionKind.studyDesk;
     }
     final target = furnitureId ?? _furnitureFor(kind);
-    final source = furnitureId == null
-        ? PetMissionSource.invitation
-        : PetMissionSource.furniture;
+    final resolvedSource =
+        source ??
+        (furnitureId == null
+            ? PetMissionSource.invitation
+            : PetMissionSource.furniture);
     return switch (kind) {
       PetMissionKind.studyDesk => PetCompanionMission(
         kind: kind,
-        source: source,
+        source: resolvedSource,
         title: '布置学习桌',
         intro: '$petName想和你完成三题，把学习桌整理好。',
         steps: const ['摆好第一件文具', '放好练习本', '学习桌整理好啦'],
@@ -50,7 +53,7 @@ class PetCompanionMission {
       ),
       PetMissionKind.lightLamp => PetCompanionMission(
         kind: kind,
-        source: source,
+        source: resolvedSource,
         title: '点亮小台灯',
         intro: '$petName想和你完成三题，把小台灯点亮。',
         steps: const ['擦亮灯罩', '接好灯线', '小台灯亮起来啦'],
@@ -59,7 +62,7 @@ class PetCompanionMission {
       ),
       PetMissionKind.fillBookcase => PetCompanionMission(
         kind: kind,
-        source: source,
+        source: resolvedSource,
         title: '装满小书柜',
         intro: '$petName想和你完成三题，为书柜找三本书。',
         steps: const ['放入第一本书', '放入第二本书', '小书柜装好啦'],
@@ -68,7 +71,7 @@ class PetCompanionMission {
       ),
       PetMissionKind.bloomFlower => PetCompanionMission(
         kind: kind,
-        source: source,
+        source: resolvedSource,
         title: '让花儿开放',
         intro: '$petName想听你完成三题，让小花慢慢开放。',
         steps: const ['花苗探出头', '长出一片新叶', '小花开放啦'],
@@ -77,7 +80,7 @@ class PetCompanionMission {
       ),
       PetMissionKind.tidyToys => PetCompanionMission(
         kind: kind,
-        source: source,
+        source: resolvedSource,
         title: '整理玩具箱',
         intro: '$petName想和你完成三题，把玩具整理好。',
         steps: const ['收好一个玩具', '再收好一个玩具', '玩具箱整理好啦'],

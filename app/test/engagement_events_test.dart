@@ -104,6 +104,18 @@ void main() {
     expect(recent.deliveryState, EngagementDeliveryState.pending);
   });
 
+  test('目标展示事件在同一目标内幂等，目标变化时换新 ID', () {
+    var next = 0;
+    final lifecycle = GoalPresentationLifecycle();
+    String makeId() => 'goal-event-${next++}';
+
+    final first = lifecycle.eventIdFor('goal-1', makeId);
+    expect(lifecycle.eventIdFor('goal-1', makeId), first);
+    expect(lifecycle.eventIdFor('goal-2', makeId), isNot(first));
+    lifecycle.clear();
+    expect(lifecycle.eventIdFor('goal-2', makeId), 'goal-event-2');
+  });
+
   test('指标从去重事件投影邀请、完成、再练和次日回访', () {
     final events = [
       _event(
@@ -123,6 +135,24 @@ void main() {
         id: 'complete',
         type: EngagementEventType.quickPracticeCompleted,
         context: const EngagementEventContext(flowId: 'flow-1'),
+      ),
+      _event(
+        id: 'skip',
+        type: EngagementEventType.invitationSkipped,
+        context: const EngagementEventContext(flowId: 'flow-skip'),
+      ),
+      _event(
+        id: 'goal-view',
+        type: EngagementEventType.goalViewed,
+        context: const EngagementEventContext(
+          flowId: 'goal-1',
+          goalId: 'unit:1',
+        ),
+      ),
+      _event(
+        id: 'goal-start',
+        type: EngagementEventType.goalPracticeStarted,
+        context: const EngagementEventContext(flowId: 'goal-1'),
       ),
       _event(
         id: 'repeat',
@@ -155,6 +185,8 @@ void main() {
     expect(metrics.quickCompletion, 1);
     expect(metrics.voluntaryRepeat, 1);
     expect(metrics.nextDayReturn, 1);
+    expect(metrics.invitationSkipRate, 1);
+    expect(metrics.goalStartRate, 1);
   });
 }
 

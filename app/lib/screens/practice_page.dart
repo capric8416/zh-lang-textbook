@@ -30,6 +30,7 @@ class PracticePage extends StatefulWidget {
     this.quickSession,
     this.quickLaunch,
     this.engagementStore,
+    this.initialChapterId,
   });
 
   final TextbookSelection selection;
@@ -38,6 +39,7 @@ class PracticePage extends StatefulWidget {
   final QuickPracticeSession? quickSession;
   final QuickPracticeLaunch? quickLaunch;
   final EngagementEventStore? engagementStore;
+  final String? initialChapterId;
 
   @override
   State<PracticePage> createState() => _PracticePageState();
@@ -84,7 +86,10 @@ class _PracticePageState extends State<PracticePage> {
         .where((unit) => unit.id != 'appendix')
         .expand((unit) => unit.chapters)
         .toList(growable: false);
-    _regularChapterId = _chapters.first.id;
+    _regularChapterId =
+        _chapters.any((chapter) => chapter.id == widget.initialChapterId)
+        ? widget.initialChapterId!
+        : _chapters.first.id;
     _mistakesOnly = widget.mistakesOnly;
     _quickSession = widget.quickSession;
     _quickLaunch = widget.quickLaunch;
@@ -534,7 +539,7 @@ class _PracticePageState extends State<PracticePage> {
       context: context,
       barrierDismissible: false,
       builder: (context) => PetMissionCompletionDialog(
-        petName: petStore.profile.name,
+        profile: petStore.profile,
         mission: launch.mission,
       ),
     );
@@ -604,6 +609,7 @@ class _PracticePageState extends State<PracticePage> {
     surface: EngagementSurface.quickPractice,
     launchSource: switch (launch.source) {
       PetMissionSource.invitation => EngagementLaunchSource.invitation,
+      PetMissionSource.goal => EngagementLaunchSource.goal,
       PetMissionSource.furniture => EngagementLaunchSource.furniture,
     },
     quickPracticeAction: _quickSession?.action,
@@ -794,6 +800,14 @@ class _PracticePageState extends State<PracticePage> {
           mission: _quickLaunch!.mission,
           mood: _petMood,
           completedSteps: _missionSteps,
+          action: switch (_petMood) {
+            PetPracticeMood.thinking => PetActionKind.think,
+            PetPracticeMood.celebrate => PetActionKind.correct,
+            PetPracticeMood.encourage => PetActionKind.incorrect,
+            PetPracticeMood.idle when _missionSteps == 0 =>
+              PetActionKind.invite,
+            PetPracticeMood.idle => null,
+          },
         ),
         const SizedBox(height: 12),
       ],

@@ -1,9 +1,7 @@
 ## Purpose
 
 Define fixed three-question practice sessions launched from pet-home furniture using only the current textbook and existing learning records.
-
 ## Requirements
-
 ### Requirement: Quick practice uses exactly three current-textbook attempts
 The system SHALL create a quick-practice session containing exactly three compatible question-direction attempts from the textbook through which pet home was opened.
 
@@ -56,31 +54,31 @@ The system SHALL end the session after the third graded attempt and display or t
 - **THEN** quick practice ends, progress is synchronized, and control returns to pet home with completion feedback
 
 ### Requirement: Ordinary quick completion triggers companion feedback
-The system SHALL keep the named pet visibly present throughout every fixed three-question session, show brief non-blocking reactions to correct answers, incorrect answers, and extended thinking, and show a completion reaction without granting a separate score, currency, or duplicate growth reward.
+The system SHALL keep the named pet visibly present throughout every fixed three-question session, show at most one brief non-blocking action per graded attempt for correct answers, incorrect answers, or extended thinking, and show a completion action without granting a separate score, currency, or duplicate growth reward.
 
 #### Scenario: Learner is still thinking
 - **WHEN** a quick-practice question remains unanswered for the configured thinking interval
-- **THEN** the pet shows one calm, non-judgmental thinking reaction without obscuring controls or changing the result
+- **THEN** the pet shows one calm, non-judgmental thinking action without obscuring controls or changing the result
 
 #### Scenario: An answer is graded
 - **WHEN** a quick-practice answer is graded correct or incorrect
-- **THEN** the pet briefly celebrates or encourages and the normal grading and persistence path remains unchanged
+- **THEN** the pet performs the matching short action, the room may update one semantic visual cue, and the normal grading and persistence path remains unchanged
 
 #### Scenario: Reduced motion is enabled
 - **WHEN** an in-session reaction is shown while platform animations are disabled
-- **THEN** the same meaning is conveyed using a static expression and text
+- **THEN** the same meaning is conveyed using a static expression, color, or text
 
 #### Scenario: Invited session completes
 - **WHEN** the learner finishes all three attempts launched from a pet invitation
-- **THEN** control returns to the launching surface and the pet performs a short activity-appropriate reaction
+- **THEN** control returns to the launching surface, the pet performs one completion action, and the next goal is visible
 
 #### Scenario: Furniture session completes
 - **WHEN** the learner finishes all three attempts launched from furniture
-- **THEN** pet home shows the same lightweight completion reaction in addition to any already-earned mastery celebration
+- **THEN** pet home shows the same lightweight completion action and preserves the furniture's semantic result in addition to any mastery celebration
 
 #### Scenario: Session exits early
 - **WHEN** the learner leaves before completing all three attempts
-- **THEN** no completion reaction is shown and existing per-attempt persistence remains unchanged
+- **THEN** no completion action is shown and existing per-attempt persistence remains unchanged
 
 ### Requirement: Quick practice presents a three-step room mission
 The system SHALL derive a named-pet room mission from the quick-practice action and launch source, present one mission step per answered attempt, and reuse the existing three-question selection, grading, and progress records.
@@ -107,3 +105,4 @@ The system SHALL offer a clearly optional action to start another suitable three
 #### Scenario: Learner dismisses completion
 - **WHEN** the learner returns to the prior screen without repeating
 - **THEN** no loss, warning, streak break, or pet disappointment is shown
+

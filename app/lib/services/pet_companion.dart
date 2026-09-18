@@ -1,4 +1,5 @@
 import '../models/pet.dart';
+import '../models/pet_learning_goal.dart';
 import '../models/pet_mission.dart';
 import '../models/practice.dart';
 import '../models/quick_practice.dart';
@@ -7,9 +8,16 @@ import 'practice_progress.dart';
 import 'quick_practice.dart';
 
 class PetCompanionGuide {
-  const PetCompanionGuide({required this.goal, this.invitation});
+  const PetCompanionGuide({
+    required this.goal,
+    this.learningGoal,
+    this.goalSelection,
+    this.invitation,
+  });
 
   final String goal;
+  final PetLearningGoal? learningGoal;
+  final QuickPracticeSelection? goalSelection;
   final PetPracticeInvitation? invitation;
 
   static PetCompanionGuide build({
@@ -19,6 +27,20 @@ class PetCompanionGuide {
     required PracticeProgress progress,
   }) {
     final unlock = _nextUnlock(profile);
+    final learningGoal = PetLearningGoalProjector.primary(
+      mastery: mastery,
+      catalog: catalog,
+      progress: progress,
+    );
+    final goalSelection = learningGoal == null
+        ? null
+        : QuickPracticeSelector.select(
+            catalog: catalog,
+            progress: progress,
+            action: learningGoal.action,
+            chapterIds: learningGoal.chapterIds.toSet(),
+            allowActionFallback: false,
+          );
     final unit = mastery.units
         .where(
           (candidate) =>
@@ -38,6 +60,8 @@ class PetCompanionGuide {
     };
     return PetCompanionGuide(
       goal: goal,
+      learningGoal: learningGoal,
+      goalSelection: goalSelection,
       invitation: _invitation(profile, catalog, progress),
     );
   }

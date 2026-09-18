@@ -1,10 +1,14 @@
 import 'pet.dart';
+import 'pet_learning_goal.dart';
 import 'pet_mission.dart';
 import 'quick_practice.dart';
 
 enum EngagementEventType {
   companionSurfaceViewed,
   invitationPresented,
+  invitationSkipped,
+  goalViewed,
+  goalPracticeStarted,
   quickPracticeStarted,
   quickPracticeExited,
   quickPracticeCompleted,
@@ -16,7 +20,7 @@ enum EngagementDeliveryState { pending, acknowledged }
 
 enum EngagementSurface { modePage, petHome, quickPractice }
 
-enum EngagementLaunchSource { invitation, furniture, repeat }
+enum EngagementLaunchSource { invitation, goal, furniture, repeat }
 
 enum EngagementDurationBucket {
   underMinute,
@@ -31,6 +35,9 @@ class EngagementEventContext {
     this.launchSource,
     this.quickPracticeAction,
     this.missionKind,
+    this.goalKind,
+    this.goalId,
+    this.goalProgress,
     this.roomId,
     this.furnitureId,
     this.durationBucket,
@@ -51,6 +58,11 @@ class EngagementEventContext {
           json['quick_practice_action'],
         ),
         missionKind: _enumValue(PetMissionKind.values, json['mission_kind']),
+        goalKind: _enumValue(PetLearningGoalKind.values, json['goal_kind']),
+        goalId: _opaqueId(json['goal_id']),
+        goalProgress: json['goal_progress'] is int
+            ? json['goal_progress'] as int
+            : null,
         roomId: _knownRoom(json['room_id']),
         furnitureId: _knownFurniture(json['furniture_id']),
         durationBucket: _enumValue(
@@ -66,6 +78,9 @@ class EngagementEventContext {
   final EngagementLaunchSource? launchSource;
   final QuickPracticeAction? quickPracticeAction;
   final PetMissionKind? missionKind;
+  final PetLearningGoalKind? goalKind;
+  final String? goalId;
+  final int? goalProgress;
   final String? roomId;
   final String? furnitureId;
   final EngagementDurationBucket? durationBucket;
@@ -79,6 +94,9 @@ class EngagementEventContext {
     if (quickPracticeAction != null)
       'quick_practice_action': quickPracticeAction!.name,
     if (missionKind != null) 'mission_kind': missionKind!.name,
+    if (goalKind != null) 'goal_kind': goalKind!.name,
+    if (goalId != null) 'goal_id': goalId,
+    if (goalProgress != null) 'goal_progress': goalProgress,
     if (roomId != null) 'room_id': roomId,
     if (furnitureId != null) 'furniture_id': furnitureId,
     if (durationBucket != null) 'duration_bucket': durationBucket!.name,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../models/pet.dart';
+import '../models/pet_learning_goal.dart';
 import '../services/learning_mastery.dart';
 import 'pet_avatar.dart';
 
@@ -13,6 +14,10 @@ class PetGrowthCard extends StatelessWidget {
     this.greeting,
     this.invitation,
     this.onAcceptInvitation,
+    this.onSkipInvitation,
+    this.learningGoal,
+    this.goalActionLabel,
+    this.onOpenGoal,
     this.onOpenHome,
   });
 
@@ -22,6 +27,10 @@ class PetGrowthCard extends StatelessWidget {
   final String? greeting;
   final String? invitation;
   final VoidCallback? onAcceptInvitation;
+  final VoidCallback? onSkipInvitation;
+  final PetLearningGoal? learningGoal;
+  final String? goalActionLabel;
+  final VoidCallback? onOpenGoal;
   final VoidCallback? onOpenHome;
 
   @override
@@ -101,6 +110,61 @@ class PetGrowthCard extends StatelessWidget {
                       ],
                     ),
                   ],
+                  if (learningGoal != null) ...[
+                    const SizedBox(height: 12),
+                    Card(
+                      key: const ValueKey('pet-learning-goal'),
+                      margin: EdgeInsets.zero,
+                      color: colors.surface.withValues(alpha: 0.7),
+                      child: InkWell(
+                        onTap: onOpenGoal,
+                        borderRadius: BorderRadius.circular(12),
+                        child: Padding(
+                          padding: const EdgeInsets.all(12),
+                          child: Row(
+                            children: [
+                              Icon(
+                                learningGoal!.isComplete
+                                    ? Icons.check_circle_outline
+                                    : Icons.flag_outlined,
+                                size: 20,
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      learningGoal!.isComplete
+                                          ? '目标完成：${learningGoal!.unitName}'
+                                          : '下一步：${goalActionLabel ?? learningGoal!.actionLabel}',
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 3),
+                                    Text(
+                                      learningGoal!.isComplete
+                                          ? learningGoal!.outcome
+                                          : '${learningGoal!.unitName}  ${learningGoal!.progressLabel}，还差 ${learningGoal!.remaining} 个小目标',
+                                    ),
+                                    const SizedBox(height: 6),
+                                    LinearProgressIndicator(
+                                      value: learningGoal!.progress,
+                                      minHeight: 5,
+                                      borderRadius: BorderRadius.circular(99),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              if (onOpenGoal != null)
+                                const Icon(Icons.arrow_forward_ios, size: 15),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                   if (invitation != null) ...[
                     const SizedBox(height: 12),
                     FilledButton.tonalIcon(
@@ -109,6 +173,14 @@ class PetGrowthCard extends StatelessWidget {
                       icon: const Icon(Icons.pets_outlined),
                       label: Text(invitation!),
                     ),
+                    if (onSkipInvitation != null)
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: TextButton(
+                          onPressed: onSkipInvitation,
+                          child: const Text('稍后再说'),
+                        ),
+                      ),
                   ],
                 ],
               ),

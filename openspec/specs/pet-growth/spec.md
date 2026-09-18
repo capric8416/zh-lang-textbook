@@ -36,7 +36,7 @@ The system SHALL derive historical rewards during silent synchronization without
 - **THEN** those events are persisted without celebration UI
 
 ### Requirement: Mode page presents pet growth
-The system SHALL show the named current breed and decoration, growth points, major stage, textbook progress, one concrete next-unlock goal, one contextual three-question invitation, and an action opening pet home.
+The system SHALL show the named current breed and decoration, growth points, major stage, textbook progress, one concrete next-unlock goal, one current-textbook learning goal with remaining actionable amount, one contextual three-question invitation subject to local frequency limits, and an action opening pet home.
 
 #### Scenario: Pet home action
 - **WHEN** the learner activates the card action
@@ -46,9 +46,17 @@ The system SHALL show the named current breed and decoration, growth points, maj
 - **WHEN** a locked breed, decoration, or furniture item remains
 - **THEN** the dashboard explains the nearest learning progress that moves the pet toward that unlock
 
+#### Scenario: Learning goal is available
+- **WHEN** the current textbook has an incomplete goal
+- **THEN** the dashboard shows its progress, remaining amount, action label, and associated room outcome
+
 #### Scenario: Invitation is accepted
-- **WHEN** the learner activates the pet's invitation
-- **THEN** an available three-question session from the current textbook opens
+- **WHEN** the learner activates the pet's invitation within its local frequency allowance
+- **THEN** an available three-question session from the current textbook opens and the invitation is recorded as accepted
+
+#### Scenario: Invitation is suppressed
+- **WHEN** the learner already saw or skipped the daily invitation, or no useful goal exists
+- **THEN** no new invitation is shown and the normal growth card remains usable
 
 ### Requirement: Lesson milestones trigger a lower-right reaction
 The system SHALL show a one-time reaction naming the current pet for newly reached lesson milestones, using increasingly rare expressions for 80%, 90%, and 100%.
@@ -70,3 +78,4 @@ The system SHALL render catalog breeds and decorations through a reusable interf
 #### Scenario: Future catalog entry
 - **WHEN** a new dog or cat descriptor is registered
 - **THEN** persistence and growth synchronization continue without a schema change
+

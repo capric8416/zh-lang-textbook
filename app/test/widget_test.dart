@@ -16,6 +16,7 @@ import 'package:zh_textbook/models/practice.dart';
 import 'package:zh_textbook/models/engagement_event.dart';
 import 'package:zh_textbook/models/textbook.dart';
 import 'package:zh_textbook/screens/mode_page.dart';
+import 'package:zh_textbook/screens/pet_home_page.dart';
 import 'package:zh_textbook/screens/practice_page.dart';
 import 'package:zh_textbook/services/numeric_pinyin.dart';
 import 'package:zh_textbook/services/engagement_events.dart';
@@ -130,7 +131,7 @@ void main() {
       events.where(
         (event) => event.type == EngagementEventType.invitationPresented,
       ),
-      hasLength(2),
+      hasLength(1),
     );
     expect(
       events.where(
@@ -144,6 +145,93 @@ void main() {
       ),
       hasLength(1),
     );
+    expect(
+      events.where(
+        (event) => event.type == EngagementEventType.goalPracticeStarted,
+      ),
+      isEmpty,
+    );
+  });
+
+  testWidgets('模式页的目标入口只记录目标启动', (tester) async {
+    final source = File(
+      '../json_reviewed/zh-lang-grade2b-textbook-struct.json',
+    ).readAsStringSync();
+    final textbook = Textbook.fromJsonString(source);
+    const selection = TextbookSelection(grade: 2, semester: Semester.second);
+
+    SharedPreferences.setMockInitialValues({});
+    await tester.pumpWidget(
+      MaterialApp(
+        home: ModePage(selection: selection, textbook: textbook),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('pet-learning-goal')));
+    await tester.pumpAndSettle();
+    expect(find.text('宠物三题陪练'), findsOneWidget);
+    await tester.tap(find.byTooltip('返回'));
+    await tester.pumpAndSettle();
+    final goalStarts = (await EngagementEventStore.open()).events.where(
+      (event) => event.type == EngagementEventType.goalPracticeStarted,
+    );
+    expect(goalStarts, hasLength(1));
+    expect(goalStarts.single.context.surface, EngagementSurface.modePage);
+    expect(goalStarts.single.context.launchSource, EngagementLaunchSource.goal);
+  });
+
+  testWidgets('宠物之家的目标入口记录目标启动', (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    final source = File(
+      '../json_reviewed/zh-lang-grade2b-textbook-struct.json',
+    ).readAsStringSync();
+    final textbook = Textbook.fromJsonString(source);
+    const selection = TextbookSelection(grade: 2, semester: Semester.second);
+    await tester.pumpWidget(
+      MaterialApp(
+        home: PetHomePage(selection: selection, textbook: textbook),
+      ),
+    );
+    await tester.pumpAndSettle();
+    final homeGoal = find.byKey(const ValueKey('pet-home-learning-goal'));
+    await tester.scrollUntilVisible(
+      homeGoal,
+      300,
+      scrollable: find.byType(Scrollable).first,
+    );
+    expect(homeGoal, findsOneWidget);
+    await tester.tap(homeGoal);
+    await tester.pumpAndSettle();
+    expect(find.text('宠物三题陪练'), findsOneWidget);
+    await tester.tap(find.byTooltip('返回'));
+    await tester.pumpAndSettle();
+    final goalStarts = (await EngagementEventStore.open()).events.where(
+      (event) => event.type == EngagementEventType.goalPracticeStarted,
+    );
+    expect(goalStarts, hasLength(1));
+    expect(goalStarts.single.context.surface, EngagementSurface.petHome);
+    expect(goalStarts.single.context.launchSource, EngagementLaunchSource.goal);
+    await tester.pump(const Duration(seconds: 1));
+  });
+
+  testWidgets('目标不足三题时说明原因并进入对应课文普通练习', (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    final textbook = _sparseTextbook();
+    const selection = TextbookSelection(grade: 2, semester: Semester.second);
+    await tester.pumpWidget(
+      MaterialApp(
+        home: ModePage(selection: selection, textbook: textbook),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.textContaining('进入本课练习'), findsOneWidget);
+    await tester.tap(find.byKey(const ValueKey('pet-learning-goal')));
+    await tester.pump();
+    expect(find.textContaining('不足 3 题'), findsOneWidget);
+    await tester.pumpAndSettle();
+    expect(find.text('语文基础练习'), findsOneWidget);
+    expect(find.text('宠物三题陪练'), findsNothing);
   });
 
   testWidgets('练习页可以从错题数量快捷进入专项模式', (WidgetTester tester) async {
@@ -180,3 +268,45 @@ void main() {
     expect(find.text('返回综合练习'), findsOneWidget);
   });
 }
+
+Textbook _sparseTextbook() => Textbook.fromJson({
+  'schema_version': 1,
+  'index': [
+    {
+      'id': 'unit-1',
+      'name': '第一单元',
+      'chapters': [
+        {'id': 'lesson-sparse', 'name': '第一课', 'children': []},
+      ],
+    },
+  ],
+  'contents': [
+    {
+      'id': 'unit-1',
+      'name': '第一单元',
+      'chapters': [
+        {'id': 'lesson-sparse', 'name': '第一课', 'text': [], 'children': []},
+      ],
+    },
+    {
+      'id': 'appendix',
+      'name': '附录',
+      'chapters': [
+        {
+          'id': 'appendix-recognition',
+          'name': '识字表',
+          'children': [],
+          'text': [
+            {
+              'id': 'spring',
+              'zh': '春',
+              'pinyin': 'chūn',
+              'introduced_at': {'chapter_id': 'lesson-sparse'},
+              'refs': [],
+            },
+          ],
+        },
+      ],
+    },
+  ],
+});

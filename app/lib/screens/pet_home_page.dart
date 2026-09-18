@@ -9,6 +9,7 @@ import '../services/pet_growth.dart';
 import '../services/engagement_events.dart';
 import '../services/learning_mastery.dart';
 import '../services/pet_companion.dart';
+import '../services/pet_invitation_scheduler.dart';
 import '../services/practice_progress.dart';
 import '../services/quick_practice.dart';
 import '../services/textbook_repository.dart';
@@ -31,11 +32,13 @@ class _PetHomePageState extends State<PetHomePage> {
   PracticeProgressStore? _progressStore;
   PracticeCatalog? _catalog;
   PetCompanionGuide? _guide;
+  PetInvitationSchedule? _invitationSchedule;
   PetDailyCompanion? _dailyCompanion;
   EngagementEventStore? _engagementStore;
   String? _surfaceEventId;
   String? _invitationFlowId;
   String? _invitationEventId;
+  final _goalPresentation = GoalPresentationLifecycle();
   String _message = '选一个喜欢的伙伴吧';
   @override
   void initState() {
@@ -92,7 +95,34 @@ class _PetHomePageState extends State<PetHomePage> {
             catalog: catalog,
             progress: progressStore.progress,
           );
-    if (guide?.invitation != null) {
+    final schedule = guide == null || selection == null
+        ? null
+        : PetInvitationScheduler.evaluate(
+            guide: guide,
+            events: engagementStore.events,
+            textbookKey: selection.fileName,
+            now: DateTime.now(),
+          );
+    if (guide?.learningGoal != null) {
+      await engagementStore.append(
+        eventId: _goalPresentation.eventIdFor(
+          guide!.learningGoal!.id,
+          engagementStore.newId,
+        ),
+        type: EngagementEventType.goalViewed,
+        context: EngagementEventContext(
+          textbookKey: selection?.fileName,
+          surface: EngagementSurface.petHome,
+          roomId: store.profile.selectedRoom,
+          goalKind: guide.learningGoal!.kind,
+          goalId: guide.learningGoal!.id,
+          goalProgress: guide.learningGoal!.current,
+        ),
+      );
+    } else {
+      _goalPresentation.clear();
+    }
+    if (schedule?.canPresent == true) {
       _invitationFlowId ??= engagementStore.newId();
       _invitationEventId ??= engagementStore.newId();
       await engagementStore.append(
@@ -102,7 +132,7 @@ class _PetHomePageState extends State<PetHomePage> {
           textbookKey: selection?.fileName,
           surface: EngagementSurface.petHome,
           launchSource: EngagementLaunchSource.invitation,
-          quickPracticeAction: guide!.invitation!.action,
+          quickPracticeAction: schedule!.invitation!.action,
           roomId: store.profile.selectedRoom,
           flowId: _invitationFlowId,
         ),
@@ -114,6 +144,7 @@ class _PetHomePageState extends State<PetHomePage> {
       _progressStore = progressStore;
       _catalog = catalog;
       _guide = guide;
+      _invitationSchedule = schedule;
       _engagementStore = engagementStore;
       _dailyCompanion = PetDailyCompanion.build(
         profile: store.profile,
@@ -167,18 +198,92 @@ class _PetHomePageState extends State<PetHomePage> {
     await _openQuickPractice(result.session!, action, furniture: furniture);
   }
 
-  Future<void> _openInvitation() async {
-    final invitation = _guide?.invitation;
+  Future<void> _acceptInvitation() async {
+    final invitation = _invitationSchedule?.invitation;
     if (invitation == null) return;
     await _openQuickPractice(invitation.session, invitation.action);
     _invitationFlowId = null;
     _invitationEventId = null;
   }
 
+  Future<void> _openGoal() async {
+    final guide = _guide;
+    final goal = guide?.learningGoal;
+    final eventStore = _engagementStore;
+    final selection = widget.selection;
+    final textbook = widget.textbook;
+    if (guide == null ||
+        goal == null ||
+        eventStore == null ||
+        selection == null ||
+        textbook == null) {
+      _showUnavailable('请从教材学习页进入目标练习');
+      return;
+    }
+    final flowId = eventStore.newId();
+    await eventStore.append(
+      eventId: eventStore.newId(),
+      type: EngagementEventType.goalPracticeStarted,
+      context: EngagementEventContext(
+        textbookKey: selection.fileName,
+        surface: EngagementSurface.petHome,
+        launchSource: EngagementLaunchSource.goal,
+        goalKind: goal.kind,
+        goalId: goal.id,
+        goalProgress: goal.current,
+        roomId: _store?.profile.selectedRoom,
+        flowId: flowId,
+      ),
+    );
+    final goalSession = guide.goalSelection;
+    if (goalSession?.session == null) {
+      if (!mounted) return;
+      _showUnavailable('${goalSession?.reason ?? '当前目标不足 3 题'}，已进入本课普通练习');
+      await Navigator.of(context).push<void>(
+        MaterialPageRoute(
+          builder: (_) => PracticePage(
+            selection: selection,
+            textbook: textbook,
+            initialChapterId: goal.chapterIds.firstOrNull,
+          ),
+        ),
+      );
+      await _open();
+      return;
+    }
+    await _openQuickPractice(
+      goalSession!.session!,
+      goal.action,
+      source: PetMissionSource.goal,
+      flowId: flowId,
+    );
+  }
+
+  Future<void> _skipInvitation() async {
+    final store = _engagementStore;
+    final invitation = _invitationSchedule?.invitation;
+    if (store == null || invitation == null) return;
+    await store.append(
+      eventId: store.newId(),
+      type: EngagementEventType.invitationSkipped,
+      context: EngagementEventContext(
+        textbookKey: widget.selection?.fileName,
+        surface: EngagementSurface.petHome,
+        launchSource: EngagementLaunchSource.invitation,
+        quickPracticeAction: invitation.action,
+        roomId: _store?.profile.selectedRoom,
+        flowId: _invitationFlowId,
+      ),
+    );
+    if (mounted) await _open();
+  }
+
   Future<void> _openQuickPractice(
     QuickPracticeSession session,
     QuickPracticeAction action, {
     PetFurniture? furniture,
+    PetMissionSource? source,
+    String? flowId,
   }) async {
     final selection = widget.selection;
     final textbook = widget.textbook;
@@ -190,14 +295,22 @@ class _PetHomePageState extends State<PetHomePage> {
         eventStore == null) {
       return;
     }
-    final flowId = furniture == null
-        ? _invitationFlowId ?? eventStore.newId()
-        : eventStore.newId();
+    final resolvedSource =
+        source ??
+        (furniture == null
+            ? PetMissionSource.invitation
+            : PetMissionSource.furniture);
+    final resolvedFlowId =
+        flowId ??
+        (furniture == null
+            ? _invitationFlowId ?? eventStore.newId()
+            : eventStore.newId());
     final mission = PetCompanionMission.forQuickPractice(
       action: action,
       petName: profile.name,
       furnitureId: furniture?.id,
       unlockedFurniture: profile.unlockedFurniture,
+      source: resolvedSource,
     );
     final completed = await Navigator.of(context).push<bool>(
       MaterialPageRoute(
@@ -207,10 +320,8 @@ class _PetHomePageState extends State<PetHomePage> {
           quickSession: session,
           quickLaunch: QuickPracticeLaunch(
             mission: mission,
-            flowId: flowId,
-            source: furniture == null
-                ? PetMissionSource.invitation
-                : PetMissionSource.furniture,
+            flowId: resolvedFlowId,
+            source: resolvedSource,
             roomId: profile.selectedRoom,
             furnitureId: furniture?.id,
           ),
@@ -338,12 +449,52 @@ class _PetHomePageState extends State<PetHomePage> {
                       key: const ValueKey('pet-next-unlock'),
                       textAlign: TextAlign.center,
                     ),
-                    if (_guide!.invitation != null)
+                    if (_guide!.learningGoal != null) ...[
+                      const SizedBox(height: 12),
+                      Card(
+                        key: const ValueKey('pet-home-learning-goal'),
+                        margin: EdgeInsets.zero,
+                        child: ListTile(
+                          leading: Icon(
+                            _guide!.learningGoal!.isComplete
+                                ? Icons.check_circle_outline
+                                : Icons.flag_outlined,
+                          ),
+                          title: Text(
+                            _guide!.learningGoal!.isComplete
+                                ? '目标完成：${_guide!.learningGoal!.unitName}'
+                                : _guide!.goalSelection?.isAvailable == false
+                                ? '进入本课练习'
+                                : _guide!.learningGoal!.actionLabel,
+                          ),
+                          subtitle: Text(
+                            _guide!.learningGoal!.isComplete
+                                ? _guide!.learningGoal!.outcome
+                                : '${_guide!.learningGoal!.progressLabel}，还差 ${_guide!.learningGoal!.remaining} 个小目标',
+                          ),
+                          trailing: SizedBox(
+                            width: 72,
+                            child: LinearProgressIndicator(
+                              value: _guide!.learningGoal!.progress,
+                              minHeight: 7,
+                              borderRadius: BorderRadius.circular(99),
+                            ),
+                          ),
+                          onTap: _openGoal,
+                        ),
+                      ),
+                    ],
+                    if (_invitationSchedule?.canPresent == true)
                       FilledButton.tonalIcon(
                         key: const ValueKey('pet-home-invitation'),
-                        onPressed: _openInvitation,
+                        onPressed: _acceptInvitation,
                         icon: const Icon(Icons.pets_outlined),
-                        label: Text(_guide!.invitation!.message),
+                        label: Text(_invitationSchedule!.invitation!.message),
+                      ),
+                    if (_invitationSchedule?.canPresent == true)
+                      TextButton(
+                        onPressed: _skipInvitation,
+                        child: const Text('稍后再说'),
                       ),
                   ],
                   Wrap(

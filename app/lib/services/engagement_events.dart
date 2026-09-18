@@ -5,6 +5,24 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/engagement_event.dart';
 
+class GoalPresentationLifecycle {
+  String? _goalId;
+  String? _eventId;
+
+  String eventIdFor(String goalId, String Function() idFactory) {
+    if (_goalId != goalId || _eventId == null) {
+      _goalId = goalId;
+      _eventId = idFactory();
+    }
+    return _eventId!;
+  }
+
+  void clear() {
+    _goalId = null;
+    _eventId = null;
+  }
+}
+
 typedef EngagementIdFactory = String Function();
 typedef EngagementClock = DateTime Function();
 
@@ -175,6 +193,8 @@ class EngagementMetrics {
     required this.quickCompletion,
     required this.voluntaryRepeat,
     required this.nextDayReturn,
+    required this.invitationSkipRate,
+    required this.goalStartRate,
   });
 
   factory EngagementMetrics.fromEvents(Iterable<EngagementEvent> input) {
@@ -187,6 +207,7 @@ class EngagementMetrics {
         .toSet();
 
     final invitations = flows(EngagementEventType.invitationPresented);
+    final skippedInvitations = flows(EngagementEventType.invitationSkipped);
     final invitationStarts = events
         .where(
           (event) =>
@@ -196,6 +217,8 @@ class EngagementMetrics {
         .map((event) => event.context.flowId ?? event.eventId)
         .toSet();
     final starts = flows(EngagementEventType.quickPracticeStarted);
+    final goalViews = flows(EngagementEventType.goalViewed);
+    final goalStarts = flows(EngagementEventType.goalPracticeStarted);
     final completions = flows(EngagementEventType.quickPracticeCompleted);
     final repeats = flows(EngagementEventType.repeatPracticeStarted);
     final visitDays = events
@@ -226,6 +249,8 @@ class EngagementMetrics {
       quickCompletion: _rate(completions.length, starts.length),
       voluntaryRepeat: _rate(repeats.length, completions.length),
       nextDayReturn: _rate(returns.length, eligibleVisits.length),
+      invitationSkipRate: _rate(skippedInvitations.length, invitations.length),
+      goalStartRate: _rate(goalStarts.length, goalViews.length),
     );
   }
 
@@ -233,6 +258,8 @@ class EngagementMetrics {
   final double quickCompletion;
   final double voluntaryRepeat;
   final double nextDayReturn;
+  final double invitationSkipRate;
+  final double goalStartRate;
 
   static double _rate(int numerator, int denominator) =>
       denominator == 0 ? 0 : numerator / denominator;

@@ -206,8 +206,10 @@ void main() {
               result = await showDialog<bool>(
                 context: context,
                 barrierDismissible: false,
-                builder: (_) =>
-                    PetMissionCompletionDialog(petName: '豆豆', mission: mission),
+                builder: (_) => PetMissionCompletionDialog(
+                  profile: const PetProfile(name: '豆豆'),
+                  mission: mission,
+                ),
               );
             },
             child: const Text('完成'),
@@ -218,8 +220,11 @@ void main() {
     await tester.tap(find.text('完成'));
     await tester.pumpAndSettle();
     expect(find.text('再练三题'), findsOneWidget);
-    expect(find.textContaining('豆豆想问'), findsOneWidget);
+    expect(find.textContaining('豆豆叼来一朵小花'), findsOneWidget);
+    expect(find.byKey(const ValueKey('pet-action-complete')), findsOneWidget);
     await tester.tap(find.byKey(const ValueKey('repeat-quick-practice')));
+    await tester.pump();
+    expect(find.byKey(const ValueKey('pet-action-repeat')), findsOneWidget);
     await tester.pumpAndSettle();
     expect(result, isTrue);
 

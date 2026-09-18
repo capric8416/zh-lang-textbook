@@ -9,20 +9,25 @@ class QuickPracticeSelector {
     required PracticeCatalog catalog,
     required PracticeProgress progress,
     required QuickPracticeAction action,
+    Set<String>? chapterIds,
+    bool allowActionFallback = true,
   }) {
     final candidates = <_Candidate>[
       for (final question in catalog.questions)
-        for (final direction in PracticeDirection.values)
-          if (question.supportsDirection(direction))
-            _Candidate(
-              question: question,
-              direction: direction,
-              progress: progress.forQuestion(question.attemptId(direction)),
-            ),
+        if (chapterIds == null || chapterIds.contains(question.chapterId))
+          for (final direction in PracticeDirection.values)
+            if (question.supportsDirection(direction))
+              _Candidate(
+                question: question,
+                direction: direction,
+                progress: progress.forQuestion(question.attemptId(direction)),
+              ),
     ];
     candidates.sort(_compare);
     final preferred = candidates.where((item) => _preferred(item, action));
-    final fallback = candidates.where((item) => !_preferred(item, action));
+    final fallback = allowActionFallback
+        ? candidates.where((item) => !_preferred(item, action))
+        : const Iterable<_Candidate>.empty();
     final selected = <_Candidate>[...preferred, ...fallback].take(3).toList();
     if (selected.length < 3) {
       return const QuickPracticeSelection.unavailable('当前教材可用练习不足 3 题');
