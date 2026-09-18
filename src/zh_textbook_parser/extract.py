@@ -26,6 +26,7 @@ from .semantics import (
     extract_lesson,
     is_reading_corner_page,
     split_after_class,
+    STANDALONE_SECTION_LABELS,
 )
 
 
@@ -112,6 +113,22 @@ def parse_page(
                 )
             ):
                 # 整页都是课后练习时，大字号示例词可能被误作无标题续文。
+                lesson = None
+            if (
+                lesson
+                and after
+                and lesson["课号"] is None
+                and lesson["课题"] is None
+                and lesson["标题"]
+                and re.fullmatch(r"[一-鿿]{6,}", lesson["标题"])
+                and any(
+                    unit["文本"].startswith(("朗读课文", "有感情地朗读", "说说课文", "读读下面"))
+                    for unit in lesson["正文"]
+                )
+            ):
+                # 高年级课后页的会认字条有时没有逐字注音，无法由
+                # recognize_strip_groups 识别；Markdown 对照表明它后面仅是课后
+                # 练习和资料袋，不能作为上一课的续篇。
                 lesson = None
             if lesson and after:
                 after_notes = [
@@ -227,7 +244,7 @@ def _inherit(lesson: dict, state: dict) -> None:
         state["课号"] = lesson["课号"]
         state["课题"] = lesson["课题"]
         return
-    if lesson.get("栏目") == "快乐读书吧":
+    if lesson.get("栏目") in {"快乐读书吧", *STANDALONE_SECTION_LABELS}:
         return
     if lesson["标题"] and state.get("课题") is None:
         return  # 新起的栏目页，不属于上一课

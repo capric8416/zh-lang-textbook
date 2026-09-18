@@ -23,6 +23,9 @@ SECTION_FONT = "FZHTK"  # 栏目标签用的黑体
 INDENT_TOLERANCE = 4.0  # 段首缩进判定（pt）
 READING_CORNER = "快乐读书吧"
 MIXED_SECTION_LABELS = {"口语交际"}
+# 这些版块与课文使用相同的大标题字号，不能当作上一课的多篇续文。
+# 标题后的同级短行才是本次练习的主题。
+STANDALONE_SECTION_LABELS = {"口语交际", "习作", "小练笔"}
 
 
 def _is_latin_number(line: Line) -> bool:
@@ -61,6 +64,11 @@ def lesson_dominant(lesson_lines: list[Line], page_body: list[Line]) -> float:
         ]
         if sum(len(ln.visible_chars()) for ln in prose) >= 4:
             return _dominant_size(prose)
+    # 古诗跨页的“诗题 注释”页同时有注释小字和诗句大字，不能用小字占多数的全页统计。
+    if any("注释" in ln.text() for ln in lesson_lines):
+        large = [ln.size for ln in lesson_lines if ln.size >= 16]
+        if large:
+            return max(set(large), key=large.count)
     chars = sum(len(ln.visible_chars()) for ln in lesson_lines)
     return _dominant_size(lesson_lines if chars >= 20 else page_body)
 
@@ -445,6 +453,7 @@ def extract_lesson(
         dominant = _dominant_size(body)
 
     lesson_no = title = subtitle = None
+    section = None
     consumed: set[int] = set()
 
     # 口语交际页用多套字号表达导语、示例和提示，不能用单一正文主字号筛选。
@@ -513,9 +522,13 @@ def extract_lesson(
         else:
             title = heads[0][1]
             note_mark = heads[0][2]
+        if len(heads) >= 2 and heads[0][1] in STANDALONE_SECTION_LABELS:
+            section = heads[0][1]
+            title = heads[1][1]
+            note_mark = heads[1][2] or heads[0][2]
 
     # 栏目标签：标题上方的黑体小字（我爱阅读 / 口语交际 / 日积月累 …）
-    section = mixed_section.text() if mixed_section is not None else None
+    section = mixed_section.text() if mixed_section is not None else section
     if mixed_section is not None:
         consumed.add(id(mixed_section))
     title_y = heads[0][0].y0 if heads else float("inf")
@@ -589,6 +602,19 @@ def extract_lesson(
         )
         and ln.visible_chars()
     ]
+    # 三年级上册古诗三首的续页标题带“注释”，页面下方的诗句字号大于课后练习，但整页主字号会被练习行拉低。
+    # 以标点句和大字号作为保守补充，避免把注释、字词条和习题当成正文。
+    if title and title.endswith("注释"):
+        text_ids = {id(line) for line in text_lines}
+        text_lines.extend(
+            line
+            for line in body
+            if id(line) not in consumed
+            and id(line) not in text_ids
+            and line.size > dominant + 1
+            and any(mark in line.text() for mark in "，。！？；…")
+        )
+        text_lines.sort(key=lambda line: (round(line.y0), line.x0))
     if not title and not text_lines:
         return None, body
 

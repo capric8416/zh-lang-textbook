@@ -214,6 +214,14 @@ def _chapter_id(unit: int, kind: str, number: int) -> str:
     return f"u{unit:02d}-{stem}-{number:02d}"
 
 
+def _lesson_number(value: str | int) -> int:
+    """Return the numeric lesson number, ignoring the textbook's ``*`` mark."""
+    match = re.match(r"\d+", str(value))
+    if not match:
+        raise ValueError(f"无法识别课号: {value!r}")
+    return int(match.group())
+
+
 def _appendix_contexts(rows: list[dict[str, Any]]) -> dict[int, tuple[int, str, str]]:
     """Return source-row index -> (unit, group, sequence)."""
     result: dict[int, tuple[int, str, str]] = {}
@@ -448,9 +456,10 @@ def _recover_character_lists(
     contexts = _appendix_contexts(parsed["附录"])
     for source_index, row in enumerate(parsed["附录"]):
         sequence = str(row["序号"])
-        if row["模块"] != "识字表":
+        if row["模块"] not in {"识字表", "写字表", "词语表"}:
             continue
-        values = row["字"]
+        value_key = "词" if row["模块"] == "词语表" else "字"
+        values = row[value_key]
         if not values or all(_references(contents, value) for value in values):
             continue
         _, group, _ = contexts[source_index]
@@ -470,6 +479,14 @@ def _recover_character_lists(
                 and expected_stem is not None
                 and f"-{expected_stem}-" in candidate_id
             ]
+            # 部分高年级解析结果没有保留附录分组；课号在全册唯一时，
+            # 可以直接用课号定位对应单元和章节。
+            if not candidates and expected_stem is None:
+                candidates = [
+                    (candidate_unit, candidate_id)
+                    for (candidate_unit, candidate_number), candidate_id in chapter_lookup.items()
+                    if candidate_number == sequence
+                ]
             if len(candidates) != 1:
                 raise KeyError(
                     "无法定位 OCR 遗漏的识字列表: "
@@ -498,13 +515,23 @@ def _recover_character_lists(
             target = chapter["children"][0]
         else:
             target = chapter
-        target["text"].append(
-            {
-                "zh": " ".join(values),
-                "pinyin": "  ".join(row["拼音"]),
-                "id": f"{target['id']}-s{len(target['text']) + 1:03d}",
-            }
-        )
+        if row["模块"] == "词语表":
+            for value, pinyin in zip(values, row["拼音"], strict=True):
+                target["text"].append(
+                    {
+                        "zh": value,
+                        "pinyin": pinyin,
+                        "id": f"{target['id']}-s{len(target['text']) + 1:03d}",
+                    }
+                )
+        else:
+            target["text"].append(
+                {
+                    "zh": " ".join(values),
+                    "pinyin": "  ".join(row["拼音"]),
+                    "id": f"{target['id']}-s{len(target['text']) + 1:03d}",
+                }
+            )
 
 
 def _introduced_at(
@@ -567,6 +594,12 @@ def _appendix_chapters(
                     and expected_stem is not None
                     and f"-{expected_stem}-" in candidate_id
                 ]
+                if not candidates and expected_stem is None:
+                    candidates = [
+                        candidate_unit
+                        for (candidate_unit, candidate_number), candidate_id in chapter_lookup.items()
+                        if candidate_number == sequence
+                    ]
                 if len(candidates) != 1:
                     raise KeyError(
                         "无法按分组和课号唯一定位附录章节: "
@@ -671,7 +704,7 @@ def generate(template_path: Path) -> dict[str, Any]:
     ]
     by_unit_number: dict[tuple[int, int], list[dict[str, Any]]] = defaultdict(list)
     for lesson in numbered:
-        by_unit_number[(int(lesson["单元"]), int(lesson["课号"]))].append(lesson)
+        by_unit_number[(_lesson_number(lesson["单元"]), _lesson_number(lesson["课号"]))].append(lesson)
 
     garden_by_unit = {int(row["单元"]): row for row in parsed["园地"]}
     supplements_by_unit: dict[int, list[dict[str, Any]]] = defaultdict(list)
@@ -699,7 +732,12 @@ def generate(template_path: Path) -> dict[str, Any]:
         contents.append({"name": "入学教育", "chapters": intro_chapters, "id": "intro"})
 
     chapter_lookup: dict[tuple[int, str], str] = {}
-    for unit in sorted(garden_by_unit):
+    units_in_lessons = {
+        int(lesson["单元"])
+        for lesson in parsed["课文"]
+        if lesson.get("单元") is not None
+    }
+    for unit in sorted(set(garden_by_unit) | units_in_lessons):
         kind = unit_kinds.get(unit, "阅读")
         unit_id = f"u{unit:02d}"
         unit_node: dict[str, Any] = {
@@ -737,48 +775,49 @@ def generate(template_path: Path) -> dict[str, Any]:
                 }
             unit_node["chapters"].append(chapter)
 
-        garden = garden_by_unit[unit]
-        garden_id = f"{unit_id}-garden"
-        garden_children: list[dict[str, Any]] = []
-        section_number = 1
-        for row in garden["栏目"]:
-            # Empty names are partial OCR echoes of the following named section,
-            # not independent textbook columns.
-            if not row.get("名称"):
-                continue
-            child, is_poem = _garden_child(unit, garden["标题"], row, section_number)
-            garden_children.append(child)
-            if not is_poem:
-                section_number += 1
-        for lesson in supplements_by_unit[unit]:
-            if lesson.get("栏目") in {"我爱阅读", "和大人一起读"}:
-                work_id = f"{garden_id}-story-01"
-                garden_children.append(
-                    _supplementary_child(unit, garden["标题"], lesson, work_id)
-                )
-            elif lesson.get("栏目") == "口语交际":
-                work_id = f"{garden_id}-section-{section_number:02d}"
-                garden_children.append(
-                    {
-                        "topic": _pair(garden["标题"]),
-                        "title": _pair(lesson["标题"]),
-                        "text": _segments(
-                            lesson["全文"], lesson["拼音"], work_id, "exercise"
-                        ),
-                        "content_type": "exercise",
-                        "id": work_id,
-                    }
-                )
-                section_number += 1
-        unit_node["chapters"].append(
-            {
-                "name": garden["标题"],
-                "page": garden["页码"][0],
-                "children": garden_children,
-                "content_type": "garden",
-                "id": garden_id,
-            }
-        )
+        garden = garden_by_unit.get(unit)
+        if garden is not None:
+            garden_id = f"{unit_id}-garden"
+            garden_children: list[dict[str, Any]] = []
+            section_number = 1
+            for row in garden["栏目"]:
+                # Empty names are partial OCR echoes of the following named section,
+                # not independent textbook columns.
+                if not row.get("名称"):
+                    continue
+                child, is_poem = _garden_child(unit, garden["标题"], row, section_number)
+                garden_children.append(child)
+                if not is_poem:
+                    section_number += 1
+            for lesson in supplements_by_unit[unit]:
+                if lesson.get("栏目") in {"我爱阅读", "和大人一起读"}:
+                    work_id = f"{garden_id}-story-01"
+                    garden_children.append(
+                        _supplementary_child(unit, garden["标题"], lesson, work_id)
+                    )
+                elif lesson.get("栏目") == "口语交际":
+                    work_id = f"{garden_id}-section-{section_number:02d}"
+                    garden_children.append(
+                        {
+                            "topic": _pair(garden["标题"]),
+                            "title": _pair(lesson["标题"]),
+                            "text": _segments(
+                                lesson["全文"], lesson["拼音"], work_id, "exercise"
+                            ),
+                            "content_type": "exercise",
+                            "id": work_id,
+                        }
+                    )
+                    section_number += 1
+            unit_node["chapters"].append(
+                {
+                    "name": garden["标题"],
+                    "page": garden["页码"][0],
+                    "children": garden_children,
+                    "content_type": "garden",
+                    "id": garden_id,
+                }
+            )
 
         for lesson in supplements_by_unit[unit]:
             if lesson.get("栏目") != "快乐读书吧":

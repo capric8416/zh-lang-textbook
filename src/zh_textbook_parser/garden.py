@@ -39,6 +39,7 @@ GARDEN_SECTION_NAMES = {
     "日积月累",
     "展示台",
     "和大人一起读",
+    "快乐读书吧",
     "用拼音",
 }
 GARDEN_SECTION_FONTS = (SECTION_FONT, "FZHTJW")

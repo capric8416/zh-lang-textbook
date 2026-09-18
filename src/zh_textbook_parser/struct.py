@@ -35,6 +35,7 @@ REVIEWED_PHRASE_FIX = {
     "好奇": [["hào"], ["qí"]],
     "肚子": [["dǔ"], ["zi"]],
     "一些": [["yì"], ["xiē"]],
+    "一个": [["yí"], ["gè"]],
     "一样": [["yí"], ["yàng"]],
     "一起来": [["yì"], ["qǐ"], ["lái"]],
     "着急": [["zháo"], ["jí"]],
@@ -44,6 +45,21 @@ REVIEWED_PHRASE_FIX = {
     "结结实实": [["jiē"], ["jiē"], ["shí"], ["shí"]],
     "高兴地说": [["gāo"], ["xìng"], ["de"], ["shuō"]],
     "一次": [["yí"], ["cì"]],
+    "不了": [["bù"], ["liǎo"]],
+    "吱吱呀呀": [["zhī"], ["zhī"], ["yā"], ["yā"]],
+    "咿咿呀呀": [["yī"], ["yī"], ["yā"], ["yā"]],
+    "喔喔喔": [["wō"], ["wō"], ["wō"]],
+    "目的": [["mù"], ["dì"]],
+    "写得好": [["xiě"], ["de"], ["hǎo"]],
+    "冲着": [["chòng"], ["zhe"]],
+    "大夫": [["dài"], ["fū"]],
+    "茸毛": [["róng"], ["máo"]],
+    "跑得快": [["pǎo"], ["de"], ["kuài"]],
+    "的的确确": [["dí"], ["dí"], ["què"], ["què"]],
+    "家伙": [["jiā"], ["huo"]],
+    "轰隆隆": [["hōng"], ["lōng"], ["lōng"]],
+    "不会": [["bú"], ["huì"]],
+    "骨头": [["gǔ"], ["tou"]],
 }
 
 load_phrases_dict({**PHRASE_FIX, **REVIEWED_PHRASE_FIX})
@@ -851,6 +867,28 @@ def build(data: dict) -> dict:
                 "拼音": py,
             }
         )
+
+    # 三年级上册的古诗三首跨页排版会把第三首切到“诗题+注释”页。
+    # 这些页没有新课号，应作为上一课的续文保留，不能因标题存在而丢失诗句。
+    merged: list[dict] = []
+    for lesson in lessons:
+        title = lesson.get("标题") or ""
+        if (
+            lesson.get("课号") is None
+            and title.endswith("注释")
+            and merged
+            and merged[-1].get("单元") == lesson.get("单元")
+            and merged[-1].get("课号") is not None
+        ):
+            previous = merged[-1]
+            previous["全文"] += lesson["全文"]
+            previous["拼音"] = (
+                f"{previous['拼音']} {lesson['拼音']}".strip()
+            )
+            previous["页码"].extend(lesson["页码"])
+            continue
+        merged.append(lesson)
+    lessons = merged
 
     gardens: list[dict] = []
     for garden in data.get("语文园地", []):

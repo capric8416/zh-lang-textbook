@@ -3,16 +3,7 @@
   "目录": [
     {
       "类型": "课文",
-      "单元": null,
-      "课号": null,
-      "标题": "美丽的校园，第",
-      "页码": [
-        1
-      ]
-    },
-    {
-      "类型": "课文",
-      "单元": null,
+      "单元": 1,
       "课号": "1",
       "标题": "阅读大青树下的小学",
       "页码": [
@@ -22,7 +13,7 @@
     },
     {
       "类型": "课文",
-      "单元": null,
+      "单元": 1,
       "课号": null,
       "标题": "绒昂扬凤墙晃",
       "页码": [
@@ -31,7 +22,7 @@
     },
     {
       "类型": "课文",
-      "单元": null,
+      "单元": 1,
       "课号": "2",
       "标题": "花的学校",
       "页码": [
@@ -40,7 +31,7 @@
     },
     {
       "类型": "课文",
-      "单元": null,
+      "单元": 1,
       "课号": "3*",
       "标题": "不懂就要问",
       "页码": [
@@ -50,7 +41,7 @@
     },
     {
       "类型": "课文",
-      "单元": null,
+      "单元": 1,
       "课号": null,
       "标题": "口语交际",
       "页码": [
@@ -59,7 +50,7 @@
     },
     {
       "类型": "课文",
-      "单元": null,
+      "单元": 1,
       "课号": null,
       "标题": "习作",
       "页码": [
@@ -68,25 +59,17 @@
     },
     {
       "类型": "课文",
-      "单元": null,
+      "单元": 2,
       "课号": "4",
       "标题": "阅读古诗三首",
       "页码": [
-        14
-      ]
-    },
-    {
-      "类型": "课文",
-      "单元": null,
-      "课号": null,
-      "标题": "夜书所见注释",
-      "页码": [
+        14,
         15
       ]
     },
     {
       "类型": "课文",
-      "单元": null,
+      "单元": 2,
       "课号": "5",
       "标题": "铺满金色巴掌的水泥道",
       "页码": [
@@ -95,7 +78,7 @@
     },
     {
       "类型": "课文",
-      "单元": null,
+      "单元": 2,
       "课号": null,
       "标题": "粘印列凌增棕",
       "页码": [
@@ -105,7 +88,7 @@
     },
     {
       "类型": "课文",
-      "单元": null,
+      "单元": 2,
       "课号": "6",
       "标题": "秋天的雨",
       "页码": [
@@ -116,7 +99,7 @@
     },
     {
       "类型": "课文",
-      "单元": null,
+      "单元": 2,
       "课号": "7*",
       "标题": "听听，秋的声音",
       "页码": [
@@ -126,7 +109,7 @@
     },
     {
       "类型": "课文",
-      "单元": null,
+      "单元": 2,
       "课号": null,
       "标题": "习作",
       "页码": [
@@ -135,7 +118,7 @@
     },
     {
       "类型": "课文",
-      "单元": null,
+      "单元": 3,
       "课号": "8",
       "标题": "老屋总也倒总也倒不了的老屋",
       "页码": [
@@ -146,7 +129,7 @@
     },
     {
       "类型": "课文",
-      "单元": null,
+      "单元": 3,
       "课号": "9*",
       "标题": "犟龟",
       "页码": [
@@ -158,7 +141,7 @@
     },
     {
       "类型": "课文",
-      "单元": null,
+      "单元": 3,
       "课号": "10*",
       "标题": "小狗学叫",
       "页码": [
@@ -169,7 +152,7 @@
     },
     {
       "类型": "课文",
-      "单元": null,
+      "单元": 3,
       "课号": null,
       "标题": "第一种结局",
       "页码": [
@@ -178,7 +161,7 @@
     },
     {
       "类型": "课文",
-      "单元": null,
+      "单元": 3,
       "课号": null,
       "标题": "第二种结局",
       "页码": [
@@ -187,7 +170,7 @@
     },
     {
       "类型": "课文",
-      "单元": null,
+      "单元": 3,
       "课号": null,
       "标题": "口语交际",
       "页码": [
@@ -196,7 +179,7 @@
     },
     {
       "类型": "课文",
-      "单元": null,
+      "单元": 3,
       "课号": null,
       "标题": "习作",
       "页码": [
@@ -205,7 +188,7 @@
     },
     {
       "类型": "课文",
-      "单元": null,
+      "单元": 4,
       "课号": "11",
       "标题": "宝葫芦的秘密（节选）",
       "页码": [
@@ -216,7 +199,7 @@
     },
     {
       "类型": "课文",
-      "单元": null,
+      "单元": 4,
       "课号": "12",
       "标题": "在牛肚子里旅行",
       "页码": [
@@ -227,7 +210,7 @@
     },
     {
       "类型": "课文",
-      "单元": null,
+      "单元": 4,
       "课号": "13*",
       "标题": "一块奶酪",
       "页码": [
@@ -237,7 +220,7 @@
     },
     {
       "类型": "课文",
-      "单元": null,
+      "单元": 4,
       "课号": null,
       "标题": "习作",
       "页码": [
@@ -246,7 +229,7 @@
     },
     {
       "类型": "课文",
-      "单元": null,
+      "单元": 5,
       "课号": "14",
       "标题": "阅读搭船的鸟",
       "页码": [
@@ -256,7 +239,7 @@
     },
     {
       "类型": "课文",
-      "单元": null,
+      "单元": 5,
       "课号": "15",
       "标题": "金色的草地",
       "页码": [
@@ -266,7 +249,7 @@
     },
     {
       "类型": "课文",
-      "单元": null,
+      "单元": 5,
       "课号": null,
       "标题": "梳理与交流",
       "页码": [
@@ -275,7 +258,7 @@
     },
     {
       "类型": "课文",
-      "单元": null,
+      "单元": 5,
       "课号": null,
       "标题": "习作",
       "页码": [
@@ -284,7 +267,7 @@
     },
     {
       "类型": "课文",
-      "单元": null,
+      "单元": 5,
       "课号": null,
       "标题": "例文",
       "页码": [
@@ -293,7 +276,7 @@
     },
     {
       "类型": "课文",
-      "单元": null,
+      "单元": 5,
       "课号": null,
       "标题": "我爱故乡的杨梅",
       "页码": [
@@ -303,16 +286,7 @@
     },
     {
       "类型": "课文",
-      "单元": null,
-      "课号": null,
-      "标题": "祖国，我爱你。单",
-      "页码": [
-        69
-      ]
-    },
-    {
-      "类型": "课文",
-      "单元": null,
+      "单元": 6,
       "课号": "16",
       "标题": "阅读富饶的西沙群岛",
       "页码": [
@@ -322,7 +296,7 @@
     },
     {
       "类型": "课文",
-      "单元": null,
+      "单元": 6,
       "课号": "17",
       "标题": "海滨小城",
       "页码": [
@@ -332,7 +306,7 @@
     },
     {
       "类型": "课文",
-      "单元": null,
+      "单元": 6,
       "课号": "18",
       "标题": "美丽的小兴安岭",
       "页码": [
@@ -342,7 +316,7 @@
     },
     {
       "类型": "课文",
-      "单元": null,
+      "单元": 6,
       "课号": "19*",
       "标题": "香港，璀璨的明珠",
       "页码": [
@@ -352,7 +326,7 @@
     },
     {
       "类型": "课文",
-      "单元": null,
+      "单元": 6,
       "课号": null,
       "标题": "习作",
       "页码": [
@@ -361,34 +335,17 @@
     },
     {
       "类型": "课文",
-      "单元": null,
-      "课号": null,
-      "标题": "语文园地",
-      "页码": [
-        81
-      ]
-    },
-    {
-      "类型": "课文",
-      "单元": null,
+      "单元": 7,
       "课号": "20",
       "标题": "阅读古诗三首",
       "页码": [
-        84
-      ]
-    },
-    {
-      "类型": "课文",
-      "单元": null,
-      "课号": null,
-      "标题": "饮湖上初晴后雨注释",
-      "页码": [
+        84,
         85
       ]
     },
     {
       "类型": "课文",
-      "单元": null,
+      "单元": 7,
       "课号": "21",
       "标题": "大自然的声音",
       "页码": [
@@ -398,7 +355,7 @@
     },
     {
       "类型": "课文",
-      "单元": null,
+      "单元": 7,
       "课号": null,
       "标题": "瀑布",
       "页码": [
@@ -407,7 +364,7 @@
     },
     {
       "类型": "课文",
-      "单元": null,
+      "单元": 7,
       "课号": "22",
       "标题": "读不完的大书",
       "页码": [
@@ -417,7 +374,7 @@
     },
     {
       "类型": "课文",
-      "单元": null,
+      "单元": 7,
       "课号": null,
       "标题": "口语交际",
       "页码": [
@@ -426,7 +383,7 @@
     },
     {
       "类型": "课文",
-      "单元": null,
+      "单元": 7,
       "课号": null,
       "标题": "习作",
       "页码": [
@@ -435,7 +392,7 @@
     },
     {
       "类型": "课文",
-      "单元": null,
+      "单元": 8,
       "课号": "23",
       "标题": "群儿戏于庭，一儿登瓮，足跌",
       "页码": [
@@ -444,7 +401,7 @@
     },
     {
       "类型": "课文",
-      "单元": null,
+      "单元": 8,
       "课号": "24",
       "标题": "一定要争气",
       "页码": [
@@ -454,7 +411,7 @@
     },
     {
       "类型": "课文",
-      "单元": null,
+      "单元": 8,
       "课号": "25",
       "标题": "手术台就是阵地",
       "页码": [
@@ -463,7 +420,7 @@
     },
     {
       "类型": "课文",
-      "单元": null,
+      "单元": 8,
       "课号": null,
       "标题": "棒大血硝危险势瓦帘担迅速夺秒",
       "页码": [
@@ -472,7 +429,7 @@
     },
     {
       "类型": "课文",
-      "单元": null,
+      "单元": 8,
       "课号": null,
       "标题": "棒伤陆血取盘",
       "页码": [
@@ -481,7 +438,7 @@
     },
     {
       "类型": "课文",
-      "单元": null,
+      "单元": 8,
       "课号": "26*",
       "标题": "一个粗瓷大碗",
       "页码": [
@@ -490,7 +447,7 @@
     },
     {
       "类型": "课文",
-      "单元": null,
+      "单元": 8,
       "课号": null,
       "标题": "瓷赵抗束缸还顿灶沾禁锅侦",
       "页码": [
@@ -499,7 +456,7 @@
     },
     {
       "类型": "课文",
-      "单元": null,
+      "单元": 8,
       "课号": null,
       "标题": "口语交际",
       "页码": [
@@ -508,7 +465,7 @@
     },
     {
       "类型": "课文",
-      "单元": null,
+      "单元": 8,
       "课号": null,
       "标题": "习作",
       "页码": [
@@ -517,28 +474,65 @@
     },
     {
       "类型": "园地",
-      "单元": null,
-      "标题": null,
+      "单元": 1,
+      "标题": "语文园地",
       "页码": [
         11,
-        12,
-        13,
+        12
+      ]
+    },
+    {
+      "类型": "园地",
+      "单元": 2,
+      "标题": "语文园地",
+      "页码": [
         25,
-        26,
-        27,
+        26
+      ]
+    },
+    {
+      "类型": "园地",
+      "单元": 3,
+      "标题": "语文园地",
+      "页码": [
         43,
-        44,
-        45,
+        44
+      ]
+    },
+    {
+      "类型": "园地",
+      "单元": 4,
+      "标题": "语文园地",
+      "页码": [
         55,
         56,
         57,
-        58,
-        59,
-        82,
-        83,
+        58
+      ]
+    },
+    {
+      "类型": "园地",
+      "单元": 6,
+      "标题": "语文园地",
+      "页码": [
+        81,
+        82
+      ]
+    },
+    {
+      "类型": "园地",
+      "单元": 7,
+      "标题": "语文园地",
+      "页码": [
         93,
-        94,
-        95,
+        94
+      ]
+    },
+    {
+      "类型": "园地",
+      "单元": 8,
+      "标题": "语文园地",
+      "页码": [
         107,
         108
       ]
@@ -572,22 +566,7 @@
   ],
   "课文": [
     {
-      "单元": null,
-      "课号": null,
-      "栏目": null,
-      "课题": null,
-      "标题": "美丽的校园，第",
-      "作者": null,
-      "年代": null,
-      "出处": null,
-      "页码": [
-        1
-      ],
-      "全文": "寻访多彩校园，留下欢乐印迹。◎阅读时，关注有新鲜感的词语和句子。◎体会习作的乐趣。",
-      "拼音": "xún fǎng duō cǎi xiào yuán ， liú xià huān lè yìn jì 。 ◎ yuè dú shí ， guān zhù yǒu xīn xiān gǎn de cí yǔ hé jù zi 。 ◎ tǐ huì xí zuò de lè qù 。"
-    },
-    {
-      "单元": null,
+      "单元": 1,
       "课号": "1",
       "栏目": null,
       "课题": null,
@@ -603,7 +582,7 @@
       "拼音": "zǎo chén ， cóng shān pō shàng ， cóng píng bà lǐ ， cóng yī tiáo tiáo kāi zhe róng qiú huā hé tài yáng huā de xiǎo lù shàng ， zǒu lái le xǔ duō xiǎo xué shēng ， yǒu hàn zú de ， yǒu dǎi zú de ， yǒu jǐng pō zú de ， hái yǒu ā chāng zú hé dé áng zú de 。 dà jiā gāo gāo xìng xìng lái dào xué xiào ， dōu chéng le hǎo péng yǒu 。 tóng xué men xiàng zài xiào yuán lǐ huān chàng de xiǎo niǎo dǎ zhāo hū ， xiàng jìng ài de lǎo shī wèn hǎo ， xiàng gāo gāo piāo yáng de guó qí jìng lǐ 。 “ dāng ， dāng dāng ！ dāng ， dāng dāng ！ ” dà qīng shù shàng de tóng zhōng qiāo xiǎng le 。 shàng kè le ， dà jiā zài jiào shì lǐ yì qǐ lǎng dú kè wén ， nà shēng yīn zhēn hǎo tīng ！ zhè shí hòu ， chuāng wài shí fēn ān jìng ， shù zhī bù yáo le ， niǎo ér bù jiào le ， hú dié tíng zài huā duǒ shàng ， hǎo xiàng dōu zài tīng tóng xué men dú kè wén 。 zuì yǒu qù de shì ， pǎo lái le liǎng zhǐ hóu zi 。 zhè xiē shān lín lǐ de péng yǒu ， shì nà yàng hào qí dì tīng zhe 。 xià kè le ， dà jiā zài dà qīng shù xià tiào kǒng què wǔ ， shuāi jiāo ， zuò yóu xì ， zhāo yǐn lái xǔ duō xiǎo niǎo ， lián sōng shǔ yě gǎn lái kàn rè nào 。 zhè jiù shì wǒ men kě ài de xiǎo xué ， yī suǒ biān jiāng de xiǎo xué 。 tóng xué men zài zhè lǐ xué xí 、 wán shuǎ ， zài zhè lǐ yú kuài chéng zhǎng 。 gǔ lǎo de tóng zhōng ， guà zài dà qīng shù cū zhuàng de zhī gàn shàng 。 fèng wěi zhú de yǐng zi ， zài jié bái de qiáng shàng yáo huàng … …"
     },
     {
-      "单元": null,
+      "单元": 1,
       "课号": null,
       "栏目": null,
       "课题": null,
@@ -618,7 +597,7 @@
       "拼音": "lǎng dú kè wén ， yī biān dú yī biān xiǎng xiàng kè wén miáo xiě de huà miàn 。 zài wén zhōng huà chū nǐ jué de yǒu xīn xiān gǎn de cí jù ， hé tóng xué jiāo liú 。 zhè suǒ xué xiào yǒu nǎ xiē tè bié de dì fāng ？ yòng zì jǐ de huà shuō yī shuō 。 nǐ de xué xiào shì shén me yàng de ？ tóng xué men zài xué xiào lǐ zuò xiē shén me ？ xuǎn zé yí gè chǎng jǐng shuō yī shuō 。 jiào shì lǐ cāo chǎng shàng huā tán biān tú shū shì lǐ jiào xué lóu qián dà shù xià … … dú yī dú ， jì yī jì 。 áng yáng áng guì áng shǒu tǐng xiōng piāo yáng biǎo yáng shén cǎi fēi yáng qiáng bì chéng qiáng tóng qiáng tiě bì yáo huàng huàng dòng yáo tóu huàng nǎo"
     },
     {
-      "单元": null,
+      "单元": 1,
       "课号": "2",
       "栏目": null,
       "课题": null,
@@ -633,7 +612,7 @@
       "拼音": "dāng léi yún zài tiān shàng hōng xiǎng ， liù yuè de zhèn yǔ là xià de shí hòu ， shī rùn de dōng fēng zǒu guò huāng yě ， zài zhú lín zhōng chuī zhe fēng dí 。 yú shì ， yī qún yī qún de huā cóng wú rén zhī dào de dì fāng tū rán pǎo chū lái ， zài lǜ cǎo shàng tiào wǔ ， kuáng huān 。 mā mā ， wǒ zhēn de jué de nà xiē huā duǒ shì zài dì xià de xué xiào lǐ shàng xué 。 tā men guān le mén zuò gōng kè 。 rú guǒ tā men xiǎng zài fàng xué yǐ qián chū lái yóu xì ， tā men de lǎo shī shì yào fá tā men de 。 yǔ yī lái ， tā men biàn fàng jià le 。 shù zhī zài lín zhōng hù xiāng pèng chù zhe ， lǜ yè zài kuáng fēng lǐ sù sù dì xiǎng ， léi yún pāi zhe dà shǒu 。 zhè shí ， huā hái zi men biàn chuān le zǐ de 、 huáng de 、 bái de yī shang ， chōng le chū lái 。 nǐ kě zhī dào ， mā mā ， tā men de jiā shì zài tiān shàng ， zài xīng xīng suǒ zhù de dì fāng 。 nǐ méi yǒu kàn jiàn tā men zěn yàng dì jí zhe yào dào nà ér qù ma ？ nǐ bù zhī dào tā men wèi shén me nà yàng jí jí máng máng ma ？ wǒ zì rán néng gòu cāi dé chū tā men shì duì shuí yáng qǐ shuāng bì lái ， tā men yě yǒu tā men de mā mā ， jiù xiàng wǒ yǒu wǒ zì jǐ de mā mā yí yàng 。"
     },
     {
-      "单元": null,
+      "单元": 1,
       "课号": "3*",
       "栏目": null,
       "课题": null,
@@ -646,10 +625,10 @@
         8
       ],
       "全文": "孙中山小时候在私塾读书。那时候上课，先生念，学生跟着念，咿咿呀呀，像唱歌一样。学生读熟了，先生就让他们一个一个地背诵。至于书里的意思，先生从来不讲。一天，孙中山来到学校，照例把书放到先生面前，流利地背出前一天所学的功课。先生听了，连连点头。接着，先生在孙中山的书上又圈了一段，他念一句，叫孙中山念一句。孙中山会读了，就回到座位上练习背诵。他读了几遍，就背下来了。可是，书里说的是什么意思，他一点儿也不懂。孙中山想：这样糊里糊涂地背，有什么用呢？于是，他壮着胆子站起来，问：“先生，您刚才让我背的这段书是什么意思？请您给我讲讲吧！”这一问，把正在摇头晃脑高声念书的同学们吓呆了，课堂里霎时变得鸦雀无声。先生拿着戒尺，走到孙中山跟前，厉声问道：“你会背了吗？”“会背了。”孙中山说着，就把那段书一字不漏地背了出来。先生收起戒尺，摆摆手让孙中山坐下，说：“我原想，书中的道理，你们长大了自然会知道的。现在你们既然想听，我就讲讲吧！”先生讲得很详细，大家听得很认真。后来，有个同学问孙中山：“你向先生提出问题，不怕挨打吗？”孙中山笑了笑，说：“学问学问，不懂就要问。为了弄清楚道理，就是挨打也值得。”",
-      "拼音": "sūn zhōng shān xiǎo shí hòu zài sī shú dú shū 。 nà shí hòu shàng kè ， xiān shēng niàn ， xué shēng gēn zhe niàn ， yī yī yā ya ， xiàng chàng gē yí yàng 。 xué shēng dú shú le ， xiān shēng jiù ràng tā men yí gè yí gè dì bèi sòng 。 zhì yú shū lǐ de yì si ， xiān shēng cóng lái bù jiǎng 。 yī tiān ， sūn zhōng shān lái dào xué xiào ， zhào lì bǎ shū fàng dào xiān shēng miàn qián ， liú lì dì bèi chū qián yī tiān suǒ xué de gōng kè 。 xiān shēng tīng le ， lián lián diǎn tóu 。 jiē zhe ， xiān shēng zài sūn zhōng shān de shū shàng yòu quān le yī duàn ， tā niàn yī jù ， jiào sūn zhōng shān niàn yī jù 。 sūn zhōng shān huì dú le ， jiù huí dào zuò wèi shàng liàn xí bèi sòng 。 tā dú le jǐ biàn ， jiù bèi xià lái le 。 kě shì ， shū lǐ shuō de shì shén me yì si ， tā yì diǎn ér yě bù dǒng 。 sūn zhōng shān xiǎng ： zhè yàng hú lǐ hú tú dì bèi ， yǒu shén me yòng ne ？ yú shì ， tā zhuàng zhe dǎn zi zhàn qǐ lái ， wèn ： “ xiān shēng ， nín gāng cái ràng wǒ bèi de zhè duàn shū shì shén me yì si ？ qǐng nín gěi wǒ jiǎng jiǎng ba ！ ” zhè yī wèn ， bǎ zhèng zài yáo tóu huàng nǎo gāo shēng niàn shū de tóng xué men xià dāi le ， kè táng lǐ shà shí biàn dé yā què wú shēng 。 xiān shēng ná zhe jiè chǐ ， zǒu dào sūn zhōng shān gēn qián ， lì shēng wèn dào ： “ nǐ huì bèi le ma ？ ” “ huì bèi le 。 ” sūn zhōng shān shuō zhe ， jiù bǎ nà duàn shū yī zì bù lòu dì bèi le chū lái 。 xiān shēng shōu qǐ jiè chǐ ， bǎi bǎi shǒu ràng sūn zhōng shān zuò xià ， shuō ： “ wǒ yuán xiǎng ， shū zhōng de dào lǐ ， nǐ men zhǎng dà le zì rán huì zhī dào de 。 xiàn zài nǐ men jì rán xiǎng tīng ， wǒ jiù jiǎng jiǎng ba ！ ” xiān shēng jiǎng dé hěn xiáng xì ， dà jiā tīng dé hěn rèn zhēn 。 hòu lái ， yǒu gè tóng xué wèn sūn zhōng shān ： “ nǐ xiàng xiān shēng tí chū wèn tí ， bù pà ái dǎ ma ？ ” sūn zhōng shān xiào le xiào ， shuō ： “ xué wèn xué wèn ， bù dǒng jiù yào wèn 。 wèi le nòng qīng chǔ dào lǐ ， jiù shì ái dǎ yě zhí de 。 ”"
+      "拼音": "sūn zhōng shān xiǎo shí hòu zài sī shú dú shū 。 nà shí hòu shàng kè ， xiān shēng niàn ， xué shēng gēn zhe niàn ， yī yī yā yā ， xiàng chàng gē yí yàng 。 xué shēng dú shú le ， xiān shēng jiù ràng tā men yí gè yí gè dì bèi sòng 。 zhì yú shū lǐ de yì si ， xiān shēng cóng lái bù jiǎng 。 yī tiān ， sūn zhōng shān lái dào xué xiào ， zhào lì bǎ shū fàng dào xiān shēng miàn qián ， liú lì dì bèi chū qián yī tiān suǒ xué de gōng kè 。 xiān shēng tīng le ， lián lián diǎn tóu 。 jiē zhe ， xiān shēng zài sūn zhōng shān de shū shàng yòu quān le yī duàn ， tā niàn yī jù ， jiào sūn zhōng shān niàn yī jù 。 sūn zhōng shān huì dú le ， jiù huí dào zuò wèi shàng liàn xí bèi sòng 。 tā dú le jǐ biàn ， jiù bèi xià lái le 。 kě shì ， shū lǐ shuō de shì shén me yì si ， tā yì diǎn ér yě bù dǒng 。 sūn zhōng shān xiǎng ： zhè yàng hú lǐ hú tú dì bèi ， yǒu shén me yòng ne ？ yú shì ， tā zhuàng zhe dǎn zi zhàn qǐ lái ， wèn ： “ xiān shēng ， nín gāng cái ràng wǒ bèi de zhè duàn shū shì shén me yì si ？ qǐng nín gěi wǒ jiǎng jiǎng ba ！ ” zhè yī wèn ， bǎ zhèng zài yáo tóu huàng nǎo gāo shēng niàn shū de tóng xué men xià dāi le ， kè táng lǐ shà shí biàn dé yā què wú shēng 。 xiān shēng ná zhe jiè chǐ ， zǒu dào sūn zhōng shān gēn qián ， lì shēng wèn dào ： “ nǐ huì bèi le ma ？ ” “ huì bèi le 。 ” sūn zhōng shān shuō zhe ， jiù bǎ nà duàn shū yī zì bù lòu dì bèi le chū lái 。 xiān shēng shōu qǐ jiè chǐ ， bǎi bǎi shǒu ràng sūn zhōng shān zuò xià ， shuō ： “ wǒ yuán xiǎng ， shū zhōng de dào lǐ ， nǐ men zhǎng dà le zì rán huì zhī dào de 。 xiàn zài nǐ men jì rán xiǎng tīng ， wǒ jiù jiǎng jiǎng ba ！ ” xiān shēng jiǎng dé hěn xiáng xì ， dà jiā tīng dé hěn rèn zhēn 。 hòu lái ， yǒu gè tóng xué wèn sūn zhōng shān ： “ nǐ xiàng xiān shēng tí chū wèn tí ， bù pà ái dǎ ma ？ ” sūn zhōng shān xiào le xiào ， shuō ： “ xué wèn xué wèn ， bù dǒng jiù yào wèn 。 wèi le nòng qīng chǔ dào lǐ ， jiù shì ái dǎ yě zhí de 。 ”"
     },
     {
-      "单元": null,
+      "单元": 1,
       "课号": null,
       "栏目": null,
       "课题": null,
@@ -664,7 +643,7 @@
       "拼音": "nǐ de shǔ jià shì zěn me dù guò de ？ jīng lì le nǎ xiē xīn xiān shì ？ hé tóng xué fēn xiǎng yī xià ba ！ xiǎng hǎo yào jiǎng de nèi róng yǐ hòu ， xiān shì zhe gěi jiā rén jiǎng yī jiǎng ， tīng tīng tā men yǒu shén me jiàn yì 。 hé tóng xué jiāo liú de shí hòu ， yào bǎ zì jǐ de jīng lì jiǎng qīng chǔ 。 jiǎng de shí hòu kě yǐ chū shì xiāng guān de tú piàn huò shí wù ， bāng zhù bié rén gèng hǎo dì lǐ jiě nǐ jiǎng de nèi róng 。"
     },
     {
-      "单元": null,
+      "单元": 1,
       "课号": null,
       "栏目": null,
       "课题": null,
@@ -679,7 +658,7 @@
       "拼音": "wǒ men lái zuò yí gè “ cāi cāi tā shì shuí ” de yóu xì ba ！ xuǎn zé yí gè tóng xué ， yòng jǐ jù huà huò yī duàn huà xiě yī xiě tā 。 zhù yì wén zhōng bù néng chū xiàn tā de míng zì ， dàn shì yào ràng bié rén dú le zhī hòu néng cāi chū nǐ xiě de shì shuí 。 nǐ xuǎn de shì shuí ？ tā yǒu nǎ xiē tè bié de dì fāng ？ xuǎn zé yī liǎng diǎn xiě xià lái 。 xiě de shí hòu ， zhù yì yī duàn huà de kāi tóu yào kōng liǎng gé 。 xiě hǎo yǐ hòu dú gěi tóng xué tīng ， kàn kàn tā men néng bù néng cāi chū nǐ xiě de shì shuí 。 yě kě yǐ bǎ quán bān tóng xué de xí zuò tiē zài qiáng bào shàng ， dà jiā yì qǐ lái cāi yī cāi 。"
     },
     {
-      "单元": null,
+      "单元": 2,
       "课号": "4",
       "栏目": null,
       "课题": null,
@@ -688,28 +667,14 @@
       "年代": "唐",
       "出处": null,
       "页码": [
-        14
-      ],
-      "全文": "望洞庭①注释潭面无风镜未磨。遥望洞庭山水翠，白银盘里一青螺③。山行注释远上寒山石径斜，④〔坐〕因为。白云生处有人家。③停车坐爱枫林晚，④霜叶红于二月花。",
-      "拼音": "wàng dòng tíng ① zhù shì tán miàn wú fēng jìng wèi mó 。 yáo wàng dòng tíng shān shuǐ cuì ， bái yín pán lǐ yī qīng luó ③ 。 shān xíng zhù shì yuǎn shàng hán shān shí jìng xié ， ④ 〔 zuò 〕 yīn wèi 。 bái yún shēng chù yǒu rén jiā 。 ③ tíng chē zuò ài fēng lín wǎn ， ④ shuāng yè hóng yú èr yuè huā 。"
-    },
-    {
-      "单元": null,
-      "课号": null,
-      "栏目": null,
-      "课题": null,
-      "标题": "夜书所见注释",
-      "作者": null,
-      "年代": null,
-      "出处": null,
-      "页码": [
+        14,
         15
       ],
-      "全文": "①〔萧萧〕这里形容风吹梧桐叶发出的声音。①②〔挑〕用细长的东西拨。萧萧梧叶送寒声，③〔促织〕蟋蟀，也叫蛐（）蛐。",
-      "拼音": "① 〔 xiāo xiāo 〕 zhè lǐ xíng róng fēng chuī wú tóng yè fā chū de shēng yīn 。 ① ② 〔 tiāo 〕 yòng xì cháng de dōng xī bō 。 xiāo xiāo wú yè sòng hán shēng ， ③ 〔 cù zhī 〕 xī shuài ， yě jiào qū （ ） qū 。"
+      "全文": "望洞庭①注释潭面无风镜未磨。遥望洞庭山水翠，白银盘里一青螺③。山行注释远上寒山石径斜，④〔坐〕因为。白云生处有人家。③停车坐爱枫林晚，④霜叶红于二月花。夜书所见注释江上秋风动客情。④〔篱落〕篱笆。知有儿童挑②促织，③夜深篱落一灯明。④",
+      "拼音": "wàng dòng tíng ① zhù shì tán miàn wú fēng jìng wèi mó 。 yáo wàng dòng tíng shān shuǐ cuì ， bái yín pán lǐ yī qīng luó ③ 。 shān xíng zhù shì yuǎn shàng hán shān shí jìng xié ， ④ 〔 zuò 〕 yīn wèi 。 bái yún shēng chù yǒu rén jiā 。 ③ tíng chē zuò ài fēng lín wǎn ， ④ shuāng yè hóng yú èr yuè huā 。 yè shū suǒ jiàn zhù shì jiāng shàng qiū fēng dòng kè qíng 。 ④ 〔 lí luò 〕 lí bā 。 zhī yǒu ér tóng tiǎo ② cù zhī ， ③ yè shēn lí luò yī dēng míng 。 ④"
     },
     {
-      "单元": null,
+      "单元": 2,
       "课号": "5",
       "栏目": null,
       "课题": null,
@@ -724,7 +689,7 @@
       "拼音": "yī yè qiū fēng ， yī yè qiū yǔ 。 wǒ bèi zhe shū bāo qù shàng xué shí ， tiān kāi shǐ fàng qíng le 。 a ！ duō me míng lǎng de tiān kōng 。 kě shì ， dì miàn hái shì cháo shī de ， bù shí hái néng kàn jiàn yí gè liàng jīng jīng de shuǐ wā ， yìng zhe yī jiǎo xiǎo xiǎo de lán tiān 。 dào lù liǎng páng de fǎ guó wú tóng shù ， diào xià le yī piàn piàn jīn huáng jīn huáng de yè zi 。 zhè yī piàn piàn shǎn zhe yǔ zhū de yè zi ， yī diào xià lái ， biàn jǐn jǐn dì zhān zài shī lù lù de shuǐ ní dào shàng le 。 wǒ zǒu zài yuàn qiáng wài de shuǐ ní dào shàng 。 shuǐ ní dào xiàng pù shàng le yī kuài cǎi sè de dì tǎn 。 zhè shì yī kuài yìn zhe luò yè tú àn de 、 shǎn shǎn fā guāng de dì tǎn ， cóng jiǎo xià yì zhí pù dào hěn yuǎn hěn yuǎn de dì fāng ， yì zhí dào lù de jìn tóu … … měi yī piàn fǎ guó wú tóng shù de luò yè ， dōu xiàng yí gè jīn sè de xiǎo bā zhǎng ， yù tiē dì 、 píng zhǎn dì zhān zài shuǐ ní dào shàng 。 tā men pái liè dé bìng bù guī zé ， shèn zhì yǒu xiē líng luàn ， rán ér ， zhè gèng zēng tiān le shuǐ ní dào de měi 。 wǒ yī bù yī bù xiǎo xīn dì zǒu zhe ， yī piàn yī piàn zǐ xì dì shù zhe 。 wǒ chuān zhe yī shuāng zōng hóng sè de xiǎo yǔ xuē 。 nǐ qiáo ， zhè duō xiàng liǎng zhǐ zōng hóng sè de xiǎo niǎo ， zài qiū tiān jīn huáng de yè cóng jiān ， yú kuài dì bèng tiào zhe ， gē chàng zhe … …"
     },
     {
-      "单元": null,
+      "单元": 2,
       "课号": null,
       "栏目": null,
       "课题": null,
@@ -740,7 +705,7 @@
       "拼音": "yào bú shì pà shàng kè chí dào ， wǒ huì zǒu dé hěn màn hěn màn de 。 yī yè qiū fēng ， yī yè qiū yǔ 。 dāng wǒ bèi zhe shū bāo qù shàng xué shí ， dì yī huí jué de ， mén qián de shuǐ ní dào zhēn měi a ！ lǎng dú kè wén 。 bǎ nǐ xǐ huān de jù zi chāo xiě xià lái 。 nǐ shì yòng shén me fāng fǎ lǐ jiě xià miàn jiā diǎn cí yǔ de ？ hé tóng xué jiāo liú 。 ◇ a ！ duō me míng lǎng de tiān kōng 。 ◇ tā men pái liè dé bìng bù guī zé ， shèn zhì yǒu xiē líng luàn 。 dú yī dú ， jì yī jì 。 jiǎo yìn yìn zhāng yìn shuā líng chén líng kōng shèng qì líng rén pái liè bìng liè liè chē zēng tiān zēng jiā yǔ rì jù zēng “ pù mǎn jīn sè bā zhǎng de shuǐ ní dào ” ， duō měi de fā xiàn a ！ nǐ zài shàng xué huò fàng xué lù shàng kàn dào le shén me yàng de jǐng sè ？ yòng jǐ jù huà xiě xià lái ba 。 cóng wǒ jiā dào xiǎo xué yào jīng guò yī tiáo dà jiē ， yī tiáo qū qū wān wān de xiàng zi 。 wǒ fàng xué huí jiā xǐ huān dōng kàn kàn ， xī kàn kàn ， kàn kàn nà xiē shǒu gōng zuō fang 、 bù diàn 、 jiàng yuán 、 zá huò diàn 、 bào zhàng diàn 、 shāo bǐng diàn 、 mài shí huī má dāo de pù zi 、 rǎn fáng … … wǒ dào yín jiàng diàn lǐ qù kàn yín jiàng zài yí gè mú zi shàng zàn chū yí gè xiǎo luó hàn ， dào zhú qì chǎng kàn shī fù zěn yàng bǎ yī gēn zhú gān zuò chéng pá cǎo de pá zi ， dào chē jiàng diàn kàn chē jiàng yòng yìng mù chē xuán chū gè zhǒng xíng zhuàng de qì wù ， kàn dēng lóng pù hú dēng lóng … … bǎi kàn bù yàn 。"
     },
     {
-      "单元": null,
+      "单元": 2,
       "课号": "6",
       "栏目": null,
       "课题": null,
@@ -754,10 +719,10 @@
         21
       ],
       "全文": "秋天的雨，是一把钥匙。它带着清凉和温柔，轻轻地，轻轻地，趁你没留意，把秋天的大门打开了。秋天的雨，有一盒五彩缤纷的颜料。你看，它把黄色给了银杏树，黄黄的叶子像一把把小扇子，扇哪扇哪，扇走了夏天的炎热。它把红色给了枫树，红红的枫叶像一枚枚邮票，飘哇飘哇，邮来了秋天的凉爽。金黄色是给田野的，看，田野像金色的海洋。橙红色是给果树的，橘子、柿子你挤我碰，争着要人们去摘呢！菊花仙子得到的颜色就更多了，紫红的、淡理解了“五彩缤纷”黄的、雪白的……美丽的菊花在秋雨里频频点头。秋天的雨，藏着非常好闻的气味。梨香香的，葡萄甜甜的，还有苹果、橘子，好多好多香甜的气味，都躲在小雨滴里呢！小朋友的脚，常被那香味勾住。秋天的雨，吹起了金色的小喇叭①。它告诉大家，冬天快要来了。小松鼠找来松果当粮食，小青蛙在加紧挖洞，准备舒舒服服地睡大觉。松柏穿上厚厚的、油亮亮的衣裳，杨树、柳树的叶子飘到树妈妈的脚下。它们都在准备过冬了。秋天的雨，带给大地的是一曲丰收的歌，带给小朋友的是一首欢乐的歌。秋分过后，黑夜就渐渐比白天长了，缺乏阳光的寒冷时节又开始了。田野里空荡荡的，夏天太阳所赐予的物产已经收获完毕，许多植物已经褪色或枯死。在植物和动物适应冬季以前，迁徙的季节来临了。植物的种子和果实在传播。许多种子装备着小小的翅膀或是“降落伞”，比如蓟类植物，风把它们的种子从妈妈那里带走，吹到尽可能远的地方。地上到处都是新的种子。如果所有的种子都落在同一个地方，它们就会互相抢夺地盘和阳光。许多幼小的动物正在成长。它们离开了父母，自己去找一处新的住所。小蜘蛛用闪闪发亮的丝将自己悬挂在空中，有时候它们远离原来的巢穴，到几公里之外搭建新家，有时候它们就直接在遇到的第一根树枝上安家。候鸟也开始了它们的旅途。随着秋天的光照时间一天天变短，候鸟的“生物钟”催促着它们：是时候了，出发吧！它们向着太阳，飞向那白昼更长、气候更温暖的南方。燕子早早地启程了，因为它知道，要不了多久，这里将没有昆虫可吃。金翅雀是一种以蓟类植物为生的雀鸟，它会停留更长的时间，直到大雪覆盖它最爱吃的食物—蓟类植物的种子。",
-      "拼音": "qiū tiān de yǔ ， shì yī bǎ yào shi 。 tā dài zhe qīng liáng hé wēn róu ， qīng qīng dì ， qīng qīng dì ， chèn nǐ méi liú yì ， bǎ qiū tiān de dà mén dǎ kāi le 。 qiū tiān de yǔ ， yǒu yī hé wǔ cǎi bīn fēn de yán liào 。 nǐ kàn ， tā bǎ huáng sè gěi le yín xìng shù ， huáng huáng de yè zi xiàng yī bǎ bǎ xiǎo shàn zi ， shàn nǎ shàn nǎ ， shàn zǒu le xià tiān de yán rè 。 tā bǎ hóng sè gěi le fēng shù ， hóng hóng de fēng yè xiàng yī méi méi yóu piào ， piāo wa piāo wa ， yóu lái le qiū tiān de liáng shuǎng 。 jīn huáng sè shì gěi tián yě de ， kàn ， tián yě xiàng jīn sè de hǎi yáng 。 chéng hóng sè shì gěi guǒ shù de ， jú zi 、 shì zi nǐ jǐ wǒ pèng ， zhēng zhe yào rén men qù zhāi ne ！ jú huā xiān zi dé dào de yán sè jiù gèng duō le ， zǐ hóng de 、 dàn lǐ jiě le “ wǔ cǎi bīn fēn ” huáng de 、 xuě bái de … … měi lì de jú huā zài qiū yǔ lǐ pín pín diǎn tóu 。 qiū tiān de yǔ ， cáng zhe fēi cháng hǎo wén de qì wèi 。 lí xiāng xiāng de ， pú táo tián tián de ， hái yǒu píng guǒ 、 jú zi ， hǎo duō hǎo duō xiāng tián de qì wèi ， dōu duǒ zài xiǎo yǔ dī lǐ ne ！ xiǎo péng yǒu de jiǎo ， cháng bèi nà xiāng wèi gōu zhù 。 qiū tiān de yǔ ， chuī qǐ le jīn sè de xiǎo lǎ bā ① 。 tā gào sù dà jiā ， dōng tiān kuài yào lái le 。 xiǎo sōng shǔ zhǎo lái sōng guǒ dāng liáng shí ， xiǎo qīng wā zài jiā jǐn wā dòng ， zhǔn bèi shū shū fú fú dì shuì dà jué 。 sōng bǎi chuān shàng hòu hòu de 、 yóu liàng liàng de yī shang ， yáng shù 、 liǔ shù de yè zi piāo dào shù mā mā de jiǎo xià 。 tā men dōu zài zhǔn bèi guò dōng le 。 qiū tiān de yǔ ， dài gěi dà dì de shì yī qū fēng shōu de gē ， dài gěi xiǎo péng yǒu de shì yī shǒu huān lè de gē 。 qiū fēn guò hòu ， hēi yè jiù jiàn jiàn bǐ bái tiān zhǎng le ， quē fá yáng guāng de hán lěng shí jié yòu kāi shǐ le 。 tián yě lǐ kōng dàng dàng de ， xià tiān tài yáng suǒ cì yǔ de wù chǎn yǐ jīng shōu huò wán bì ， xǔ duō zhí wù yǐ jīng tuì shǎi huò kū sǐ 。 zài zhí wù hé dòng wù shì yìng dōng jì yǐ qián ， qiān xǐ de jì jié lái lín le 。 zhí wù de zhǒng zi hé guǒ shí zài chuán bō 。 xǔ duō zhǒng zi zhuāng bèi zhe xiǎo xiǎo de chì bǎng huò shì “ jiàng luò sǎn ” ， bǐ rú jì lèi zhí wù ， fēng bǎ tā men de zhǒng zi cóng mā mā nà lǐ dài zǒu ， chuī dào jǐn kě néng yuǎn de dì fāng 。 dì shàng dào chù dōu shì xīn de zhǒng zi 。 rú guǒ suǒ yǒu de zhǒng zi dōu luò zài tóng yī gè dì fāng ， tā men jiù huì hù xiāng qiǎng duó dì pán hé yáng guāng 。 xǔ duō yòu xiǎo de dòng wù zhèng zài chéng zhǎng 。 tā men lí kāi le fù mǔ ， zì jǐ qù zhǎo yī chù xīn de zhù suǒ 。 xiǎo zhī zhū yòng shǎn shǎn fā liàng de sī jiāng zì jǐ xuán guà zài kōng zhōng ， yǒu shí hòu tā men yuǎn lí yuán lái de cháo xué ， dào jǐ gōng lǐ zhī wài dā jiàn xīn jiā ， yǒu shí hòu tā men jiù zhí jiē zài yù dào de dì yī gēn shù zhī shàng ān jiā 。 hòu niǎo yě kāi shǐ le tā men de lǚ tú 。 suí zhe qiū tiān de guāng zhào shí jiān yī tiān tiān biàn duǎn ， hòu niǎo de “ shēng wù zhōng ” cuī cù zhe tā men ： shì shí hòu le ， chū fā ba ！ tā men xiàng zhe tài yáng ， fēi xiàng nà bái zhòu gèng zhǎng 、 qì hòu gèng wēn nuǎn de nán fāng 。 yàn zi zǎo zǎo dì qǐ chéng le ， yīn wèi tā zhī dào ， yào bù le duō jiǔ ， zhè lǐ jiāng méi yǒu kūn chóng kě chī 。 jīn chì què shì yī zhǒng yǐ jì lèi zhí wù wéi shēng de què niǎo ， tā huì tíng liú gèng zhǎng de shí jiān ， zhí dào dà xuě fù gài tā zuì ài chī de shí wù — jì lèi zhí wù de zhǒng zi 。"
+      "拼音": "qiū tiān de yǔ ， shì yī bǎ yào shi 。 tā dài zhe qīng liáng hé wēn róu ， qīng qīng dì ， qīng qīng dì ， chèn nǐ méi liú yì ， bǎ qiū tiān de dà mén dǎ kāi le 。 qiū tiān de yǔ ， yǒu yī hé wǔ cǎi bīn fēn de yán liào 。 nǐ kàn ， tā bǎ huáng sè gěi le yín xìng shù ， huáng huáng de yè zi xiàng yī bǎ bǎ xiǎo shàn zi ， shàn nǎ shàn nǎ ， shàn zǒu le xià tiān de yán rè 。 tā bǎ hóng sè gěi le fēng shù ， hóng hóng de fēng yè xiàng yī méi méi yóu piào ， piāo wa piāo wa ， yóu lái le qiū tiān de liáng shuǎng 。 jīn huáng sè shì gěi tián yě de ， kàn ， tián yě xiàng jīn sè de hǎi yáng 。 chéng hóng sè shì gěi guǒ shù de ， jú zi 、 shì zi nǐ jǐ wǒ pèng ， zhēng zhe yào rén men qù zhāi ne ！ jú huā xiān zi dé dào de yán sè jiù gèng duō le ， zǐ hóng de 、 dàn lǐ jiě le “ wǔ cǎi bīn fēn ” huáng de 、 xuě bái de … … měi lì de jú huā zài qiū yǔ lǐ pín pín diǎn tóu 。 qiū tiān de yǔ ， cáng zhe fēi cháng hǎo wén de qì wèi 。 lí xiāng xiāng de ， pú táo tián tián de ， hái yǒu píng guǒ 、 jú zi ， hǎo duō hǎo duō xiāng tián de qì wèi ， dōu duǒ zài xiǎo yǔ dī lǐ ne ！ xiǎo péng yǒu de jiǎo ， cháng bèi nà xiāng wèi gōu zhù 。 qiū tiān de yǔ ， chuī qǐ le jīn sè de xiǎo lǎ bā ① 。 tā gào sù dà jiā ， dōng tiān kuài yào lái le 。 xiǎo sōng shǔ zhǎo lái sōng guǒ dāng liáng shí ， xiǎo qīng wā zài jiā jǐn wā dòng ， zhǔn bèi shū shū fú fú dì shuì dà jué 。 sōng bǎi chuān shàng hòu hòu de 、 yóu liàng liàng de yī shang ， yáng shù 、 liǔ shù de yè zi piāo dào shù mā mā de jiǎo xià 。 tā men dōu zài zhǔn bèi guò dōng le 。 qiū tiān de yǔ ， dài gěi dà dì de shì yī qū fēng shōu de gē ， dài gěi xiǎo péng yǒu de shì yī shǒu huān lè de gē 。 qiū fēn guò hòu ， hēi yè jiù jiàn jiàn bǐ bái tiān zhǎng le ， quē fá yáng guāng de hán lěng shí jié yòu kāi shǐ le 。 tián yě lǐ kōng dàng dàng de ， xià tiān tài yáng suǒ cì yǔ de wù chǎn yǐ jīng shōu huò wán bì ， xǔ duō zhí wù yǐ jīng tuì shǎi huò kū sǐ 。 zài zhí wù hé dòng wù shì yìng dōng jì yǐ qián ， qiān xǐ de jì jié lái lín le 。 zhí wù de zhǒng zi hé guǒ shí zài chuán bō 。 xǔ duō zhǒng zi zhuāng bèi zhe xiǎo xiǎo de chì bǎng huò shì “ jiàng luò sǎn ” ， bǐ rú jì lèi zhí wù ， fēng bǎ tā men de zhǒng zi cóng mā mā nà lǐ dài zǒu ， chuī dào jǐn kě néng yuǎn de dì fāng 。 dì shàng dào chù dōu shì xīn de zhǒng zi 。 rú guǒ suǒ yǒu de zhǒng zi dōu luò zài tóng yí gè dì fāng ， tā men jiù huì hù xiāng qiǎng duó dì pán hé yáng guāng 。 xǔ duō yòu xiǎo de dòng wù zhèng zài chéng zhǎng 。 tā men lí kāi le fù mǔ ， zì jǐ qù zhǎo yī chù xīn de zhù suǒ 。 xiǎo zhī zhū yòng shǎn shǎn fā liàng de sī jiāng zì jǐ xuán guà zài kōng zhōng ， yǒu shí hòu tā men yuǎn lí yuán lái de cháo xué ， dào jǐ gōng lǐ zhī wài dā jiàn xīn jiā ， yǒu shí hòu tā men jiù zhí jiē zài yù dào de dì yī gēn shù zhī shàng ān jiā 。 hòu niǎo yě kāi shǐ le tā men de lǚ tú 。 suí zhe qiū tiān de guāng zhào shí jiān yī tiān tiān biàn duǎn ， hòu niǎo de “ shēng wù zhōng ” cuī cù zhe tā men ： shì shí hòu le ， chū fā ba ！ tā men xiàng zhe tài yáng ， fēi xiàng nà bái zhòu gèng zhǎng 、 qì hòu gèng wēn nuǎn de nán fāng 。 yàn zi zǎo zǎo dì qǐ chéng le ， yīn wèi tā zhī dào ， yào bù liǎo duō jiǔ ， zhè lǐ jiāng méi yǒu kūn chóng kě chī 。 jīn chì què shì yī zhǒng yǐ jì lèi zhí wù wéi shēng de què niǎo ， tā huì tíng liú gèng zhǎng de shí jiān ， zhí dào dà xuě fù gài tā zuì ài chī de shí wù — jì lèi zhí wù de zhǒng zi 。"
     },
     {
-      "单元": null,
+      "单元": 2,
       "课号": "7*",
       "栏目": null,
       "课题": null,
@@ -773,7 +738,7 @@
       "拼音": "tīng tīng ， qiū de shēng yīn ， dà shù dǒu dǒu shǒu bì ， “ shuā shuā ” ， shì huáng yè dào bié de huà yīn 。 tīng tīng ， qiū de shēng yīn ， xī shuài zhèn dòng chì bǎng ， “ ” ， shì hé yáng tái gào bié de gē yùn 。 yī pái pái dà yàn zhuī shàng bái yún ， sā xià yī zhèn nuǎn nuǎn de dīng níng ； yī zhèn zhèn qiū fēng lüè guò tián yě ， sòng lái yī piàn fēng shōu de gē yín 。 tīng tīng ， zǒu jìn qiū ， zǒu jìn zhè liáo kuò tòu míng de yīn yuè tīng ， nǐ hǎo hǎo dì qù tīng — qiū de shēng yīn 。 qiū de shēng yīn ， zài měi yī piàn yè zi lǐ ， zài měi yī duǒ xiǎo huā shàng ， zài měi yī dī hàn shuǐ lǐ ， zài měi yī kē bǎo mǎn de gǔ lì lǐ 。 tīng tīng ， qiū de shēng yīn ， cóng yuǎn fāng cōng cōng dì lái ， xiàng yuǎn fāng cōng cōng dì qù 。 tīng tīng ， wǒ men qù tīng qiū de shēng yīn 。"
     },
     {
-      "单元": null,
+      "单元": 2,
       "课号": null,
       "栏目": null,
       "课题": null,
@@ -788,7 +753,7 @@
       "拼音": "9 yuè 2 9 rì xīng qī yī qíng zǎo shàng qǐ chuáng shí ， wǒ fā xiàn nà kē sōng dòng de yá chǐ gèng sōng le 。 wǒ xiǎng bǎ tā yáo diào ， kě shì zuǒ yáo yòu yáo ， yá chǐ jiù shì bù diào 。 āi ！ zěn me bàn ne ？ zhè zhǒng gǎn jué zhēn nán shòu 。 wǎn fàn qián ， wǒ rěn bú zhù yòu qù huàng dòng tā ， huǎng le jǐ xià ， a ， zhōng yú diào le ！ mā mā bǎ wǒ de zhè kē yá chǐ xǐ gān jìng ， shōu qǐ lái le 。"
     },
     {
-      "单元": null,
+      "单元": 3,
       "课号": "8",
       "栏目": null,
       "课题": "阅读",
@@ -805,7 +770,7 @@
       "拼音": "lǎo wū yǐ jīng huó le yì bǎi duō suì le 。 tā de chuāng hù biàn chéng le hēi kū lóng ， mén bǎn yě pò le dòng ， hěn jiǔ hěn jiǔ méi rén zhù le 。 “ hǎo le ， wǒ dào le dǎo xià de shí hòu le ！ ” tā zì yán zì yǔ zhe ， zhǔn bèi wǎng páng biān dào qù 。 tú zhōng de lǎo wū “ děng děng ， lǎo wū ！ ” yí gè xiǎo xiǎo de shēng yīn zài tā mén qián xiǎng qǐ ， “ zài guò yí gè wǎn shàng ， xíng ma ？ jīn tiān wǎn shàng yǒu yīng ba ！ bào fēng yǔ ， wǒ zhǎo bú dào yí gè ān xīn shuì jiào de dì fāng 。 ” lǎo wū dī tóu kàn kàn ， chī lì dì mī qǐ yǎn jīng ： “ ò ， shì xiǎo māo a 。 hǎo ba ， wǒ jiù zài zhàn yí gè wǎn shàng 。 ” dì èr tiān ， tiān qíng le 。 xiǎo māo cóng pò chuāng hù lǐ tiào le chū lái ： “ miāo miāo ， xiè xiè ！ ” lǎo wū shuō ： “ zài jiàn ！ hǎo le ， wǒ dào le dǎo xià de shí hòu le ！ ” “ děng děng ， lǎo wū ！ ” yí gè xiǎo xiǎo de shēng yīn zài tā mén qián xiǎng qǐ ， “ zài guò èr shí jǐ tiān ， xíng ma ？ zhǔ rén xiǎng ná zǒu wǒ de dàn ， kě shì wǒ xiǎng fū xiǎo jī 。 wǒ zhǎo bú dào yí gè ān xīn fū dàn de dì fāng 。 ” néng huì bù nài fán le 。 lǎo wū dī tóu kàn kàn ， qiáng bì zhī zhī yā yā dì xiǎng ： “ ó ， shì lǎo mǔ jī a 。 hǎo ba ， wǒ jiù zài zhàn èr shí jǐ tiān 。 ” èr shí duō tiān hòu ， lǎo mǔ jī cóng mén shàng de pò dòng lǐ zǒu le chū lái ， jiǔ zhǐ xiǎo jī cóng mén bǎn xià miàn jī jī jiào zhe zuān le chū lái ： “ jī jī ， xiè xiè ！ ” lǎo wū shuō ： “ zài jiàn ！ hǎo le ， wǒ dào le dǎo xià de shí yī dú dào zhè jù hòu le ！ ” “ děng děng ， lǎo wū ！ ” yí gè xiǎo jí le de shēng yīn zài tā mén qián xiǎng qǐ ， bù zhù yì gēn běn tīng bú dào ， “ qǐng zài zhàn yī huì er ba ， wǒ dǔ zi hǎo è hǎo è ， wài miàn de shù bèi kǎn guāng le ， wū huì zěn me huí dá 。 wǒ zhǎo bú dào yí gè ān xīn zhī wǎng zhuā chóng de dì fāng 。 ” lǎo wū dī tóu kàn kàn ， yǎn jīng mī chéng yī tiáo fèng ： “ ó ， shì xiǎo zhī zhū a 。 hǎo ba ， wǒ jiù zài zhàn yī huì er 。 ” xiǎo zhī zhū fēi kuài dì pá jìn wū zi ， zài wū liáng shàng zhī le yī zhāng yòu dà yòu piào liàng de wǎng 。 ǒu ěr yǒu chóng zi zhuàng dào wǎng shàng ， xiǎo lǎo wū kě néng hái zhī zhū mǎ shàng pá guò qù bǎ chóng zi chī diào 。 “ xiǎo zhī zhū ， nǐ chī bǎo le ma ？ ” lǎo wū wèn 。 “ méi yǒu ， méi yǒu ！ ” xiǎo zhī zhū yī biān máng zhe bǔ wǎng ， yī biān huí dá ， “ lǎo wū lǎo wū ， wǒ gěi nín jiǎng gè gù shì ba ！ ” lǎo wū xiǎng ， zhè dào hěn yǒu yì si 。 yú shì tā jiù kāi shǐ tīng xiǎo zhī zhū jiǎng gù shì 。 xiǎo zhī zhū de gù shì yì zhí méi jiǎng wán ， yīn cǐ ， lǎo wū dào xiàn zài hái zhàn zài nà ér ， biān shài tài yáng ， biān tīng xiǎo zhī zhū"
     },
     {
-      "单元": null,
+      "单元": 3,
       "课号": "9*",
       "栏目": null,
       "课题": null,
@@ -823,7 +788,7 @@
       "拼音": "zhè shì yí gè měi lì de zǎo chén ， yáng guāng càn làn 。 wū guī táo táo zhèng zuò zài tā nà shū shì de xiǎo dòng qián ， chī zhe chē qián cǎo de yè zi 。 tā de tóu dǐng shàng ， shì yī kē gǔ lǎo de gǎn lǎn shù ， yī duì gē zi zhèng zài shù shàng tán huà ： shī wáng èr shí bā shì yào jǔ xíng hūn lǐ le ， tā yāo qǐng suǒ yǒu dòng wù qián qù cān jiā qìng diǎn 。 shī wáng de gōng diàn lù tú yáo yuǎn ， ér qìng diǎn bù jiǔ jiù yào kāi shǐ ， bì xū mǎ shàng dòng shēn 。 liǎng zhǐ gē zi shuō wán jiù fēi zǒu le 。 táo táo tīng jiàn gē zi de tán huà ， xiàn rù le chén sī ： rú guǒ suǒ yǒu dòng wù dōu bèi yāo qǐng le ， dāng rán yě bāo kuò wǒ ， wèi shén me wǒ bù qù cān jiā zhè yǒu shǐ yǐ lái zuì rè nào de hūn lǐ ne ？ xiǎng le zhěng zhěng yī tiān yī yè hòu ， táo táo zhōng yú ná dìng zhǔ yì ， dì èr tiān yī dà zǎo biàn shàng lù le 。 tā yī bù yī bù xiàng qián pá qù ， suī rán hěn màn ， què yì zhí méi yǒu tíng xià 。 lù guò yī piàn jīng jí cóng shí ， táo táo yù dào le zhī zhū 。 dé zhī tā yào qù cān jiā shī wáng de hūn lǐ ， zhī zhū hā hā dà xiào ， jù dà de zhī zhū wǎng bèi xiào shēng zhèn dé jù liè dì chàn dòng qǐ lái 。 “ hūn lǐ liǎng zhōu hòu jiù yào jǔ xíng le ， nǐ kě shì màn dé chū qí ya ， zěn me kě néng gǎn de shàng ne ？ ” táo táo kàn le kàn zì jǐ de tuǐ — tā men suī rán duǎn xiǎo ， què hěn jiē shí 。 tā mǎn huái xìn xīn dì shuō ： “ wǒ huì zhǔn shí gǎn dào nà lǐ de 。 ” zhī zhū chōng mǎn tóng qíng dì quàn tā ： “ táo táo ， wǒ de tuǐ bù dàn bǐ nǐ de líng qiǎo ， hái duō yí bèi ne ， lián wǒ dōu jué de lù tú tài yáo yuǎn ， nǐ hái shì qīng xǐng diǎn ér ， gǎn jǐn huí jiā ba ！ ” “ hěn yí hàn ， wǒ bù néng zhè yàng ， wǒ de jué dìng shì bù kě gǎi biàn de 。 ” táo táo yǒu hǎo dì huí dá ， yòu hēng chī hēng chī dì kāi shǐ gǎn lù le 。 yuè guò zhǒng zhǒng zhàng ài ， chuān guò shù lín hé shā dì ， táo táo rì yè bù tíng dì gǎn lù 。 yǒu yī tiān ， táo táo jīng guò yí gè chí táng ， tā xiǎng tíng xià lái hē kǒu shuǐ 。 zài yī piàn cháng chūn téng de yè zi shàng ， yī zhī wō niú zhèng dèng zhe shuāng yǎn dǎ liàng zhe tā 。 táo táo kè qì dì gēn wō niú dǎ tīng qù shī wáng èr shí bā shì de gōng diàn zěn me zǒu 。 wō niú xiǎng le hǎo yī huì er ， cái bǎ zì jǐ nà mí mí hū hū de sī xù lǐ qīng chǔ 。 tā nán guò dì gào sù táo táo ： “ tài zāo le ！ nǐ wán quán zǒu fǎn le fāng xiàng 。 ” “ fēi cháng gǎn xiè nǐ gěi wǒ zhǐ lù ！ ” shuō wán ， táo táo màn màn diào tóu wǎng huí zǒu 。 “ kě shì ， hòu tiān jiù yào jǔ xíng hūn lǐ le ya ！ ” wō niú jī hū dài zhe kū qiāng shuō 。 “ zhǐ yào yī bù yī bù jiān chí zǒu ， wǒ huì zhǔn shí gǎn dào de 。 ” táo táo shuō 。 yuè guò zhǒng zhǒng zhàng ài ， chuān guò shù lín hé shā dì ， táo táo rì yè bù tíng dì gǎn lù 。 hòu lái ， tā yù dào le zhèng tǎng zài shí tou shàng dǎ dǔn ér de bì hǔ 。 dé zhī táo táo de lái yì ， bì hǔ jū gāo lín xià dì dǎ liàng zhe tā shuō ： “ zuò wéi shī wáng wáng gōng de gāo jí guān yuán ， wǒ zhèng shì tōng zhī nǐ ， hūn lǐ zàn shí qǔ xiāo le 。 yóu yú fēi cháng tū rán de yuán yīn ， shī wáng èr shí bā shì bù dé bù hé lǎo hǔ kāi zhàn 。 nǐ kě yǐ huí jiā le 。 ” … … wǒ fā xiàn “ yuè guò zhǒng zhǒng zhàng ài ， chuān guò shù lín hé shā dì ， táo táo rì yè bù tíng dì gǎn lù ” zhè jù huà zài wén zhōng chū xiàn le liǎng cì ， wǒ yù cè hòu miàn kě néng hái huì chū xiàn hěn duō zhàng ài 。 tīng lǎo shī bǎ gù shì jiǎng wán ， kàn kàn zì jǐ de yù cè hé yuán wén yǒu nǎ xiē xiāng tóng hé bù tóng 。 dāng fā xiàn zì jǐ de yù cè hé yuán wén de shí jì nèi róng bù tóng shí ， wǒ huì jí shí xiū zhèng zì jǐ de xiǎng fǎ ， jiē zhe cāi cè hòu miàn kě néng fā shēng shén me 。 wǒ yù cè de nèi róng méi yǒu yuán wén fēng fù ， yǒu de hái yǔ yuán wén bù yí zhì ， dàn shì wǒ de yù cè yě shì yǒu yī jù de 。 dú dú xià miàn zhè xiē wén zhāng de biāo tí hé shū míng ， cāi cāi lǐ miàn kě néng xiě le xiē shén me 。 《 duǒ māo māo dà wáng 》 《 xià luò de wǎng 》 《 mào zi de mì mì 》 《 róu ruǎn de yáng guāng 》 《 tuán yuán 》 《 xiǎo líng tōng màn yóu wèi lái 》"
     },
     {
-      "单元": null,
+      "单元": 3,
       "课号": "10*",
       "栏目": null,
       "课题": null,
@@ -837,10 +802,10 @@
         38
       ],
       "全文": "从前，有一条不会叫的狗。它不会像狗一样叫，不会像猫一样叫，也不会像牛那样哞哞叫，更不会像马那样嘶鸣。它是一只孤零零的小狗，不知道怎么到了一个陌生的地方。它并没有发现自己有什么毛病，是别的动物让它知道，不会叫其实是一种很大的缺陷。它们对它说：“你怎么不叫？”“我不会……我是外来的……”“这算什么回答啊。你难道不知道狗是会叫的？”“干吗要叫？”“狗会叫，因为它们是狗。它们对过路的陌生人叫，对惹人讨厌的猫叫，对着满月叫。它们高兴的时候叫，紧张的时候叫，发怒的时候也叫。它们白天叫得多，但晚上也叫。”“也许是这样，可我……”“可你怎么啦？你这只狗可真特别。去，去！总有一天你会上新闻的。”小狗不知道该怎么回答这些指责。它不会叫，也不知道怎么才能学会。“你跟我学。”有一次，一只同情它的小公鸡对它说。那只小公鸡喔喔喔地叫了几声。“我觉得很难。”小狗对小公鸡说道。“不难，容易极了。你好好听着，看我的嘴，注意观察，学我的样子。”小公鸡又喔喔喔地叫起来。小狗试着照小公鸡的样子做，但嘴里只发出一种滑稽的咯咯声，吓得旁边的小母鸡都逃走了。“不要紧，”小公鸡说道，“第一次能这样就很不错了。你再试试，来！”小狗又试了一次，两次，三次，都没能成功。从此，它天天都练习，从早到晚偷偷地练。有时候，为了更自由，它索性到树林里去练。一天早晨，它在树林里练习，发出的喔喔喔的叫声是那么逼真，那么好听，那么洪亮。一只狐狸听到了，心里寻思着：公鸡终于来找我了，我得去感谢它的来访。狐狸真的去了，还没忘记带上刀叉和餐巾，因为对狐狸来说，没有比小公鸡更美味可口的午餐了。可以想象，当它看见啼叫的是一只狗而不是小公鸡时，该是多么失望啊！那只狗蹲坐着，一声又一声地喔喔叫着。狐狸真想哈哈大笑。它在地上打着滚，捧着肚子，竭力忍着不笑出声来。小狗感到很委屈，低着头，含着泪水默默走开了。附近的一只杜鹃看着小狗走过去，很同情它。“你怎么啦？”“没什么。”“那你为什么这样伤心？”“唉……没什么好说的……因为我不会叫。”“要是就因为这个，那我可以教你。你听我怎么叫，尽可能模仿我。咕咕……咕咕……咕咕……你听明白了吗？”“我觉得很容易。”“容易极了，我从小就会这样叫。你试试！咕咕……”“咕……”小狗学着杜鹃叫，“咕……”它那天试了，第二天、第三天又试了。一个星期过后，它已经学得相当不错了。小狗真高兴，心想：我终于会叫",
-      "拼音": "cóng qián ， yǒu yī tiáo bú huì jiào de gǒu 。 tā bú huì xiàng gǒu yí yàng jiào ， bú huì xiàng māo yí yàng jiào ， yě bú huì xiàng niú nà yàng mōu mōu jiào ， gèng bú huì xiàng mǎ nà yàng sī míng 。 tā shì yī zhī gū líng líng de xiǎo gǒu ， bù zhī dào zěn me dào le yí gè mò shēng de dì fāng 。 tā bìng méi yǒu fā xiàn zì jǐ yǒu shén me máo bìng ， shì bié de dòng wù ràng tā zhī dào ， bú huì jiào qí shí shì yī zhǒng hěn dà de quē xiàn 。 tā men duì tā shuō ： “ nǐ zěn me bù jiào ？ ” “ wǒ bú huì … … wǒ shì wài lái de … … ” “ zhè suàn shén me huí dá a 。 nǐ nán dào bù zhī dào gǒu shì huì jiào de ？ ” “ gàn má yào jiào ？ ” “ gǒu huì jiào ， yīn wèi tā men shì gǒu 。 tā men duì guò lù de mò shēng rén jiào ， duì rě rén tǎo yàn de māo jiào ， duì zhe mǎn yuè jiào 。 tā men gāo xìng de shí hòu jiào ， jǐn zhāng de shí hòu jiào ， fā nù de shí hòu yě jiào 。 tā men bái tiān jiào dé duō ， dàn wǎn shàng yě jiào 。 ” “ yě xǔ shì zhè yàng ， kě wǒ … … ” “ kě nǐ zěn me la ？ nǐ zhè zhǐ gǒu kě zhēn tè bié 。 qù ， qù ！ zǒng yǒu yī tiān nǐ huì shàng xīn wén de 。 ” xiǎo gǒu bù zhī dào gāi zěn me huí dá zhè xiē zhǐ zé 。 tā bú huì jiào ， yě bù zhī dào zěn me cái néng xué huì 。 “ nǐ gēn wǒ xué 。 ” yǒu yí cì ， yī zhī tóng qíng tā de xiǎo gōng jī duì tā shuō 。 nà zhǐ xiǎo gōng jī wō ō ō dì jiào le jǐ shēng 。 “ wǒ jué de hěn nán 。 ” xiǎo gǒu duì xiǎo gōng jī shuō dào 。 “ bù nán ， róng yì jí le 。 nǐ hǎo hǎo tīng zhe ， kàn wǒ de zuǐ ， zhù yì guān chá ， xué wǒ de yàng zi 。 ” xiǎo gōng jī yòu ō ō ō dì jiào qǐ lái 。 xiǎo gǒu shì zhe zhào xiǎo gōng jī de yàng zi zuò ， dàn zuǐ lǐ zhǐ fā chū yī zhǒng huá jī de gē gē shēng ， xià dé páng biān de xiǎo mǔ jī dōu táo zǒu le 。 “ bú yào jǐn ， ” xiǎo gōng jī shuō dào ， “ dì yí cì néng zhè yàng jiù hěn bù cuò le 。 nǐ zài shì shì ， lái ！ ” xiǎo gǒu yòu shì le yí cì ， liǎng cì ， sān cì ， dōu méi néng chéng gōng 。 cóng cǐ ， tā tiān tiān dōu liàn xí ， cóng zǎo dào wǎn tōu tōu dì liàn 。 yǒu shí hòu ， wèi le gèng zì yóu ， tā suǒ xìng dào shù lín lǐ qù liàn 。 yī tiān zǎo chén ， tā zài shù lín lǐ liàn xí ， fā chū de ō ō ō de jiào shēng shì nà me bī zhēn ， nà me hǎo tīng ， nà me hóng liàng 。 yī zhī hú lí tīng dào le ， xīn lǐ xín sī zhe ： gōng jī zhōng yú lái zhǎo wǒ le ， wǒ dé qù gǎn xiè tā de lái fǎng 。 hú lí zhēn de qù le ， hái méi wàng jì dài shàng dāo chā hé cān jīn ， yīn wèi duì hú lí lái shuō ， méi yǒu bǐ xiǎo gōng jī gèng měi wèi kě kǒu de wǔ cān le 。 kě yǐ xiǎng xiàng ， dāng tā kàn jiàn tí jiào de shì yī zhī gǒu ér bú shì xiǎo gōng jī shí ， gāi shì duō me shī wàng a ！ nà zhǐ gǒu dūn zuò zhe ， yī shēng yòu yī shēng dì wō wō jiào zhe 。 hú lí zhēn xiǎng hā hā dà xiào 。 tā zài dì shàng dǎ zhe gǔn ， pěng zhe dǔ zi ， jié lì rěn zhe bù xiào chū shēng lái 。 xiǎo gǒu gǎn dào hěn wěi qū ， dī zhe tóu ， hán zhe lèi shuǐ mò mò zǒu kāi le 。 fù jìn de yī zhī dù juān kàn zhe xiǎo gǒu zǒu guò qù ， hěn tóng qíng tā 。 “ nǐ zěn me la ？ ” “ méi shén me 。 ” “ nà nǐ wèi shén me zhè yàng shāng xīn ？ ” “ āi … … méi shén me hǎo shuō de … … yīn wèi wǒ bú huì jiào 。 ” “ yào shì jiù yīn wèi zhè ge ， nà wǒ kě yǐ jiào nǐ 。 nǐ tīng wǒ zěn me jiào ， jǐn kě néng mó fǎng wǒ 。 gū gū … … gū gū … … gū gū … … nǐ tīng míng bái le ma ？ ” “ wǒ jué de hěn róng yì 。 ” “ róng yì jí le ， wǒ cóng xiǎo jiù huì zhè yàng jiào 。 nǐ shì shì ！ gū gū … … ” “ gū … … ” xiǎo gǒu xué zhe dù juān jiào ， “ gū … … ” tā nà tiān shì le ， dì èr tiān 、 dì sān tiān yòu shì le 。 yí gè xīng qī guò hòu ， tā yǐ jīng xué dé xiāng dāng bù cuò le 。 xiǎo gǒu zhēn gāo xìng ， xīn xiǎng ： wǒ zhōng yú huì jiào"
+      "拼音": "cóng qián ， yǒu yī tiáo bú huì jiào de gǒu 。 tā bú huì xiàng gǒu yí yàng jiào ， bú huì xiàng māo yí yàng jiào ， yě bú huì xiàng niú nà yàng mōu mōu jiào ， gèng bú huì xiàng mǎ nà yàng sī míng 。 tā shì yī zhī gū líng líng de xiǎo gǒu ， bù zhī dào zěn me dào le yí gè mò shēng de dì fāng 。 tā bìng méi yǒu fā xiàn zì jǐ yǒu shén me máo bìng ， shì bié de dòng wù ràng tā zhī dào ， bú huì jiào qí shí shì yī zhǒng hěn dà de quē xiàn 。 tā men duì tā shuō ： “ nǐ zěn me bù jiào ？ ” “ wǒ bú huì … … wǒ shì wài lái de … … ” “ zhè suàn shén me huí dá a 。 nǐ nán dào bù zhī dào gǒu shì huì jiào de ？ ” “ gàn má yào jiào ？ ” “ gǒu huì jiào ， yīn wèi tā men shì gǒu 。 tā men duì guò lù de mò shēng rén jiào ， duì rě rén tǎo yàn de māo jiào ， duì zhe mǎn yuè jiào 。 tā men gāo xìng de shí hòu jiào ， jǐn zhāng de shí hòu jiào ， fā nù de shí hòu yě jiào 。 tā men bái tiān jiào dé duō ， dàn wǎn shàng yě jiào 。 ” “ yě xǔ shì zhè yàng ， kě wǒ … … ” “ kě nǐ zěn me la ？ nǐ zhè zhǐ gǒu kě zhēn tè bié 。 qù ， qù ！ zǒng yǒu yī tiān nǐ huì shàng xīn wén de 。 ” xiǎo gǒu bù zhī dào gāi zěn me huí dá zhè xiē zhǐ zé 。 tā bú huì jiào ， yě bù zhī dào zěn me cái néng xué huì 。 “ nǐ gēn wǒ xué 。 ” yǒu yí cì ， yī zhī tóng qíng tā de xiǎo gōng jī duì tā shuō 。 nà zhǐ xiǎo gōng jī wō wō wō dì jiào le jǐ shēng 。 “ wǒ jué de hěn nán 。 ” xiǎo gǒu duì xiǎo gōng jī shuō dào 。 “ bù nán ， róng yì jí le 。 nǐ hǎo hǎo tīng zhe ， kàn wǒ de zuǐ ， zhù yì guān chá ， xué wǒ de yàng zi 。 ” xiǎo gōng jī yòu wō wō wō dì jiào qǐ lái 。 xiǎo gǒu shì zhe zhào xiǎo gōng jī de yàng zi zuò ， dàn zuǐ lǐ zhǐ fā chū yī zhǒng huá jī de gē gē shēng ， xià dé páng biān de xiǎo mǔ jī dōu táo zǒu le 。 “ bú yào jǐn ， ” xiǎo gōng jī shuō dào ， “ dì yí cì néng zhè yàng jiù hěn bù cuò le 。 nǐ zài shì shì ， lái ！ ” xiǎo gǒu yòu shì le yí cì ， liǎng cì ， sān cì ， dōu méi néng chéng gōng 。 cóng cǐ ， tā tiān tiān dōu liàn xí ， cóng zǎo dào wǎn tōu tōu dì liàn 。 yǒu shí hòu ， wèi le gèng zì yóu ， tā suǒ xìng dào shù lín lǐ qù liàn 。 yī tiān zǎo chén ， tā zài shù lín lǐ liàn xí ， fā chū de wō wō wō de jiào shēng shì nà me bī zhēn ， nà me hǎo tīng ， nà me hóng liàng 。 yī zhī hú lí tīng dào le ， xīn lǐ xín sī zhe ： gōng jī zhōng yú lái zhǎo wǒ le ， wǒ dé qù gǎn xiè tā de lái fǎng 。 hú lí zhēn de qù le ， hái méi wàng jì dài shàng dāo chā hé cān jīn ， yīn wèi duì hú lí lái shuō ， méi yǒu bǐ xiǎo gōng jī gèng měi wèi kě kǒu de wǔ cān le 。 kě yǐ xiǎng xiàng ， dāng tā kàn jiàn tí jiào de shì yī zhī gǒu ér bú shì xiǎo gōng jī shí ， gāi shì duō me shī wàng a ！ nà zhǐ gǒu dūn zuò zhe ， yī shēng yòu yī shēng dì wō wō jiào zhe 。 hú lí zhēn xiǎng hā hā dà xiào 。 tā zài dì shàng dǎ zhe gǔn ， pěng zhe dǔ zi ， jié lì rěn zhe bù xiào chū shēng lái 。 xiǎo gǒu gǎn dào hěn wěi qū ， dī zhe tóu ， hán zhe lèi shuǐ mò mò zǒu kāi le 。 fù jìn de yī zhī dù juān kàn zhe xiǎo gǒu zǒu guò qù ， hěn tóng qíng tā 。 “ nǐ zěn me la ？ ” “ méi shén me 。 ” “ nà nǐ wèi shén me zhè yàng shāng xīn ？ ” “ āi … … méi shén me hǎo shuō de … … yīn wèi wǒ bú huì jiào 。 ” “ yào shì jiù yīn wèi zhè ge ， nà wǒ kě yǐ jiào nǐ 。 nǐ tīng wǒ zěn me jiào ， jǐn kě néng mó fǎng wǒ 。 gū gū … … gū gū … … gū gū … … nǐ tīng míng bái le ma ？ ” “ wǒ jué de hěn róng yì 。 ” “ róng yì jí le ， wǒ cóng xiǎo jiù huì zhè yàng jiào 。 nǐ shì shì ！ gū gū … … ” “ gū … … ” xiǎo gǒu xué zhe dù juān jiào ， “ gū … … ” tā nà tiān shì le ， dì èr tiān 、 dì sān tiān yòu shì le 。 yí gè xīng qī guò hòu ， tā yǐ jīng xué dé xiāng dāng bù cuò le 。 xiǎo gǒu zhēn gāo xìng ， xīn xiǎng ： wǒ zhōng yú huì jiào"
     },
     {
-      "单元": null,
+      "单元": 3,
       "课号": null,
       "栏目": null,
       "课题": null,
@@ -855,7 +820,7 @@
       "拼音": "le ， xiàn zài bié rén zài yě bù néng qǔ xiào wǒ le 。 jiù zài nà jǐ tiān ， rén men kāi shǐ dǎ liè le ， shù lín lǐ lái le hěn duō liè rén ， lǐ miàn hái yǒu bǎi fā bǎi zhòng de shén qiāng shǒu 。 yí gè liè rén jīng guò nà lǐ ， tīng jiàn shù cóng zhōng chuán lái gū gū de jiào shēng ， jiù jǔ qiāng miáo zhǔn ， “ pēng ！ pēng ！ ” lián kāi le liǎng qiāng 。 xìng hǎo méi dǎ zhòng 。 zǐ dàn cā guò xiǎo gǒu de ěr biān ， jiù xiàng lián huán huà lǐ huà de nà yàng 。 xiǎo gǒu bá tuǐ jiù pǎo 。 tā hěn chà yì ： nà ge liè rén zhǔn shì fā fēng le ， jìng rán duì gǒu kāi qiāng ！ gǒu pǎo a ， pǎo a … … gǒu pǎo a ， pǎo a ， tā pǎo dào le yī piàn cǎo dì shàng ， yī tóu xiǎo mǔ niú zhèng zài nà lǐ ān xiáng dì chī cǎo 。 “ nǐ qù nǎ ér a ？ ” “ wǒ bù zhī dào 。 ” “ nà nǐ jiù bié zǒu le ， zhè lǐ de qīng cǎo tè bié xiān nèn 。 ” “ āi ， qīng cǎo bù néng yī zhì wǒ de bìng … … ” “ nǐ bìng la ？ ” “ kě bú shì ！ wǒ bú huì jiào 。 ” “ kě shì ， zhè shì shì jiè shàng zuì róng yì de shì ！ nǐ tīng wǒ jiào ： mōu … … mōu … … mōu … … hái yǒu bǐ zhè gèng hǎo tīng de jiào shēng ma ？ ” … …"
     },
     {
-      "单元": null,
+      "单元": 3,
       "课号": null,
       "栏目": null,
       "课题": null,
@@ -870,7 +835,7 @@
       "拼音": "gǒu pǎo a ， pǎo a ， tā pèng shàng le yí gè nóng fū 。 … … gǒu pǎo a ， pǎo a ， tū rán tíng zhù le ， tā tīng jiàn yī zhǒng qí guài de jiào shēng ： “ wāng wāng ， wāng wāng … … ” zhè jiào shēng xiàng zài duì wǒ shuō shén me ， tā xiǎng ， jǐn guǎn wǒ gǎo bù qīng zhè shì shén me dòng wù zài jiào 。 “ wāng ， wāng … … ” … …"
     },
     {
-      "单元": null,
+      "单元": 3,
       "课号": null,
       "栏目": null,
       "课题": null,
@@ -885,7 +850,7 @@
       "拼音": "měi gè rén dōu yǒu míng zì 。 nǐ zhī dào zì jǐ de míng zì yǒu shén me hán yì ma ？ huí jiā wèn wèn zhǎng bèi ba 。 nǐ de míng zì lǐ yě xǔ bǎo hán zhe tā men duì nǐ de qī dài ， shuō bù dìng hái cáng zhe yí gè gù shì ne ！ hé tóng xué jiāo liú míng zì de hán yì huò lái lì ， kě yǐ shì guān yú zì jǐ míng zì de ， yě kě yǐ shì guān yú qí tā rén míng zì de 。 tīng tóng xué jiǎng de shí hòu ， rú guǒ yǒu gǎn xìng qù de huò bù lǐ jiě de nèi róng ， kě yǐ xiàng jiǎng de rén tí chū lái ， jìn yí bù liǎo jiě 。 hé tóng xué jiāo liú zhī hòu ， huí jiā hé jiā lǐ rén shuō shuō ， nǐ cóng tóng xué de jiǎng shù lǐ zhī dào le nǎ xiē xīn xiān shì 。"
     },
     {
-      "单元": null,
+      "单元": 3,
       "课号": null,
       "栏目": null,
       "课题": null,
@@ -900,7 +865,7 @@
       "拼音": "wǒ shàng gè xīng qī guò jiǔ suì wǒ yě gāng gāng guò le jiǔ suì wǒ yě kuài guò shēng rì shēng rì ， mā mā gěi wǒ mǎi le yī shēng rì ， shēng rì nà tiān wǒ shì hé le ， dàn shì bà bà mā mā gè hěn dà de shēng rì dàn gāo 。 quán jiā rén yì qǐ guò de 。 dōu zài wài dì gōng zuò … … lǐ xiǎo míng de bà bà mā mā zài wài dì gōng zuò ， míng tiān shì tā de shēng rì ， wǒ men kě yǐ … …"
     },
     {
-      "单元": null,
+      "单元": 4,
       "课号": "11",
       "栏目": null,
       "课题": "阅读",
@@ -917,7 +882,7 @@
       "拼音": "wǒ lái gěi nǐ men jiǎng gè gù shì 。 kě shì wǒ xiān dé jiè shào jiè shào wǒ zì jǐ ： wǒ xìng wáng ， jiào wáng bǎo 。 wǒ yào jiǎng de ， zhèng shì wǒ zì jǐ de yī jiàn shì qíng ， shì wǒ hé bǎo hú lú de gù shì 。 nǐ men yě xǔ yào wèn ： “ shén me ？ bǎo hú lú ？ jiù shì chuán shuō gù shì lǐ de nà zhǒng bǎo hú lú ma ？ ” bù cuò ， zhèng shì nà zhǒng bǎo hú lú 。 kě shì wǒ yào shēng míng ， wǒ bìng bú shì shén me shén xiān ， yě bú shì shén me yāo guài 。 wǒ hé nǐ men yí yàng ， shì yí gè píng píng cháng cháng de pǔ tōng rén 。 nǐ men qiáo ， wǒ shì yí gè shào xiān duì yuán ， wǒ yě hé nǐ men yí yàng ， hěn ài tīng gù shì 。 zhì yú bǎo hú lú de gù shì ， nà wǒ cóng xiǎo jiù zhī dào le 。 nà shì wǒ nǎi nǎi jiǎng gěi wǒ tīng de 。 nǎi nǎi měi féng yāo qiú wǒ gàn shén me ， jiù dé gěi wǒ jiǎng gè gù shì 。 zhè shì wǒ men de guī jǔ 。 “ guāi xiǎo bǎo ， lái ， nǎi nǎi gěi nǐ xǐ gè jiǎo 。 ” nǎi nǎi zǒng shì yí miàn niǎn wǒ ， yí miàn zhāo shǒu 。 “ wǒ bù gàn ， wǒ pà tàng 。 ” wǒ zǒng shì yí miàn liū kāi ， yí miàn bǎi shǒu 。 “ bù tàng a 。 lěng le hǎo yī huì er le 。 ” “ nà ， wǒ pà lěng 。 ” nǎi nǎi niǎn shàng le wǒ ， shuō xǐ jiǎo shuǐ gāng hǎo bù tàng yě bù lěng ， fēi xǐ bù kě 。 wǒ zhǐ hǎo ràng bù 。 bù guò wǒ yǒu yí gè tiáo jiàn ： “ nǐ ài xǐ jiù ràng nǐ xǐ 。 nǐ kě dé jiǎng gè gù shì 。 ” jiù zhè me zhe ， nǎi nǎi jiǎng le gè bǎo hú lú de gù shì 。 “ hǎo xiǎo bǎo ， bié dòng ！ ” nǎi nǎi gāng gěi wǒ xǐ le jiǎo ， hū rán yòu tí chū yí gè xīn de yāo qiú lái ， “ ràng wǒ gěi nǐ jiǎn yī jiǎn … … ” shén me ！ jiǎn jiǎo zhǐ jiǎ a ？ nà bù xíng ！ wǒ guāng zhe jiǎo yā ， yī xià dì jiù pǎo 。 kě shì gē bó gěi nǎi nǎi zhuài zhù le 。 méi yǒu bàn fǎ 。 bù guò wǒ dé tí chū wǒ de tiáo jiàn ： “ nà ， fēi děi jiǎng gù shì 。 ” yú shì nǎi nǎi yòu jiǎng le yí gè — yòu shì bǎo hú lú de gù shì 。 wǒ jiù zhè me zhe ， cóng hěn xiǎo de shí hòu qǐ ， tīng nǎi nǎi jiǎng gù shì ， yì zhí tīng dào wǒ shí lái suì 。 nǎi nǎi měi cì jiǎng de dōu bù yí yàng 。 shàng cì jiǎng de shì zhāng sān pī miàn zhuàng jiàn le yī wèi shén xiān ， dé le yí gè bǎo hú lú 。 xià cì jiǎng de shì lǐ sì chū qù yuǎn zú lǚ xíng ， yī yóu yóu dào le lóng gōng ， dé dào le yí gè bǎo hú lú 。 wáng wǔ ne ， tā yīn wèi shì yí gè hǎo hái zi ， kěn ràng nǎi nǎi gěi tā huàn yī fú ， suǒ yǐ dé dào le yí gè bǎo hú lú 。 zhì yú zhào liù dé de yí gè bǎo hú lú — nà shì jué dì jué chū lái de 。 bù guǎn zhāng sān yě hǎo ， lǐ sì yě hǎo ， yī dé dào le zhè ge bǎo hú lú ， kě jiù xìng fú jí le ， yào shén me yǒu shén me 。 zhāng sān xiǎng ： “ wǒ yào chī shuǐ mì táo 。 ” lì kè jiù yǒu yī pán shuǐ mì táo 。 lǐ sì xī wàng yǒu yī tiáo dà huā gǒu ， mǎ shàng jiù mào chū le nà me yī tiáo — chòng zhe tā yáo wěi ba ， tiǎn tā de shǒu 。 hòu lái ne ？ hòu lái bú yòng shuō ， tā men quán dōu guò shàng le hǎo rì zi 。 wǒ tīng le zhè xiē gù shì ， cháng cháng jiù lián xì dào zì jǐ ： “ wǒ yào shì yǒu le yí gè bǎo hú lú ， wǒ gāi zěn me bàn ？ wǒ gāi yào xiē shén me ？ ” yì zhí dào wǒ zhǎng dà le ， yǒu shí hòu hái xiǎng qǐ tā lái 。 wǒ yǒu jǐ cì duì zhe yī dào suàn shù tí fā lèng ， bù zhī dào yào zěn me liè shì zi ， jiù yóu “ 8 ” zì xiǎng dào le bǎo hú lú — jiǎ rú wǒ yǒu zhè me yí gè ， nà kě jiù shěng xīn le 。 wǒ hé tóng xué men bǐ sài zhǒng xiàng rì kuí ， wǒ jiā lǐ de nà jǐ kē zhǎng dé yòu shòu yòu zhǎng ， shàng miàn dǐng zhe yí gè xiǎo nǎo dài ， kě lián bā bā de yàng ér ， bǐ shuí de yě bǐ bù shàng 。 wǒ jiù yòu xiǎng dào le nà ge bǎo bèi ： “ nà ， wǒ dé yào yī kē zuì hǎo zuì hǎo de xiàng rì kuí ， zhǎng dé bù néng zài bàng de xiàng rì kuí 。 ” kě nà zhǐ bù guò shì huàn xiǎng bà le 。 kě wǒ zǒng hái shì yào xiǎng dào tā 。 nà yī tiān wǒ hé kē xué xiǎo zǔ de tóng xué nào fān le ， wǒ yòu xiǎng dào le tā 。 “ yào shì wǒ yǒu nà me yí gè hú lú ， nà … … ”"
     },
     {
-      "单元": null,
+      "单元": 4,
       "课号": "12",
       "栏目": null,
       "课题": null,
@@ -934,7 +899,7 @@
       "拼音": "yǒu liǎng zhǐ xiǎo xī shuài ， yī zhī jiào qīng tóu ， lìng yī zhī jiào hóng tóu 。 tā men shì yī duì fēi cháng yào hǎo de péng yǒu 。 yǒu yī tiān ， chī guò zǎo fàn ， qīng tóu duì hóng tóu shuō ： “ zán men wán zhuō mí cáng ba ！ ” “ nà ràng wǒ xiān cáng ， nǐ lái zhǎo 。 ” hóng tóu shuō 。 “ hǎo ba ！ ” qīng tóu shuō wán ， zhuǎn guò shēn zi bì shàng yǎn jīng 。 hóng tóu xiàng zhōu wéi kàn le kàn ， qiāo qiāo dì duǒ zài yí gè cǎo duī lǐ bù zuò shēng le 。 “ cáng hǎo le ma ？ ” qīng tóu dà shēng wèn 。 hóng tóu bù shuō huà ， zhǐ lù liǎng zhǐ yǎn jīng tōu tōu dì kàn 。 tā xīn xiǎng ： wǒ yào shì yī dā yìng ， jiù huì bèi qīng tóu fā xiàn 。 zhèng zài zhè shí ， yī tóu dà huáng niú cóng hóng tóu hòu miàn màn màn zǒu guò lái 。 hóng tóu zuò mèng yě méi yǒu xiǎng dào ， dà huáng niú tū rán dī xià tou lái chī cǎo 。 kě lián de hóng tóu hái méi yǒu lái de jí tiào kāi ， jiù hé cǎo yì qǐ bèi dà huáng niú juǎn dào zuǐ lǐ le 。 “ jiù mìng a ！ jiù mìng a ！ ” hóng tóu pīn mìng dì jiào qǐ lái 。 “ nǐ zài nǎ ér ？ ” qīng tóu jí máng wèn 。 “ wǒ bèi niú chī le … … zhèng zài tā de zuǐ lǐ … … jiù mìng a ！ jiù mìng a ！ ” qīng tóu dà chī yī jīng ， tā yī xià zi bèng dào niú shēn shàng ， kě shì nà tóu niú yòng wěi ba qīng qīng yī sǎo ， qīng tóu jiù gěi shuāi dào dì shàng le 。 qīng tóu bù gù téng tòng ， yī gū lù pá qǐ lái dà shēng hǎn ： “ duǒ guò tā de yá chǐ ， niú zài zhè shí hòu bú huì zǐ xì jiáo de ， tā huì bǎ nǐ hé cǎo yì qǐ tūn dào dǔ zi lǐ qù … … ” “ nà wǒ mǎ shàng jiù huì sǐ diào 。 ” hóng tóu kū qǐ lái 。 tā hé cǎo yǐ jīng yì qǐ jìn le niú de dǔ zi 。 qīng tóu yòu tiào dào niú shēn shàng ， gé zhe dù pí hé hóng tóu shuō huà ： “ hóng tóu ！ bú yào pà ， nǐ huì chū lái de 。 wǒ tīng shuō niú de wèi yǒu sì gè wèi shì ， qián sān gè zhǔ yào shì chǔ cún shí wù de ， dì sì gè cái shì guǎn xiāo huà de ！ ” “ kě shì nǐ shuō zhè xiē duì wǒ yǒu shén me yòng ne ？ ” hóng tóu bēi āi dì shuō 。 “ dāng rán yǒu yòng 。 děng yī huì er niú xiū xī de shí hòu ， tā yào bǎ gāng cái tūn jìn qù de cǎo chóng xīn sòng huí zuǐ lǐ ， rán hòu xì jiáo màn yàn … … nǐ shì yǒng gǎn de xī shuài ， nǐ yí dìng néng chū lái de 。 ” “ xiè xiè nǐ ！ ” hóng tóu de shēng yīn xiǎo dé jī hū tīng bú jiàn le 。 tā yǎo zhe yá bù ràng zì jǐ shī qù zhī jué 。 hóng tóu zài niú dǔ zi lǐ suí zhe cǎo yì qǐ yí dòng ， cóng dì yí gè wèi shì dào le dì èr gè wèi shì ， yòu cóng dì èr gè wèi shì huí dào le niú zuǐ lǐ 。 zhè yī xià ， hóng tóu yòu kàn jiàn le guāng liàng 。 kě shì ， tā yǐ jīng yī dòng yě bù néng dòng le 。 zhè shí ， qīng tóu pá dào niú bí zi shàng ， yòng tā de shēn tǐ zài niú bí kǒng lǐ cèng lái cèng qù 。 “ ā tì ！ ” niú dǎ le yí gè pēn tì ， hóng tóu suí zhe yī tuán cǎo yī xià zi gěi pēn le chū lái 。 hóng tóu kàn jiàn zì jǐ de péng yǒu ， gāo xìng dé liú xià le yǎn lèi ： “ xiè xiè nǐ … … ” qīng tóu xiào mī mī dì shuō ： “ bú yào kū ， jiù dāng shì yí cì zài niú dǔ zi lǐ de lǚ xíng ba ！ ”"
     },
     {
-      "单元": null,
+      "单元": 4,
       "课号": "13*",
       "栏目": null,
       "课题": null,
@@ -950,7 +915,7 @@
       "拼音": "mǎ yǐ duì zhǎng jí hé hǎo duì wǔ ， xiàng dà jiā xuān bù ： “ jīn tiān bān yùn liáng shí ， zhǐ xǔ chū lì ， bù xǔ tōu zuǐ 。 shuí tōu zuǐ jiù yào chǔ fá shuí 。 ” yī zhī xiǎo mǎ yǐ zài duì liè lǐ dí gū ： “ yào shì tōu zuǐ de shì nín ne ？ ” mǎ yǐ duì zhǎng shuō ： “ zhào yàng yào shòu chǔ fá 。 ” dà jiā yī tīng ， dōu lái jìn le ， zhēng xiān kǒng hòu gǎn dào yùn liáng dì diǎn ， qiǎng zhe tái dà de ， bān zhòng de ， shuí yě bù yuàn tōu lǎn 。 jiù zài zhè shí ， mǎ yǐ duì zhǎng fā xiàn le yī kuài dà nǎi lào 。 nà kuài nǎi lào shí zài tài dà le ， tā zuǒ tái tái bù qǐ ， yòu bān bān bù dòng ， zhǐ hǎo jiào lái qī bā zhǐ xiǎo mǎ yǐ dāng zhù shǒu 。 nǎi lào duō yòu rén a ！ tái zhe tā ， bú yào shuō chī ， dān shì wén wén ， dōu yào tǎng kǒu shuǐ 。 xiǎo mǎ yǐ men zuǐ diāo zhe tā ， yào zuò dào bù chèn jī tiǎn yī xià ， nà yào yǒu duō dà de yì lì 、 duō qiáng de jì lǜ xìng a ！ mǎ yǐ duì zhǎng diāo zhe nǎi lào de yī jiǎo wǎng qián zhuài zhe ， yě xǔ shì yòng lì guò měng ， yī xià jiù bǎ nà ge jiǎo zhuāi diào le 。 dīng zhe nà yì diǎn ér diào zài dì shàng de nǎi lào zhā ， mǎ yǐ duì zhǎng xiǎng ： diū diào ， shí zài tài kě xī ； chèn jī chī diào tā ， yòu yào fàn bù xǔ tōu zuǐ de jìn lìng 。 zěn me bàn ne ？ tā de xīn qī shàng bā xià ， zhǐ hǎo xià lìng ： “ xiū xī yī huì er ！ ” tīng dào mìng lìng ， dà jiā fàng xià nǎi lào ， què bù zǒu kāi 。 “ dà jiā fēn sàn kāi ， nǎ lǐ liáng kuài jiù dào nǎ lǐ xiū xī 。 ” dà jiā yī jiù bù dòng ， yǎn jīng wàng zhe bié chù ， xīn què qiān guà zhe nà yì diǎn ér nǎi lào zhā 。 mǎ yǐ duì zhǎng shēng qì le 。 tā dēng shàng yī kuài dà shí bǎn ， tū rán xià lìng ： “ zhù yì la ， quán tǐ dōu yǒu 。 shào xī ！ lì zhèng ！ xiàng hòu — zhuǎn ！ qí bù — zǒu ！ ” děng xiǎo mǎ yǐ men xiāo shī zài cǎo cóng zhōng ， tā cái dà jiào ： “ lì — dìng ！ yuán dì xiū xī ！ ” zhè shí ， nǎi lào páng biān zhǐ yǒu mǎ yǐ duì zhǎng ， tā yào shì tōu zuǐ ， shuí yě kàn bú jiàn 。 tā dī xià tou ， xiù xiù nà diǎn ér nǎi lào zhā ， wèi dào zhēn xiāng ！ kě shì ， tā yóu yù le yī huì er ， zhōng yú yī duò jiǎo ： “ zhù yì la ， quán tǐ dōu yǒu 。 shào xī ！ lì zhèng ！ xiàng hòu — zhuǎn ！ qí bù — zǒu ！ ” xiǎo mǎ yǐ men cóng sì miàn bā fāng de cǎo cóng lǐ zǒu lǒng lái le 。 dāng tā men chóng xīn jù dào nǎi lào páng biān shí ， mǎ yǐ duì zhǎng mìng lìng nián líng zuì xiǎo de yī zhī mǎ yǐ ： “ zhè diǎn ér nǎi lào zhā shì gāng cái nòng diào de ， diū le kě xī ， nǐ chī diào tā ba ！ ” dà jiā yòu gàn qǐ huó lái le ， jìn tóu bǐ gāng cái gèng zú ， nǎi lào yī huì er jiù bèi bān jìn dòng lǐ qù le 。"
     },
     {
-      "单元": null,
+      "单元": 4,
       "课号": null,
       "栏目": null,
       "课题": null,
@@ -965,7 +930,7 @@
       "拼音": "tóng huà shì jiè zhēn qí miào ， wǒ men yě lái biān tóng huà gù shì ba 。 cài yuán xī hóng shì qié zi xià tiān sōng shǔ kǒng què xīng qī tiān sēn lín qiān bǐ xiàng pí shēn yè wén jù hé kàn dào shàng miàn zhè xiē cí yǔ ， nǐ de nǎo hǎi lǐ fú xiàn chū le zěn yàng de huà miàn ？ nǐ xiǎng dào le shén me yàng de gù shì ？ xuǎn zé yī zǔ ， fā huī xiǎng xiàng ， bǎ gù shì xiě xià lái 。 xiě zhī qián xiǎng yī xiǎng ： ◇ gù shì lǐ yǒu nǎ xiē jué sè ？ （ kě yǐ shì shàng miàn tí gōng de jué sè ， hái kě yǐ tiān jiā nǐ xǐ huān de qí tā jué sè 。 ） ◇ gù shì fā shēng zài shén me shí jiān ？ shì zài nǎ lǐ fā shēng de ？ ◇ tā men zài nà lǐ zuò shén me ？ tā men zhī jiān fā shēng le shén me shì ？ xiě wán hòu gěi gù shì jiā yí gè tí mù ， zhù yì tí mù yào jū zhōng 。 zài shì zhe yòng xué guò de xiū gǎi fú hào xiū gǎi nǐ de xí zuò 。"
     },
     {
-      "单元": null,
+      "单元": 5,
       "课号": "14",
       "栏目": null,
       "课题": null,
@@ -981,7 +946,7 @@
       "拼音": "wǒ hé mǔ qīn zuò zhe xiǎo chuán ， dào xiāng xià wài zǔ fù jiā lǐ qù 。 wǒ men zuò zài chuán cāng lǐ ， tiān xià zhe yǔ ， yǔ diǎn ér dǎ zài chuán péng shàng ， shā lā shā la dì xiǎng 。 chuán fū pī zhe suō yī zài chuán hòu yòng lì dì yáo zhe lǔ 。 hòu lái yǔ tíng le 。 wǒ kàn jiàn yī zhī cǎi sè de xiǎo niǎo zhàn zài chuán tóu ， duō me měi lì a ！ tā de yǔ máo shì cuì lǜ de ， chì bǎng dài zhe yì xiē lán sè ， bǐ yīng wǔ hái piào liàng 。 tā hái yǒu yī zhāng hóng sè de zhǎng zuǐ 。 tā shén me shí hòu fēi lái de ne ？ tā jìng qiāo qiāo dì tíng zài chuán tóu bù zhī yǒu duō jiǔ le 。 tā zhàn zài nà lǐ zuò shén me ne ？ nán dào tā yào hé wǒ men yì qǐ zuò chuán dào wài zǔ fù jiā lǐ qù ma ？ wǒ zhèng xiǎng zhe ， tā yī xià zi chōng jìn shuǐ lǐ ， bú jiàn le 。 kě shì ， méi yī huì er ， tā fēi qǐ lái le ， hóng sè de zhǎng zuǐ xián zhe yī tiáo xiǎo yú 。 tā zhàn zài chuán tóu ， yī kǒu bǎ xiǎo yú tūn le xià qù 。 mǔ qīn gào sù wǒ ， zhè shì yī zhī cuì niǎo 。 ó ， zhè zhǐ cuì niǎo dā le wǒ men de chuán ， zài bǔ yú chī ne 。"
     },
     {
-      "单元": null,
+      "单元": 5,
       "课号": "15",
       "栏目": null,
       "课题": null,
@@ -994,10 +959,10 @@
         63
       ],
       "全文": "我们住在乡下，窗前是一大片草地。草地上长满了蒲公英。当蒲公英盛开的时候，这片草地就变成金色的了。我和弟弟常常在草地上玩耍。有一次，弟弟跑在我前面，我装着一本正经的样子，喊：“谢廖沙！”他回过头来，我就使劲一吹，把蒲公英的茸毛吹到他的脸上。弟弟也假装打哈欠，把蒲公英的茸毛朝我脸上吹。就这样，这些并不引人注目的蒲公英，给我们带来了不少快乐。有一天，我起得很早去钓鱼，发现草地并不是金色的，而是绿色的。中午回家的时候，我看见草地是金色的。傍晚的时候，草地又变绿了。这是为什么呢？我来到草地上，仔细观察，发现蒲公英的花瓣是合拢的。原来，蒲公英的花就像我们的手掌，可以张开、合上。花朵张开时，花瓣是金色的，草地也是金色的；花朵合拢时，金色的花瓣被包住了，草地就变成绿色的了。多么可爱的草地！多么有趣的蒲公英！从那时起，蒲公英成了我们最喜爱的一种花。",
-      "拼音": "wǒ men zhù zài xiāng xià ， chuāng qián shì yī dà piàn cǎo dì 。 cǎo dì shàng zhǎng mǎn le pú gōng yīng 。 dāng pú gōng yīng shèng kāi de shí hòu ， zhè piàn cǎo dì jiù biàn chéng jīn sè de le 。 wǒ hé dì di cháng cháng zài cǎo dì shàng wán shuǎ 。 yǒu yí cì ， dì di pǎo zài wǒ qián miàn ， wǒ zhuāng zhe yī běn zhèng jīng de yàng zi ， hǎn ： “ xiè liào shā ！ ” tā huí guò tóu lái ， wǒ jiù shǐ jìn yī chuī ， bǎ pú gōng yīng de róng máo chuī dào tā de liǎn shàng 。 dì di yě jiǎ zhuāng dǎ hā qiàn ， bǎ pú gōng yīng de rōng máo cháo wǒ liǎn shàng chuī 。 jiù zhè yàng ， zhè xiē bìng bù yǐn rén zhù mù de pú gōng yīng ， gěi wǒ men dài lái le bù shǎo kuài lè 。 yǒu yī tiān ， wǒ qǐ dé hěn zǎo qù diào yú ， fā xiàn cǎo dì bìng bú shì jīn sè de ， ér shì lǜ sè de 。 zhōng wǔ huí jiā de shí hòu ， wǒ kàn jiàn cǎo dì shì jīn sè de 。 bàng wǎn de shí hòu ， cǎo dì yòu biàn lǜ le 。 zhè shì wèi shén me ne ？ wǒ lái dào cǎo dì shàng ， zǐ xì guān chá ， fā xiàn pú gōng yīng de huā bàn shì hé lǒng de 。 yuán lái ， pú gōng yīng de huā jiù xiàng wǒ men de shǒu zhǎng ， kě yǐ zhāng kāi 、 hé shàng 。 huā duǒ zhāng kāi shí ， huā bàn shì jīn sè de ， cǎo dì yě shì jīn sè de ； huā duǒ hé lǒng shí ， jīn sè de huā bàn bèi bāo zhù le ， cǎo dì jiù biàn chéng lǜ sè de le 。 duō me kě ài de cǎo dì ！ duō me yǒu qù de pú gōng yīng ！ cóng nà shí qǐ ， pú gōng yīng chéng le wǒ men zuì xǐ ài de yī zhǒng huā 。"
+      "拼音": "wǒ men zhù zài xiāng xià ， chuāng qián shì yī dà piàn cǎo dì 。 cǎo dì shàng zhǎng mǎn le pú gōng yīng 。 dāng pú gōng yīng shèng kāi de shí hòu ， zhè piàn cǎo dì jiù biàn chéng jīn sè de le 。 wǒ hé dì di cháng cháng zài cǎo dì shàng wán shuǎ 。 yǒu yí cì ， dì di pǎo zài wǒ qián miàn ， wǒ zhuāng zhe yī běn zhèng jīng de yàng zi ， hǎn ： “ xiè liào shā ！ ” tā huí guò tóu lái ， wǒ jiù shǐ jìn yī chuī ， bǎ pú gōng yīng de róng máo chuī dào tā de liǎn shàng 。 dì di yě jiǎ zhuāng dǎ hā qiàn ， bǎ pú gōng yīng de róng máo cháo wǒ liǎn shàng chuī 。 jiù zhè yàng ， zhè xiē bìng bù yǐn rén zhù mù dì pú gōng yīng ， gěi wǒ men dài lái le bù shǎo kuài lè 。 yǒu yī tiān ， wǒ qǐ dé hěn zǎo qù diào yú ， fā xiàn cǎo dì bìng bú shì jīn sè de ， ér shì lǜ sè de 。 zhōng wǔ huí jiā de shí hòu ， wǒ kàn jiàn cǎo dì shì jīn sè de 。 bàng wǎn de shí hòu ， cǎo dì yòu biàn lǜ le 。 zhè shì wèi shén me ne ？ wǒ lái dào cǎo dì shàng ， zǐ xì guān chá ， fā xiàn pú gōng yīng de huā bàn shì hé lǒng de 。 yuán lái ， pú gōng yīng de huā jiù xiàng wǒ men de shǒu zhǎng ， kě yǐ zhāng kāi 、 hé shàng 。 huā duǒ zhāng kāi shí ， huā bàn shì jīn sè de ， cǎo dì yě shì jīn sè de ； huā duǒ hé lǒng shí ， jīn sè de huā bàn bèi bāo zhù le ， cǎo dì jiù biàn chéng lǜ sè de le 。 duō me kě ài de cǎo dì ！ duō me yǒu qù de pú gōng yīng ！ cóng nà shí qǐ ， pú gōng yīng chéng le wǒ men zuì xǐ ài de yī zhǒng huā 。"
     },
     {
-      "单元": null,
+      "单元": 5,
       "课号": null,
       "栏目": null,
       "课题": null,
@@ -1012,7 +977,7 @@
       "拼音": "liú xīn guān chá yǒu nǎ xiē hǎo chù ？ jié hé xué guò de kè wén hé tóng xué jiāo liú 。 yí cì píng cháng de tàn qīn zhī lǚ ， yīn wèi liú xīn guān chá ， zuò zhě rèn shí le yí gè kě ài de xīn liú xīn zhōu wéi de shì péng yǒu — huì “ dā chuán ” de cuì niǎo 。 wù ， wǒ men jiù huì yǒu xīn chuāng qián de cǎo dì duì zuò zhě lái shuō zài shú xī de fā xiàn 。 bù guò le ， dàn zuò zhě shāo jiā liú yì ， jiù fā xiàn le qí miào de biàn huà 。 cuì niǎo de měi zài yú tā yǒu zhe sè cǎi yàn lì xì zhì de guān chá kě de yǔ máo hé mǐn jié de shēn shǒu 。 yǐ ràng wǒ men duì shì wù yǒu cǎo dì de sè cǎi huì fā shēng qí miào de biàn gēng duō gēng shēn de liǎo jiě 。 huà ， yuán lái shì yīn wèi pú gōng yīng de huā yǒu shí zhāng kāi yǒu shí hé lǒng 。 nǐ zài shēng huó zhōng guān chá dào le shén me ？ yòng jǐ jù huà xiě xià lái hé tóng xué jiāo liú ba ！ yǔ tíng le ， wǒ mā mā jīng cháng gěi wǒ mǎi xiāng jiāo chī 。 xiāng hé bà bà qù mǎi cài ， jiāo de pí huáng chéng chéng de ， xíng zhuàng xiàng wān wān de yuè zài lù shàng kàn dào hǎo jǐ yá ， mō shàng qù hěn guāng huá 。 fàng dào bí zi biān zhǐ wō niú zhèng màn yōu yōu wén ， yǒu yī gǔ dàn dàn de xiāng wèi 。 bō kāi pí cháng dì pá zhe … … yī kǒu ， shì yī zhǒng hěn ruǎn nuò de kǒu gǎn … …"
     },
     {
-      "单元": null,
+      "单元": 5,
       "课号": null,
       "栏目": null,
       "课题": null,
@@ -1024,10 +989,10 @@
         65
       ],
       "全文": "这段时间我们观察了不少身边的事物，有了很多新发现，简单列出来和同学交流。这次习作，就让我们把最近观察时印象最深的事物写下来。写完后，自己读一读，修改错别字和不通顺的语句。再把你认为写得好的部分读给小组同学听，展示你的观察所得。交流习作之后，试着说说最近的观察感受，和同学分享心得。如：◇观察时要细致一些，注意事物的变化。◇观察时可以用眼睛看，用耳朵听，还可以用手摸，用鼻子闻，有时还可以尝一尝。◇可以从事物的不同方面观察。",
-      "拼音": "zhè duàn shí jiān wǒ men guān chá le bù shǎo shēn biān de shì wù ， yǒu le hěn duō xīn fā xiàn ， jiǎn dān liè chū lái hé tóng xué jiāo liú 。 zhè cì xí zuò ， jiù ràng wǒ men bǎ zuì jìn guān chá shí yìn xiàng zuì shēn de shì wù xiě xià lái 。 xiě wán hòu ， zì jǐ dú yī dú ， xiū gǎi cuò bié zì hé bù tōng shùn de yǔ jù 。 zài bǎ nǐ rèn wéi xiě dé hǎo de bù fèn dú gěi xiǎo zǔ tóng xué tīng ， zhǎn shì nǐ de guān chá suǒ dé 。 jiāo liú xí zuò zhī hòu ， shì zhe shuō shuō zuì jìn de guān chá gǎn shòu ， hé tóng xué fēn xiǎng xīn dé 。 rú ： ◇ guān chá shí yào xì zhì yì xiē ， zhù yì shì wù de biàn huà 。 ◇ guān chá shí kě yǐ yòng yǎn jīng kàn ， yòng ěr duǒ tīng ， hái kě yǐ yòng shǒu mō ， yòng bí zi wén ， yǒu shí hái kě yǐ cháng yī cháng 。 ◇ kě yǐ cóng shì wù de bù tóng fāng miàn guān chá 。"
+      "拼音": "zhè duàn shí jiān wǒ men guān chá le bù shǎo shēn biān de shì wù ， yǒu le hěn duō xīn fā xiàn ， jiǎn dān liè chū lái hé tóng xué jiāo liú 。 zhè cì xí zuò ， jiù ràng wǒ men bǎ zuì jìn guān chá shí yìn xiàng zuì shēn de shì wù xiě xià lái 。 xiě wán hòu ， zì jǐ dú yī dú ， xiū gǎi cuò bié zì hé bù tōng shùn de yǔ jù 。 zài bǎ nǐ rèn wéi xiě de hǎo de bù fèn dú gěi xiǎo zǔ tóng xué tīng ， zhǎn shì nǐ de guān chá suǒ dé 。 jiāo liú xí zuò zhī hòu ， shì zhe shuō shuō zuì jìn de guān chá gǎn shòu ， hé tóng xué fēn xiǎng xīn dé 。 rú ： ◇ guān chá shí yào xì zhì yì xiē ， zhù yì shì wù de biàn huà 。 ◇ guān chá shí kě yǐ yòng yǎn jīng kàn ， yòng ěr duǒ tīng ， hái kě yǐ yòng shǒu mō ， yòng bí zi wén ， yǒu shí hái kě yǐ cháng yī cháng 。 ◇ kě yǐ cóng shì wù de bù tóng fāng miàn guān chá 。"
     },
     {
-      "单元": null,
+      "单元": 5,
       "课号": null,
       "栏目": null,
       "课题": null,
@@ -1042,7 +1007,7 @@
       "拼音": "wǒ dé hǎo hǎo xiě xiě wǒ men jiā de xiǎo gǒu ， tā jiào “ wáng zǐ ” ， shì wǒ men cūn lǐ zhǎng dé zuì huā 、 máo sè zuì piào liàng de yī zhī gǒu 。 tā pǎo dé tè bié kuài ， wǒ zǒng yě zhuī bù shàng tā 。 bù guò “ wáng zǐ ” hěn guāi ， tā zǒng shì zài qián miàn děng zhe wǒ 。 zuò zhě guān chá dé wǒ jiào guò “ wáng zǐ ” rèn zì ， kě shì tā lián yí gè zì mǔ yě méi zhēn zǐ xì ， tā fā xiàn xué huì ， bù guò tā dào shì tǐng ài shàng kè de 。 wǒ jiào tā niàn “ gǒu ” de shí hòu ， tā jiào dé zuì huān 。 tā zhǔn shì zài xiǎng ， zhè shì zài shuō tā zì jǐ zuì huān 。 ya ！ “ wáng zǐ ” hái huì shǔ shù ， bù guò zǒng gòng cái huì shù dào èr 。 tā xǐ huān hēng hēng jiào hé wāng wāng jiào 。 “ nǐ yào gàn shén me ？ ” “ wáng zǐ ” zài wǒ miàn qián hēng hēng shí ， wǒ wèn tā 。 tā wāng dì jiào yī shēng ， huǎng yī huǎng nǎo dài ， biǎo shì xiǎng yào chū qù 。 “ xiàn zài hái xiǎng gàn shén me ？ ” dāng wǒ men zǒu chū yuàn zi shí ， wǒ jiē zhe wèn tā 。 “ wáng zǐ ” yòu wāng dì jiào yī shēng ， cháo tiě lù nà biān pǎo qù 。 “ nǐ gāi yí cì shuō wán nǎ ！ ” wǒ yī biān mán yuàn ， yī biān gēn zài tā hòu miàn pǎo 。 wǒ zhī dào “ wáng zǐ ” xiǎng qù nà ér gàn shén me ， tā xǐ huān tóng huǒ chē sài pǎo 。 měi cì dōu shì tā shū ， kě tā cóng bù zài hū 。 měi dāng"
     },
     {
-      "单元": null,
+      "单元": 5,
       "课号": null,
       "栏目": null,
       "课题": null,
@@ -1055,25 +1020,10 @@
         68
       ],
       "全文": "有火车开过来，“王子”都以为能跑赢它。等到跑不“王子”竟敢动了，它便冲着远去的火车汪汪叫上几声，不知是跟火车赛跑，真允许火车开走呢，还是骂了火车一顿。经过仔细观察，作者发现了“王子”的淘气可爱。把你觉得它淘气可爱的部分找出来，和同学交流。我的故乡在江南，我爱故乡的杨梅。细雨如丝，一棵棵杨梅树贪婪地吮吸着春天的甘露。它们伸展着四季常绿的枝条，一片片狭长的叶子在雨雾中欢笑着。端午节过后，杨梅树上挂满了杨梅。杨梅圆圆的，和桂圆一样大小，遍身生着小刺。作者把杨梅等杨梅渐渐长熟，刺也渐渐软了，平了。摘一个放的变化观察得多进嘴里，舌尖触到杨梅那平滑的刺，是那样细腻而柔软。杨梅先是淡红的，随后变成深红，最后几乎变成黑的了。它不是真的变黑，而是因为太红了，看上去像黑的。你轻轻咬开它，就可以看见那新鲜红嫩的果肉，嘴唇上舌头上同时染满了鲜红的汁水。没有熟透的杨梅又酸又甜，熟透了就甜津津的，作者把杨梅叫人越吃越爱吃。我小时候，有一次杨梅吃得太多，的味道写得这么感觉牙齿又酸又软，连豆腐也咬不动了。我这才知道，杨梅虽然熟透了，酸味还是有的，因为它太甜，的滋味。吃起来就不觉得酸了。吃多了杨梅再吃别的东西，才感觉到牙齿已经被它酸倒了。填写下面的表格，体会作者细致的观察。外形颜色味道",
-      "拼音": "yǒu huǒ chē kāi guò lái ， “ wáng zǐ ” dōu yǐ wéi néng pǎo yíng tā 。 děng dào pǎo bù “ wáng zǐ ” jìng gǎn dòng le ， tā biàn chōng zhe yuǎn qù de huǒ chē wāng wāng jiào shàng jǐ shēng ， bù zhī shì gēn huǒ chē sài pǎo ， zhēn yǔn xǔ huǒ chē kāi zǒu ne ， hái shì mà le huǒ chē yī dùn 。 jīng guò zǐ xì guān chá ， zuò zhě fā xiàn le “ wáng zǐ ” de táo qì kě ài 。 bǎ nǐ jué de tā táo qì kě ài de bù fèn zhǎo chū lái ， hé tóng xué jiāo liú 。 wǒ de gù xiāng zài jiāng nán ， wǒ ài gù xiāng de yáng méi 。 xì yǔ rú sī ， yī kē kē yáng méi shù tān lán dì shǔn xī zhe chūn tiān de gān lù 。 tā men shēn zhǎn zhe sì jì cháng lǜ de zhī tiáo ， yī piàn piàn xiá cháng de yè zi zài yǔ wù zhōng huān xiào zhe 。 duān wǔ jié guò hòu ， yáng méi shù shàng guà mǎn le yáng méi 。 yáng méi yuán yuán de ， hé guì yuán yí yàng dà xiǎo ， biàn shēn shēng zhe xiǎo cì 。 zuò zhě bǎ yáng méi děng yáng méi jiàn jiàn zhǎng shú ， cì yě jiàn jiàn ruǎn le ， píng le 。 zhāi yí gè fàng de biàn huà guān chá dé duō jìn zuǐ lǐ ， shé jiān chù dào yáng méi nà píng huá de cì ， shì nà yàng xì nì ér róu ruǎn 。 yáng méi xiān shì dàn hóng de ， suí hòu biàn chéng shēn hóng ， zuì hòu jī hū biàn chéng hēi de le 。 tā bú shì zhēn de biàn hēi ， ér shì yīn wèi tài hóng le ， kàn shàng qù xiàng hēi de 。 nǐ qīng qīng yǎo kāi tā ， jiù kě yǐ kàn jiàn nà xīn xiān hóng nèn de guǒ ròu ， zuǐ chún shàng shé tou shàng tóng shí rǎn mǎn le xiān hóng de zhī shuǐ 。 méi yǒu shú tòu de yáng méi yòu suān yòu tián ， shú tòu le jiù tián jīn jīn de ， zuò zhě bǎ yáng méi jiào rén yuè chī yuè ài chī 。 wǒ xiǎo shí hòu ， yǒu yí cì yáng méi chī dé tài duō ， de wèi dào xiě dé zhè me gǎn jué yá chǐ yòu suān yòu ruǎn ， lián dòu fǔ yě yǎo bù dòng le 。 wǒ zhè cái zhī dào ， yáng méi suī rán shú tòu le ， suān wèi hái shì yǒu de ， yīn wèi tā tài tián ， de zī wèi 。 chī qǐ lái jiù bù jué de suān le 。 chī duō le yáng méi zài chī bié de dōng xī ， cái gǎn jué dào yá chǐ yǐ jīng bèi tā suān dào le 。 tián xiě xià miàn de biǎo gé ， tǐ huì zuò zhě xì zhì de guān chá 。 wài xíng yán sè wèi dào"
+      "拼音": "yǒu huǒ chē kāi guò lái ， “ wáng zǐ ” dōu yǐ wéi néng pǎo yíng tā 。 děng dào pǎo bù “ wáng zǐ ” jìng gǎn dòng le ， tā biàn chòng zhe yuǎn qù de huǒ chē wāng wāng jiào shàng jǐ shēng ， bù zhī shì gēn huǒ chē sài pǎo ， zhēn yǔn xǔ huǒ chē kāi zǒu ne ， hái shì mà le huǒ chē yī dùn 。 jīng guò zǐ xì guān chá ， zuò zhě fā xiàn le “ wáng zǐ ” de táo qì kě ài 。 bǎ nǐ jué de tā táo qì kě ài de bù fèn zhǎo chū lái ， hé tóng xué jiāo liú 。 wǒ de gù xiāng zài jiāng nán ， wǒ ài gù xiāng de yáng méi 。 xì yǔ rú sī ， yī kē kē yáng méi shù tān lán dì shǔn xī zhe chūn tiān de gān lù 。 tā men shēn zhǎn zhe sì jì cháng lǜ de zhī tiáo ， yī piàn piàn xiá cháng de yè zi zài yǔ wù zhōng huān xiào zhe 。 duān wǔ jié guò hòu ， yáng méi shù shàng guà mǎn le yáng méi 。 yáng méi yuán yuán de ， hé guì yuán yí yàng dà xiǎo ， biàn shēn shēng zhe xiǎo cì 。 zuò zhě bǎ yáng méi děng yáng méi jiàn jiàn zhǎng shú ， cì yě jiàn jiàn ruǎn le ， píng le 。 zhāi yí gè fàng de biàn huà guān chá dé duō jìn zuǐ lǐ ， shé jiān chù dào yáng méi nà píng huá de cì ， shì nà yàng xì nì ér róu ruǎn 。 yáng méi xiān shì dàn hóng de ， suí hòu biàn chéng shēn hóng ， zuì hòu jī hū biàn chéng hēi de le 。 tā bú shì zhēn de biàn hēi ， ér shì yīn wèi tài hóng le ， kàn shàng qù xiàng hēi de 。 nǐ qīng qīng yǎo kāi tā ， jiù kě yǐ kàn jiàn nà xīn xiān hóng nèn de guǒ ròu ， zuǐ chún shàng shé tou shàng tóng shí rǎn mǎn le xiān hóng de zhī shuǐ 。 méi yǒu shú tòu de yáng méi yòu suān yòu tián ， shú tòu le jiù tián jīn jīn de ， zuò zhě bǎ yáng méi jiào rén yuè chī yuè ài chī 。 wǒ xiǎo shí hòu ， yǒu yí cì yáng méi chī dé tài duō ， de wèi dào xiě dé zhè me gǎn jué yá chǐ yòu suān yòu ruǎn ， lián dòu fǔ yě yǎo bù dòng le 。 wǒ zhè cái zhī dào ， yáng méi suī rán shú tòu le ， suān wèi hái shì yǒu de ， yīn wèi tā tài tián ， de zī wèi 。 chī qǐ lái jiù bù jué de suān le 。 chī duō le yáng méi zài chī bié de dōng xī ， cái gǎn jué dào yá chǐ yǐ jīng bèi tā suān dào le 。 tián xiě xià miàn de biǎo gé ， tǐ huì zuò zhě xì zhì de guān chá 。 wài xíng yán sè wèi dào"
     },
     {
-      "单元": null,
-      "课号": null,
-      "栏目": null,
-      "课题": null,
-      "标题": "祖国，我爱你。单",
-      "作者": null,
-      "年代": null,
-      "出处": null,
-      "页码": [
-        69
-      ],
-      "全文": "饱览大好河山，感受祖国之美。◎借助关键语句理解一段话的意思。◎学习围绕一个意思把一段话写清楚。",
-      "拼音": "bǎo lǎn dà hǎo hé shān ， gǎn shòu zǔ guó zhī měi 。 ◎ jiè zhù guān jiàn yǔ jù lǐ jiě yī duàn huà de yì si 。 ◎ xué xí wéi rào yí gè yì si bǎ yī duàn huà xiě qīng chǔ 。"
-    },
-    {
-      "单元": null,
+      "单元": 6,
       "课号": "16",
       "栏目": null,
       "课题": null,
@@ -1089,7 +1039,7 @@
       "拼音": "xī shā qún dǎo wèi yú nán hǎi de xī běi bù ， shì wǒ guó hǎi nán shěng sān shā shì de yī bù fèn 。 nà lǐ fēng jǐng yōu měi ， wù chǎn fēng fù ， shì gè kě ài de dì fāng 。 xī shā qún dǎo yī dài hǎi shuǐ wǔ guāng shí sè ， guī lì wú bǐ ： yǒu shēn lán de ， dàn qīng de ， qiǎn lǜ de ， xìng huáng de 。 yī kuài kuài ， yī tiáo tiáo ， xiāng hù jiāo cuò zhe 。 yīn wèi hǎi dǐ gāo dī bù píng ， yǒu shān yá ， yǒu xiá gǔ ， hǎi shuǐ yǒu shēn yǒu qiǎn ， cóng hǎi miàn kàn ， sè cǎi jiù bù tóng le 。 hǎi dǐ de yán shí shàng shēng zhǎng zhe gè zhǒng gè yàng de shān hú ， yǒu de xiàng zhàn kāi de huā duǒ ， yǒu de xiàng fēn zhī de lù jiǎo 。 hǎi shēn dào chù dōu shì ， zài hǎi dǐ lǎn yáng yáng dì rú dòng 。 dà lóng xiā quán shēn pī jiǎ ， huá guò lái ， huá guò qù ， yàng zi tǐng wēi wǔ 。 yú chéng qún jié duì dì zài shān hú cóng zhōng chuān lái chuān qù ， hǎo kàn jí le 。 yǒu de quán shēn bù mǎn cǎi sè de tiáo wén ； yǒu de tóu shàng zhǎng zhe yī cù hóng yīng ； yǒu de zhōu shēn xiàng chā zhe hǎo xiē shàn zi ， yóu dòng de shí hòu piāo piāo yáo yáo ； yǒu de yǎn jīng yuán liū liū de ， shēn shàng zhǎng mǎn le cì ， gǔ qǐ qì lái xiàng pí qiú yí yàng yuán 。 gè zhǒng gè yàng de yú duō dé shǔ bù qīng 。 zhèng xiàng rén men shuō de nà yàng ， xī shā qún dǎo de hǎi lǐ yí bàn shì shuǐ ， yí bàn shì yú 。 xī shā qún dǎo yě shì niǎo de tiān xià 。 dǎo shàng yǒu yī piàn piàn mào mì de shù lín ， shù lín lǐ qī xī zhe gè zhǒng hǎi wǒ fā xiàn zhè duàn huà shì niǎo 。 biàn dì dōu shì niǎo dàn 。 shù xià duī jī zhe yī céng hòu wéi rào dì yī jù huà lái xiě de 。 hòu de niǎo fèn ， zhè shì fēi cháng bǎo guì de féi liào 。 fù ráo de xī shā qún dǎo ， shì wǒ men zǔ zǔ bèi bèi shēng huó de dì fāng 。 suí zhe zǔ guó jiàn shè shì yè de fā zhǎn ， kě ài de xī shā qún dǎo ， bì jiāng biàn dé gèng jiā měi lì ， gèng jiā fù ráo 。"
     },
     {
-      "单元": null,
+      "单元": 6,
       "课号": "17",
       "栏目": null,
       "课题": null,
@@ -1105,7 +1055,7 @@
       "拼音": "zhè shì yī zuò hǎi bīn xiǎo chéng 。 rén men zǒu dào jiē dào jìn tóu ， jiù kě yǐ kàn jiàn hào hàn de dà hǎi 。 tiān shì lán de ， hǎi yě shì lán de 。 hǎi tiān jiāo jiè de shuǐ píng xiàn shàng ， zōng sè de jī fān chuán hé yín sè de jūn jiàn lái lái wǎng wǎng 。 tiān kōng fēi xiáng zhe bái sè de 、 huī sè de hǎi ōu ， hái piāo zhe gēn hǎi ōu yí yàng yán sè de yún duǒ 。 zǎo chén ， jī fān chuán 、 jūn jiàn 、 hǎi ōu 、 yún duǒ ， dōu bèi zhāo yáng dù shàng le yī céng jīn huáng sè 。 fān chuán shàng de yú mín ， jūn jiàn shàng de zhàn shì ， tā men de liǎn hé gē bei yě dù shàng le yī céng jīn huáng sè 。 hǎi biān shì yī piàn shā tān ， shā tān shàng biàn dì shì gè zhǒng yán sè 、 gè zhǒng huā wén de bèi ké 。 zhè lǐ de hái zi jiàn dé duō le ， dōu bù qù lǐ cǎi zhè xiē bèi ké ， bèi ké zhǐ hǎo jì mò dì tǎng zài nà lǐ 。 yuǎn chù xiǎng qǐ le qì dí shēng ， nà shì chū hǎi bǔ yú de chuán duì huí lái le 。 chuán shàng mǎn zài zhe yín guāng shǎn shǎn de yú ， hái yǒu qīng sè de xiā hé xiè 、 jīn huáng sè de hǎi luó 。 chuán duì yī kào àn ， hǎi tān shàng jiù xuān nào qǐ lái 。 xiǎo chéng lǐ měi yí gè tíng yuàn dōu zāi le hěn duō shù 。 yǒu ān shù 、 yē zi shù 、 gǎn lǎn shù 、 fèng huáng shù ， hái yǒu bié de xǔ duō yà rè dài shù mù 。 chū xià ， ān shù yè zi sàn fà chū lái de xiāng wèi ， piāo dé mǎn jiē mǎn yuàn dōu shì 。 fèng huáng shù kāi le huā ， kāi dé nà me rè nào ， xiǎo chéng hǎo xiàng lǒng zhào zài yī piàn piàn hóng yún zhōng 。 xiǎo chéng de gōng yuán gèng měi 。 zhè lǐ zāi zhe xǔ xǔ duō duō róng shù 。 yī kē kē róng shù jiù xiàng yī dǐng dǐng chēng kāi de lǜ róng dà sǎn ， shù yè mì bù tòu fēng ， kě yǐ zhē tài yáng ， dǎng fēng yǔ 。 shù xià bǎi zhe shí dèng ， měi féng xiū xī de rì zi ， shí dèng shàng zǒng shì zuò mǎn le rén 。 xiǎo chéng de jiē dào yě měi 。 chú le lì qīng de dà lù ， dōu shì yòng xì shā pù chéng de ， cǎi shàng qù gē zhī gē zhī dì xiǎng ， hǎo xiàng cǎi zài shā tān shàng yí yàng 。 rén men bǎ jiē dào dǎ sǎo dé shí fēn gān jìng ， shèn zhì lián yī piàn luò yè dōu méi yǒu 。 zhè zuò hǎi bīn xiǎo chéng zhēn shì yòu měi lì yòu zhěng jié 。"
     },
     {
-      "单元": null,
+      "单元": 6,
       "课号": "18",
       "栏目": null,
       "课题": null,
@@ -1121,7 +1071,7 @@
       "拼音": "wǒ guó dōng běi de xiǎo xīng ān lǐng ， yǒu shǔ bù qīng de hóng sōng 、 bái huà 、 lì shù … … jǐ bǎi lǐ lián chéng yī piàn ， jiù xiàng lǜ sè de hǎi yáng 。 chūn tiān ， shù mù chōu chū xīn de zhī tiáo ， zhǎng chū nèn lǜ de yè zi 。 shān shàng de jī xuě róng huà le ， xuě shuǐ huì chéng xiǎo xī ， cóng cóng dì liú zhe 。 xī lǐ zhǎng mǎn le chūn shuǐ 。 xiǎo lù zài xī biān sàn bù ， tā men yǒu de fǔ xià shēn zi hē shuǐ ， yǒu de cè zhe nǎo dài xīn shǎng zì jǐ yìng zài shuǐ lǐ de yǐng zi 。 xià tiān ， shù mù zhǎng dé cōng cōng lóng lóng ， mì mì céng céng de zhī yè bǎ sēn lín fēng dé yán yán shí shí de ， dǎng zhù le rén men de shì xiàn ， zhē zhù le lán lán de tiān kōng 。 zǎo chén ， wù cóng shān gǔ lǐ shēng qǐ lái ， zhěng gè sēn lín jìn zài rǔ bái sè de nóng wù lǐ 。 tài yáng chū lái le ， qiān wàn lǚ yào yǎn de jīn guāng chuān guò shù shāo ， zhào shè zài gōng rén sù shè mén qián de cǎo dì shàng 。 cǎo dì shàng shèng kāi zhe gè zhǒng gè yàng de yě huā ， hóng de 、 bái de 、 huáng de 、 zǐ de ， zhēn xiàng gè měi lì de dà huā tán 。 qiū tiān ， bái huà hé lì shù de yè zi biàn huáng le ， sōng bǎi xiǎn de gèng cāng cuì le 。 qiū fēng chuī lái ， luò yè zài lín jiān fēi wǔ 。 zhè shí hòu ， sēn lín xiàng rén men xiàn chū le suān tián kě kǒu de shān pú táo ， yòu xiāng yòu cuì de zhēn zi ， xiān nèn de mó gū hé mù ěr ， hái yǒu rén shēn děng míng guì yào cái 。 dōng tiān ， xuě huā zài kōng zhōng fēi wǔ 。 shù shàng jī mǎn le bái xuě 。 dì shàng de xuě hòu hòu de ， yòu sōng yòu ruǎn ， cháng cháng méi guò xī gài 。 xī běi fēng hū hū dì guā guò shù shāo 。 hēi xióng duǒ jìn zì jǐ de dòng lǐ dōng mián 。 zǐ diāo bǔ zhuō yě tù dāng měi cān 。 sōng shǔ kào qiū tiān shōu cáng zài shù dòng lǐ de sōng zi guò rì zi ， yǒu shí hòu hái dào zhī tóu sàn sàn bù ， kàn kàn chūn tiān shì bú shì kuài yào lái lín 。 xiǎo xīng ān lǐng yī nián sì jì jǐng sè yòu rén ， shì yī zuò měi lì de dà huā yuán ， yě shì yī zuò jù dà de bǎo kù 。"
     },
     {
-      "单元": null,
+      "单元": 6,
       "课号": "19*",
       "栏目": null,
       "课题": null,
@@ -1137,7 +1087,7 @@
       "拼音": "xiāng gǎng wèi yú wǒ guó nán bù ， nán hǎi zhī bīn ， suī rán miàn jī bù dà ， què shì xiǎng yù shì jiè de jīn róng 、 háng yùn hé mào yì zhōng xīn ， hái shì gòu wù 、 pǐn cháng měi shí hé lǚ yóu de hǎo qù chù 。 xiāng gǎng yǒu zhe fán róng de mào yì huó dòng ， shì yī zuò jǔ shì wén míng de mào yì gǎng chéng shì 。 shì jiè gè dì de shāng rén dōu lè yì lái zhè lǐ zuò shēng yì ， lái zì bù tóng guó jiā hé dì qū de shāng pǐn ， lín láng mǎn mù ， yīng yǒu jìn yǒu ， “ wàn guó shì chǎng ” de míng hào dāng zhī wú kuì 。 rén men ài bǎ xiāng gǎng chēng zuò “ měi shí tiān táng ” 。 míng mǎn tiān xià de yuè cài 、 chuān cài ， dōng nán yà gè dì de fēng wèi yǐn shí ， ōu zhōu gè guó de jiā yáo ， yī yīng jù quán 。 yóu kè bù jǐn néng dà bǎo kǒu fú ， hái kě yǐ zài xiǎng shòu měi shí shèng yàn de tóng shí ， tǐ yàn xiāng gǎng de duō yuán wén huà 。 xiāng gǎng hái shì yí gè lǚ yóu shèng dì 。 měi bù shèng shōu de wéi duō lì yà gǎng ， ràng rén liú lián wàng fǎn 。 wèi yú guó jì huì yì zhǎn lǎn zhōng xīn dōng běi cè guǎng chǎng shàng de jīn zǐ jīng diāo sù ， shì zhōng wài yóu kè de bì dào zhī chù ， zhè shì 1 9 9 7 nián xiāng gǎng huí guī zǔ guó shí zhōng yāng zhèng fǔ zèng sòng de lǐ wù 。 měi dāng yè mù jiàng lín ， xiāng gǎng biàn chéng le dēng de hǎi yáng 。 dà xíng dēng guāng yīn yuè huì yǎn “ huàn cǎi yǒng xiāng jiāng ” jiāng shēng hé guāng jiāo zhī zài yì qǐ ， bǎ xiāng gǎng de yè jǐng yìng zhào dé xuàn lì duō zī 。 gǎng wān lǐ shǎn shuò de dēng guāng ， xiàng wǔ yán liù sè de yàn huǒ sǎ luò rén jiān 。 mǎ lù shàng yī chuàn chuàn míng liàng de chē dēng ， rú tóng shǎn guāng de cháng hé ， bēn liú bù xī 。 gāo lóu dà shà de ní hóng dēng liú guāng yì cǎi ， rè qíng huān yíng lái zì wǔ zhōu sì hǎi de yóu kè 。 wèi lái ， zài gòng jiàn “ yī dài yī lù ” hé yuè gǎng ào dà wān qū jiàn shè de jìn chéng zhōng ， xiāng gǎng jiāng bàn yǎn zhòng yào jué sè ， zǔ guó nán hǎi zhī bīn de zhè kē míng zhū bì dìng gèng jiā cuǐ càn duó mù 。"
     },
     {
-      "单元": null,
+      "单元": 6,
       "课号": null,
       "栏目": null,
       "课题": null,
@@ -1152,22 +1102,7 @@
       "拼音": "huā yuán 、 guǒ yuán ， tián yě 、 xiǎo hé … … wǒ men zhōu wéi yǒu xǔ duō měi lì de dì fāng ， nǐ fā xiàn le ma ？ ràng wǒ men bǎ shēn biān de měi jǐng jiè shào gěi bié rén ba ！ xiě zhī qián zǐ xì guān chá ， kàn kàn zhè ge dì fāng yǒu xiē shén me ， shì shén me yàng zi de 。 xiě de shí hòu ， shì zhe yùn yòng cóng kè wén zhōng xué dào de fāng fǎ ， wéi rào yí gè yì si xiě yī duàn huà 。 rú ： ◇ cāo chǎng hòu miàn de xiǎo huā yuán zhēn měi … … ◇ cūn lǐ de guǒ yuán jiù xiàng yī fú sè cǎi bān lán de tú huà … … ◇ yī dào chí táng biān ， wǒ jiù bèi yǎn qián de jǐng sè xī yǐn zhù le … … xiě hǎo hòu zì jǐ dú yī dú ， kàn kàn jù zi shì fǒu tōng shùn ， yì si shì fǒu qīng chǔ 。 rán hòu dú gěi tóng xué tīng ， hé tóng xué fēn xiǎng nǐ fā xiàn de měi jǐng 。 shèng kāi cuì lǜ míng lǎng shǎn shǎn fā guāng xīn xué de cí yǔ 。 mào mì xiāng tián jìng qiāo qiāo měi bù shèng shōu cū zhuàng qīng liáng liàng jīng jīng bēn liú bù xī"
     },
     {
-      "单元": null,
-      "课号": null,
-      "栏目": null,
-      "课题": null,
-      "标题": "语文园地",
-      "作者": null,
-      "年代": null,
-      "出处": null,
-      "页码": [
-        81
-      ],
-      "全文": "你在阅读时关注段落中的关键语句了吗？结合读过的文章和同学交流。有的时候，一段话的开头就表达了这段话的主要意思，后面的内容都是围绕开头这句话来写的。这样的句子也有可能在一段话的末尾或中间。找到这样的句子，可以帮助我们更好地理解一段话的意思。我们习作的时候也可以学着这样写。读一读，想象句子描写的情形，然后照样子写句子。◇各种各样的鱼多得数不清。◇夏天，树木长得葱葱茏茏。◇王老师急得直跺脚。◇他跑得像兔子一样快。◇妈妈累得。◇得。",
-      "拼音": "nǐ zài yuè dú shí guān zhù duàn luò zhōng de guān jiàn yǔ jù le ma ？ jié hé dú guò de wén zhāng hé tóng xué jiāo liú 。 yǒu de shí hòu ， yī duàn huà de kāi tóu jiù biǎo dá le zhè duàn huà de zhǔ yào yì si ， hòu miàn de nèi róng dōu shì wéi rào kāi tóu zhè jù huà lái xiě de 。 zhè yàng de jù zi yě yǒu kě néng zài yī duàn huà de mò wěi huò zhōng jiān 。 zhǎo dào zhè yàng de jù zi ， kě yǐ bāng zhù wǒ men gèng hǎo dì lǐ jiě yī duàn huà de yì si 。 wǒ men xí zuò de shí hòu yě kě yǐ xué zhe zhè yàng xiě 。 dú yī dú ， xiǎng xiàng jù zi miáo xiě de qíng xíng ， rán hòu zhào yàng zi xiě jù zi 。 ◇ gè zhǒng gè yàng de yú duō dé shǔ bù qīng 。 ◇ xià tiān ， shù mù zhǎng dé cōng cōng lóng lóng 。 ◇ wáng lǎo shī jí dé zhí duò jiǎo 。 ◇ tā pǎo dé xiàng tù zi yí yàng kuài 。 ◇ mā mā lèi dé 。 ◇ dé 。"
-    },
-    {
-      "单元": null,
+      "单元": 7,
       "课号": "20",
       "栏目": null,
       "课题": null,
@@ -1176,28 +1111,14 @@
       "年代": "唐",
       "出处": null,
       "页码": [
-        84
-      ],
-      "全文": "鹿柴①注释空山不见人，。返景入深林，③复照青苔上。望天门山①注释",
-      "拼音": "lù chái ① zhù shì kōng shān bú jiàn rén ， 。 fǎn jǐng rù shēn lín ， ③ fù zhào qīng tái shàng 。 wàng tiān mén shān ① zhù shì"
-    },
-    {
-      "单元": null,
-      "课号": null,
-      "栏目": null,
-      "课题": null,
-      "标题": "饮湖上初晴后雨注释",
-      "作者": null,
-      "年代": null,
-      "出处": null,
-      "页码": [
+        84,
         85
       ],
-      "全文": "①〔潋滟〕波光闪动的样子。②〔方〕正。①②③〔空蒙〕隐隐约约的样子。③④⑤〔西子〕西施，春秋时代",
-      "拼音": "① 〔 liàn yàn 〕 bō guāng shǎn dòng de yàng zi 。 ② 〔 fāng 〕 zhèng 。 ① ② ③ 〔 kōng méng 〕 yǐn yǐn yuē yuē de yàng zi 。 ③ ④ ⑤ 〔 xī zi 〕 xī shī ， chūn qiū shí dài"
+      "全文": "鹿柴①注释空山不见人，。返景入深林，③复照青苔上。望天门山①注释饮湖上初晴后雨注释水光潋滟晴方好，④〔亦〕也。山色空蒙雨亦奇。越国的美女。欲把西湖比西子，⑤淡妆浓抹总相宜。",
+      "拼音": "lù chái ① zhù shì kōng shān bú jiàn rén ， 。 fǎn jǐng rù shēn lín ， ③ fù zhào qīng tái shàng 。 wàng tiān mén shān ① zhù shì yǐn hú shàng chū qíng hòu yǔ zhù shì shuǐ guāng liàn yàn qíng fāng hǎo ， ④ 〔 yì 〕 yě 。 shān sè kōng méng yǔ yì qí 。 yuè guó de měi nǚ 。 yù bǎ xī hú bǐ xī zi ， ⑤ dàn zhuāng nóng mǒ zǒng xiāng yí 。"
     },
     {
-      "单元": null,
+      "单元": 7,
       "课号": "21",
       "栏目": null,
       "课题": null,
@@ -1213,7 +1134,7 @@
       "拼音": "dà zì rán yǒu xǔ duō měi miào de shēng yīn 。 fēng ， shì dà zì rán de yīn yuè jiā 。 tā huì zài sēn lín lǐ yǎn zòu tā de shǒu fēng qín 。 dāng tā fān dòng shù yè ， shù yè biàn xiàng gē shǒu yí yàng ， chàng chū gè zhǒng bù tóng de gē qǔ 。 bù yí yàng de shù yè ， yǒu bù yí yàng de shēng yīn ； bù yí yàng de jì jié ， yǒu bù yí yàng de yīn yuè 。 dāng wēi fēng fú guò ， nà shēng yīn qīng qīng róu róu de ， hǎo xiàng ní nán xì yǔ ， ràng rén gǎn shòu dào dà zì rán de wēn róu ； dāng kuáng fēng chuī qǐ ， zhěng zuò sēn lín dōu jī dòng qǐ lái ， hé zòu chū yī shǒu xióng wěi de yuè qǔ ， nà shēng yīn chōng mǎn lì liàng ， lìng rén gǎn shòu dào dà zì rán de wēi lì 。 shuǐ ， yě shì dà zì rán de yīn yuè jiā 。 xià yǔ de shí hòu ， tā xǐ huān wán dǎ jī yuè qì 。 xiǎo yǔ dī qiāo qiāo dǎ dǎ ， yī cháng rè nào de yīn yuè huì biàn kāi shǐ le 。 dī dī dā dā … … dīng dīng dōng dōng … … suǒ yǒu de shù lín ， shù lín lǐ de měi piàn shù yè ， suǒ yǒu de fáng zi ， fáng zi de wū dǐng hé chuāng hù ， dōu fā chū bù tóng de shēng yīn 。 dāng xiǎo yǔ dī huì jù qǐ lái ， tā men biàn yì qǐ chàng zhe gē ： xiǎo xī cóng cóng ， liú xiàng hé liú ； hé liú chán chán ， liú xiàng dà hǎi ； dà hǎi huā huā ， xiōng yǒng péng pài 。 cóng yī shǒu qīng kuài de shān zhōng xiǎo qǔ ， chàng dào bō lán zhuàng kuò de hǎi yáng dà hé chàng 。 dòng wù shì dà zì rán de gē shǒu 。 zǒu zài gōng yuán lǐ ， tīng tīng shù shàng jī jī zhā zhā de niǎo jiào ； zuò zài yī kē shù xià ， tīng tīng jī lī lī jī lī lī de chóng míng ； zài shuǐ táng biān sàn bù ， tīng tīng qīng wā de gē chàng 。 nǐ zhī dào tā men chàng de shì shén me ma ？ tā men de gē shēng hǎo xiàng gào sù wǒ men ： “ wǒ zài gē chàng ， wǒ hěn kuài lè ！ ”"
     },
     {
-      "单元": null,
+      "单元": 7,
       "课号": null,
       "栏目": null,
       "课题": null,
@@ -1228,7 +1149,7 @@
       "拼音": "dú dú xià miàn miáo xiě shēng yīn de cí yǔ ， zài shuō shuō nǐ zài nǎ lǐ tīng dào guò zhè yàng de shēng yīn 。 qīng qīng róu róu de ní nán xì yǔ xióng wěi de yuè qǔ chōng mǎn lì liàng de shēng yīn rè nào de yīn yuè huì qīng kuài de shān zhōng xiǎo qǔ bō lán zhuàng kuò de hǎi yáng dà hé chàng nǐ tīng dào guò nǎ xiē “ měi miào de shēng yīn ” ？ shì zhe yòng shàng nǐ jī lěi de cí jù ， xiě jǐ jù huà hé tóng xué jiāo liú ， rú ， “ niǎo ér shì dà zì rán de gē shǒu … … ” “ chú fáng shì yí gè yīn yuè tīng … … ” 。 hái méi kàn jiàn pù bù ， xiān tīng jiàn pù bù de shēng yīn ， hǎo xiàng dié dié de làng yǒng shàng àn tān ， yòu xiàng zhèn zhèn de fēng chuī guò sōng lín 。 shān lù hū rán yī zhuǎn ， a ， wàng jiàn le pù bù de quán shēn ！ zhè bān jǐng xiàng méi fǎ bǐ yù ， qiān zhàng qīng shān chèn zhe yī dào bái yín 。 zhàn zài pù bù jiǎo xià yǎng wàng ， hǎo wěi dà ya ， yī zuò zhēn zhū de píng ！ shí shí lái yī zhèn fēng ， bǎ tā chuī dé rú yān ， rú wù ， rú chén 。"
     },
     {
-      "单元": null,
+      "单元": 7,
       "课号": "22",
       "栏目": null,
       "课题": null,
@@ -1244,7 +1165,7 @@
       "拼音": "wǒ wǔ liù suì shí ， jiù xǐ huān dào dà zì rán zhōng qù xún zhǎo hǎo wán de dōng xī 。 gāo yuǎn de tiān kōng ， guǎng kuò de dà dì ， kōng zhōng de fú yún fēi niǎo ， shuǐ lǐ de xiā xiè yóu yú ， dì shàng de zǒu shòu kūn chóng 、 huā cǎo shù mù … … shì jiè wàn wù ， bù jǐn hǎo wán ， hái ràng rén chén sī hé xiá xiǎng 。 xiǎo má què jī jī zhā zhā 、 bèng bèng tiào tiào de ， jiào rén yú yuè 。 lǎo yīng zài gāo kōng pán xuán ， zhǎn chì huá xiáng ， tū rán měng pū ér xià ， gěi rén yǐ xióng jiàn yǒng měng de gǎn jué 。 mǎ yǐ bān jiā ， jǐng rán yǒu xù ， dāng liǎng jūn duì lěi shí ， nà yǒng gǎn zhōng zhēn de jīng shén ， zhēn jiào rén jìng pèi 。 zhí wù de kāi huā 、 jié zǐ ， shǔ hán róng kū ， yǒu zhe bù tóng de qù wèi 。 huā ér yǒu hóng de 、 huáng de 、 zǐ de 、 lán de ， yǒu dān bàn de 、 zhòng bàn de ， qiān zī bǎi tài 。 cǎo de yè zi gè bù xiāng tóng ， yǒu zhǎng yǒu duǎn ， yǒu kuān yǒu zhǎi ， yǒu de hái dài zhe cì 。 wǒ jiā fáng zi qián hòu zāi yǒu gè zhǒng guǒ shù ， yǒu lí shù 、 táo shù 、 jú zi shù 、 yòu zi shù ， zài bù tóng de shí jiān lǐ ， tā men kāi bù tóng de huā ， jié bù tóng de guǒ 。 gāng cóng shù shàng zhāi xià de guǒ zi ， wèi dào gé wài xiān měi 。 wǒ zuì xǐ ài de ， shì wǒ jiā wū hòu de liǎng cóng zhú zi hé yī zhū zōng lǘ 。 zhú zi zhǎng dé kuài ， yǔ hòu chūn sǔn ， yī tiān zhǎng jǐ cùn ， méi jǐ tiān jiù zhǎng dé hé wǒ yí yàng gāo le 。 wēi fēng chuī lái ， shā shā de zhú yè shēng ， rú tóng wēn róu de xì yǔ 。 chí táng biān de zōng lǘ shù gāo dà tǐng bá ， dà pú shàn shì de yè zi zài fēng zhōng yáo bǎi ， yī fù chāo fán tuō sú de yàng zi 。 zài qiū gāo qì shuǎng de rì zi lǐ ， tā dào yìng zài chí táng de shuǐ zhōng ， xiǎo yú zài dào yǐng jiān yóu wán ， yòu shì lìng yī zhǒng jìng jiè 。 dà zì rán shì yī běn kàn bù wán de dà huà cè ， shì yī bù yǒng yuǎn dú bù wán de dà shū ， lǐ miàn yǒu wú qióng de ào mì ， yǒu wú jìn de lè qù 。"
     },
     {
-      "单元": null,
+      "单元": 7,
       "课号": null,
       "栏目": null,
       "课题": null,
@@ -1259,7 +1180,7 @@
       "拼音": "wǒ men de shēn biān měi tiān dōu zài fā shēng gè zhǒng gè yàng de “ xiǎo shì ” ， měi jiàn shì dōu yǐ bù tóng de fāng shì yǐng xiǎng zhe wǒ men de shēng huó 。 nǐ de shēn biān yǒu nǎ xiē lèi sì zhè yàng de “ xiǎo shì ” ？ hé xiǎo zǔ tóng xué jiāo liú nǐ fā xiàn de lìng rén gǎn dào wēn nuǎn de xíng wéi ， huò shì bù wén míng de xíng wéi ， zài tán tán nǐ duì zhè xiē xíng wéi de kàn fǎ 。 huì zǒng xiǎo zǔ tóng xué tán dào de “ xiǎo shì ” ， hé qí tā xiǎo zǔ jiāo liú 。"
     },
     {
-      "单元": null,
+      "单元": 7,
       "课号": null,
       "栏目": null,
       "课题": null,
@@ -1274,7 +1195,7 @@
       "拼音": "shēng huó zhōng yǒu hěn duō xū yào gǎi jìn de wèn tí 。 rú guǒ wǒ men jī jí biǎo dá zì jǐ de xiǎng fǎ ， tí chū gǎi jìn jiàn yì hé jiě jué bàn fǎ ， jiù néng shǐ shēng huó biàn dé gèng jiā měi hǎo 。 rú ： wǒ fā xiàn ài wán shǒu jī de rén tè bié duō 。 shàng gè yuè wǒ men qù gěi yé yé zhù shòu ， jù huì de shí hòu dà jiā dōu zài gè zì kàn shǒu jī ， hěn shǎo yì qǐ liáo tiān 。 wǒ bà bà xià bān huí jiā hòu yě yì zhí wán shǒu jī ， shuí jiào tā dōu bù lǐ 。 guò yú chén mí shǒu jī huì yǐng xiǎng yǔ bié rén de jiāo wǎng ， wǒ men bù yīng gāi zǒng shì wán shǒu jī ， yīng gāi yòng gèng duō de shí jiān guān xīn shēn biān de rén 。 zuì jìn wǒ yì zhí zài xiǎng ， wǒ men bān néng bù néng kāi pì yí gè zhí wù jiǎo ne ？ wǒ men kě yǐ zài zhí wù jiǎo yǎng huā zhòng cǎo ， huò shì zhǒng huā shēng 、 zhǒng dòu zi ， hái kě yǐ gēn jù jì jié de biàn huà gēng huàn bù tóng de zhí wù 。 wǒ men kě yǐ lún liú zhào kàn tā men ， gěi tā men jiāo shuǐ 、 shī féi 。 zhè yàng jì kě yǐ shǐ bān lǐ de tóng xué liǎo jiě bù tóng zhí wù de tè diǎn ， hái kě yǐ shǐ dà jiā qīn jìn zì rán ， wèi jiào shì zēng tiān dà zì rán de qì xī 。 shēng huó zhōng yǒu nǎ xiē wèn tí yǐn qǐ le nǐ de guān zhù ？ nǐ yǒu shén me xiǎng fǎ ？ cóng zì jǐ fā xiàn de huò tóng xué liè jǔ de wèn tí zhōng xuǎn zé yí gè xiě yī xiě 。 xiě de shí hòu ， yào bǎ wèn tí hé nǐ de xiǎng fǎ xiě qīng chǔ 。 rú guǒ yǒu gǎi jìn jiàn yì hé jiě jué bàn fǎ ， yě kě yǐ xiě xià lái 。 xiě hǎo yǐ hòu dú gěi tóng xué tīng ， kàn kàn tā shì fǒu míng bái nǐ de xiǎng fǎ ， zài wèn wèn tā duì zhè ge wèn tí yǒu shén me kàn fǎ ， rán hòu xiū gǎi zì jǐ de xí zuò 。"
     },
     {
-      "单元": null,
+      "单元": 8,
       "课号": "23",
       "栏目": null,
       "课题": "阅读司马光",
@@ -1289,7 +1210,7 @@
       "拼音": "gēn zhe lǎo shī lǎng dú kè wén ， zhù yì dú zhǔn zì yīn ， bǎ wò hǎo tíng dùn 。 bèi sòng kè wén 。 jiè zhù zhù shì ， yòng zì jǐ de huà jiǎng yī jiǎng zhè ge gù shì 。 zhè piān kè wén de yǔ yán hé qí tā kè wén yǒu shén me bù tóng ？ hé tóng xué jiāo liú 。"
     },
     {
-      "单元": null,
+      "单元": 8,
       "课号": "24",
       "栏目": null,
       "课题": null,
@@ -1305,7 +1226,7 @@
       "拼音": "tóng dì zhōu shì wǒ guó zhù míng de shēng wù xué jiā ， cháng qī cóng shì kē xué yán jiū ， qǔ dé le zhuó zhù de chéng jiù 。 tā chū shēng zài zhè jiāng shěng yí gè piān pì de shān cūn lǐ ， xiǎo shí hòu jiā lǐ bù fù yù ， zhǐ néng yī biān bāng jiā lǐ zuò nóng huó ， yī biān gēn fù qīn niàn diǎn ér shū 。 tóng dì zhōu 1 7 suì jìn rù dāng dì de yī suǒ zhōng xué dú shū 。 yóu yú wén huà jī chǔ chà ， tā xué xí hěn chī lì ， dì yī xué qī qī mò kǎo shì ， píng jūn chéng jì cái 4 5 fēn 。 xiào zhǎng yào tā tuì xué huò jiàng jí ， jīng guò tóng dì zhōu zài sān kěn qiú ， cái tóng yì tā gēn bān zài shì dú yí gè xué qī 。 dì èr xué qī ， tóng dì zhōu gèng jiā zhēn xī zhè nán dé de xué xí jī huì 。 zǎo chén tiān bù liàng ， tā jiù qiāo qiāo qǐ chuáng ， jiè zhe xiào yuán de lù dēng kàn shū 。 yè lǐ tóng xué men rù shuì le ， tā yòu dào lù dēng xià miàn qù kàn shū 。 zhí bān lǎo shī fā xiàn hòu ， guān le lù dēng ， ràng tā jìn wū shuì jiào 。 tā chèn lǎo shī bù zhù yì ， yòu liū dào cè suǒ wài de dēng xià xué xí 。 jīng guò bàn nián de nǔ lì ， tā de gè kē chéng jì dōu gǎn le shàng lái ， jǐ hé hái kǎo le mǎn fēn 。 tóng dì zhōu kàn zhe chéng jì dān ， xīn xiǎng ： yí dìng yào zhēng qì ， wǒ bìng bù bǐ bié rén bèn 。 bié rén néng bàn dào de shì ， wǒ jīng guò nǔ lì yě yí dìng néng bàn dào 。 tóng dì zhōu 2 8 suì de shí hòu ， dé dào qīn yǒu zī zhù ， qù bǐ lì shí liú xué ， gēn suí ōu zhōu hěn yǒu míng de shēng wù xué jiào shòu xué xí 。 yì qǐ xué xí de hái yǒu qí tā guó jiā de xué shēng 。 nà shí de zhōng guó pín qióng luò hòu ， zài shì jiè shàng méi yǒu dì wèi ， zhōng guó xué shēng cháng cháng bèi wài guó tóng xué qiáo bù qǐ 。 tóng dì zhōu àn àn xià dìng jué xīn ， yí dìng yào wèi zhōng guó rén zhēng qì 。 nà wèi jiào shòu yào zuò yī xiàng shí yàn ， xū yào bō lí qīng wā luǎn de wài mó ， zhè shì guān chá luǎn xì bāo xíng tài 、 jié gòu hé fā yù guò chéng de guān jiàn huán jié 。 gōng zuò de nán dù hěn dà ， bù dàn yào yǒu shú liàn de jì qiǎo ， hái yào nài xīn xì zhì ， duō nián lái méi rén néng gòu zuò chéng 。 tóng dì zhōu bù shēng bù xiǎng dì kè kǔ zuān yán ， fǎn fù shí jiàn ， zhōng yú qǔ dé chéng gōng 。 jiào shòu xīng fèn dì shuō ： “ tóng dì zhōu zhēn xíng ！ ” qīng wā luǎn wài mó de chéng gōng bō lí ， zhèn jīng le ōu zhōu tóng háng 。 tóng dì zhōu jī dòng dì xiǎng ： yí dìng yào zhēng qì ， zhōng guó rén bìng bù bǐ wài guó rén bèn 。 wài guó rén rèn wéi hěn nán bàn dào de shì ， wǒ men zhōng guó rén jīng guò nǔ lì ， zhào yàng néng bàn dào 。 “ yí dìng yào zhēng qì ！ ” zhè jù huà yì zhí jī lì zhe tóng dì zhōu xiàng kē xué de gāo fēng bù duàn pān dēng 。"
     },
     {
-      "单元": null,
+      "单元": 8,
       "课号": "25",
       "栏目": null,
       "课题": null,
@@ -1320,7 +1241,7 @@
       "拼音": "1 9 3 9 nián chūn ， qí huì zhàn dòu dǎ xiǎng le 。 qì yàn xiāo zhāng de rì jūn gāng gāng dào qí huì yī dài jiù āi le dāng tóu yī bàng ， bèi wǒ jūn xiāo miè le wǔ bǎi duō rén 。 dí rén bù duàn fǎn pū ， zhàn dòu fēi cháng jī liè 。 wǒ jūn de shāng yuán lù xù cóng huǒ xiàn shàng tái xià lái 。 zài lí huǒ xiàn bù yuǎn de yī zuò xiǎo miào lǐ ， bái qiú ēn dài fū zhèng zài gěi shāng yuán zuò shǒu shù 。 tā yǐ jīng liǎng tiān liǎng yè méi xiū xī le ， yǎn qiú shàng bù mǎn le xuè sī 。 tū rán ， jǐ fā pào dàn luò zài xiǎo miào qián de kòng dì shàng 。 xiāo yān gǔn gǔn ， dàn piàn fēn fēi ， xiǎo miào bèi yān wù yān mò le 。 bái qiú ēn réng rán zhèn dìng dì zhàn zài shǒu shù tái páng 。 tā jiē guò zhù shǒu dì guò lái de niè zi ， mǐn jié dì cóng shāng yuán de fù qiāng lǐ qǔ chū yī kuài dàn piàn ， diū zài pán zi lǐ 。"
     },
     {
-      "单元": null,
+      "单元": 8,
       "课号": null,
       "栏目": null,
       "课题": null,
@@ -1332,10 +1253,10 @@
         101
       ],
       "全文": "敌机不断地在上空吼叫，炮弹不断地在周围爆炸。师卫生部长匆匆赶来，对白求恩说：“师长决定让您和一部分伤员离开这里。”白求恩沉思了一会儿，说：“我同意撤走部分伤员。至于我个人，要和战士们在一起，不能离开。”部长恳求说：“白求恩同志，这儿危险，让您离开这里，是战斗形势的需要哇！”白求恩说：“谢谢师长的关心。可是，手术台是医生的阵地。战士们没有离开他们的阵地，我怎么能离开自己的阵地呢？部长同志，请您转告师长，我是一名八路军战士，不是你们的客人。”白求恩低下头，继续给伤员做手术。一连几发炮弹落在小庙的周围。庙的一角落下了许多瓦片。挂在门口的布帘烧着了，火苗向手术台扑过来。助手们赶忙把火扑灭。担架队抬起做过手术的伤员，迅速向后方转移。白求恩仍然争分夺秒地给伤员做手术，做了一个又一个。齐会战斗进行了三天三夜，胜利结束了。白求恩大夫在手术台旁，连续工作了六十九个小时。",
-      "拼音": "dí jī bù duàn dì zài shàng kōng hǒu jiào ， pào dàn bù duàn dì zài zhōu wéi bào zhà 。 shī wèi shēng bù zhǎng cōng cōng gǎn lái ， duì bái qiú ēn shuō ： “ shī zhǎng jué dìng ràng nín hé yī bù fèn shāng yuán lí kāi zhè lǐ 。 ” bái qiú ēn chén sī le yī huì er ， shuō ： “ wǒ tóng yì chè zǒu bù fèn shāng yuán 。 zhì yú wǒ gè rén ， yào hé zhàn shì men zài yì qǐ ， bù néng lí kāi 。 ” bù zhǎng kěn qiú shuō ： “ bái qiú ēn tóng zhì ， zhè ér wēi xiǎn ， ràng nín lí kāi zhè lǐ ， shì zhàn dòu xíng shì de xū yào wa ！ ” bái qiú ēn shuō ： “ xiè xiè shī zhǎng de guān xīn 。 kě shì ， shǒu shù tái shì yī shēng de zhèn dì 。 zhàn shì men méi yǒu lí kāi tā men de zhèn dì ， wǒ zěn me néng lí kāi zì jǐ de zhèn dì ne ？ bù zhǎng tóng zhì ， qǐng nín zhuǎn gào shī zhǎng ， wǒ shì yī míng bā lù jūn zhàn shì ， bú shì nǐ men de kè rén 。 ” bái qiú ēn dī xià tou ， jì xù gěi shāng yuán zuò shǒu shù 。 yī lián jǐ fā pào dàn luò zài xiǎo miào de zhōu wéi 。 miào de yī jiǎo là xià le xǔ duō wǎ piàn 。 guà zài mén kǒu de bù lián shāo zhe le ， huǒ miáo xiàng shǒu shù tái pū guò lái 。 zhù shǒu men gǎn máng bǎ huǒ pū miè 。 dān jià duì tái qǐ zuò guò shǒu shù de shāng yuán ， xùn sù xiàng hòu fāng zhuǎn yí 。 bái qiú ēn réng rán zhēng fēn duó miǎo dì gěi shāng yuán zuò shǒu shù ， zuò le yí gè yòu yí gè 。 qí huì zhàn dòu jìn xíng le sān tiān sān yè ， shèng lì jié shù le 。 bái qiú ēn dà fū zài shǒu shù tái páng ， lián xù gōng zuò le liù shí jiǔ gè xiǎo shí 。"
+      "拼音": "dí jī bù duàn dì zài shàng kōng hǒu jiào ， pào dàn bù duàn dì zài zhōu wéi bào zhà 。 shī wèi shēng bù zhǎng cōng cōng gǎn lái ， duì bái qiú ēn shuō ： “ shī zhǎng jué dìng ràng nín hé yī bù fèn shāng yuán lí kāi zhè lǐ 。 ” bái qiú ēn chén sī le yī huì er ， shuō ： “ wǒ tóng yì chè zǒu bù fèn shāng yuán 。 zhì yú wǒ gè rén ， yào hé zhàn shì men zài yì qǐ ， bù néng lí kāi 。 ” bù zhǎng kěn qiú shuō ： “ bái qiú ēn tóng zhì ， zhè ér wēi xiǎn ， ràng nín lí kāi zhè lǐ ， shì zhàn dòu xíng shì de xū yào wa ！ ” bái qiú ēn shuō ： “ xiè xiè shī zhǎng de guān xīn 。 kě shì ， shǒu shù tái shì yī shēng de zhèn dì 。 zhàn shì men méi yǒu lí kāi tā men de zhèn dì ， wǒ zěn me néng lí kāi zì jǐ de zhèn dì ne ？ bù zhǎng tóng zhì ， qǐng nín zhuǎn gào shī zhǎng ， wǒ shì yī míng bā lù jūn zhàn shì ， bú shì nǐ men de kè rén 。 ” bái qiú ēn dī xià tou ， jì xù gěi shāng yuán zuò shǒu shù 。 yī lián jǐ fā pào dàn luò zài xiǎo miào de zhōu wéi 。 miào de yī jiǎo là xià le xǔ duō wǎ piàn 。 guà zài mén kǒu de bù lián shāo zhe le ， huǒ miáo xiàng shǒu shù tái pū guò lái 。 zhù shǒu men gǎn máng bǎ huǒ pū miè 。 dān jià duì tái qǐ zuò guò shǒu shù de shāng yuán ， xùn sù xiàng hòu fāng zhuǎn yí 。 bái qiú ēn réng rán zhēng fēn duó miǎo dì gěi shāng yuán zuò shǒu shù ， zuò le yí gè yòu yí gè 。 qí huì zhàn dòu jìn xíng le sān tiān sān yè ， shèng lì jié shù le 。 bái qiú ēn dài fū zài shǒu shù tái páng ， lián xù gōng zuò le liù shí jiǔ gè xiǎo shí 。"
     },
     {
-      "单元": null,
+      "单元": 8,
       "课号": null,
       "栏目": null,
       "课题": null,
@@ -1350,7 +1271,7 @@
       "拼音": "mò dú kè wén ， tǐ huì zhàn dòu de jī liè ， zài shuō shuō nǐ duì “ shǒu shù tái jiù shì zhèn dì ” zhè jù huà de lǐ jiě 。 dú xià miàn de jù zi ， shuō shuō nǐ shì yòng shén me fāng fǎ lǐ jiě jiā diǎn cí yǔ de 。 ◇ qì yàn xiāo zhāng de rì jūn gāng gāng dào qí huì yī dài jiù āi le dāng tóu yī bàng ， bèi wǒ jūn xiāo miè le wǔ bǎi duō rén 。 ◇ bái qiú ēn réng rán zhèn dìng dì zhàn zài shǒu shù tái páng 。 ◇ bái qiú ēn réng rán zhēng fēn duó miǎo dì gěi shāng yuán zuò shǒu shù ， zuò le yí gè yòu yí gè 。 dú yī dú ， zhǎo chū gèng duō miáo xiě bái qiú ēn de yǔ jù ， hé tóng xué jiāo liú tā gěi nǐ liú xià de yìn xiàng 。 ◇ tā yǐ jīng liǎng tiān liǎng yè méi xiū xī le ， yǎn qiú shàng bù mǎn le xuè sī 。 ◇ tā jiē guò zhù shǒu dì guò lái de niè zi ， mǐn jié dì cóng shāng yuán de fù qiāng lǐ qǔ chū yī kuài dàn piàn ， diū zài pán zi lǐ 。 ◇ bái qiú ēn shuō ： “ xiè xiè shī zhǎng de guān xīn 。 kě shì ， shǒu shù tái shì yī shēng de zhèn dì 。 zhàn shì men méi yǒu lí kāi tā men de zhèn dì ， wǒ zěn me néng lí kāi zì jǐ de zhèn dì ne ？ ”"
     },
     {
-      "单元": null,
+      "单元": 8,
       "课号": "26*",
       "栏目": null,
       "课题": null,
@@ -1365,7 +1286,7 @@
       "拼音": "zhōng guó rén mín gé mìng jūn shì bó wù guǎn lǐ ， chén liè zhe yí gè cū cí dà wǎn ， shì zhào yī màn zài dōng běi rén mín gé mìng jūn ② zhōng dān rèn tuán zhèng zhì wěi yuán shí yòng guò de 。 zhè ge wǎn ， zhào yī màn jǐn jǐn yòng guò yí cì ， dàn shì kàng lián de lǎo zhàn shì dōu néng rèn chū lái 。 yīn wèi zhè ge wǎn yǒu zhe yī duàn lìng rén gǎn dòng de gù shì 。 yǒu yī huí ， yī cháng xí jī rì kòu de zhàn dòu gāng gāng jié shù ， xiǎo tōng xùn yuán gěi zhào yī màn sòng lái yí gè gǔ gǔ de guà bāo 。 dǎ kāi yī kàn ， shì gè cū cí dà wǎn 。 zhào yī màn chī fàn yòng de táng cí gāng zi zǎo jiù sòng gěi yí gè xīn zhàn shì le ， tōng xùn yuán yì zhí xiǎng gěi tā lìng zhǎo yí gè wǎn ， hǎo bù róng yì zài zhè cì zhàn dòu zhōng zhǎo dào le ， jiù lián máng gěi tā sòng lái 。 zhào yī màn kàn zhe zhè ge wǎn ， duì tōng xùn yuán shuō ： “ nǎ lǐ ná lái de ， qǐng nǐ huán dào nǎ lǐ qù ！ ” “ zhè … … zhè … … dí rén dōu bèi xiāo miè le ， wǎng nǎ lǐ hái a ！ ” tōng xùn"
     },
     {
-      "单元": null,
+      "单元": 8,
       "课号": null,
       "栏目": null,
       "课题": null,
@@ -1380,7 +1301,7 @@
       "拼音": "yuán wéi nán dì shuō 。 kāi fàn le 。 tōng xùn yuán yòng zhè ge dà wǎn gěi zhào yī màn shèng le mǎn mǎn yī wǎn gāo liáng mǐ fàn ， tā xiǎng ： zhè huí wǒ men zhèng wěi gāi chī dùn bǎo fàn le 。 zhào yī màn yī kàn ， jiù zhī dào shì cóng bìng hào zào shèng lái de 。 nà xiē rì zi fēi cháng jiān kǔ ， kàng lián bù duì jǐ gè yuè lái dōu shì kào yě cài 、 cǎo gēn 、 xiàng zi miàn chōng jī 。 yǒu shí hòu xiāng qīn men mào zhe wēi xiǎn gěi bù duì sòng lái yì diǎn ér liáng shí ， dàn dé liú gěi shāng bìng yuán chī 。 tuán zhǎng 、 zhèng wěi hé zhàn shì men yí yàng ， zuǐ biān yǒu jǐ gè yuè méi zhān guò liáng shí le 。 zhào yī màn kàn dào zhè wǎn gāo liáng mǐ fàn ， bù jīn xiǎng qǐ zhàn shì men de jiān kǔ shēng huó ， xiǎng qǐ tóng zhì zhī jiān de yǒu ài ， xiǎng qǐ tōng xùn yuán duì tā de guān xīn … … zhào yī màn duān zhe wǎn qīng qīng zǒu jìn chuī shì péng ， chèn rén bù zhù yì de shí hòu ， bǎ wǎn lǐ de fàn dào jìn guō lǐ ， yòu cóng lìng yī kǒu guō lǐ shèng le bàn wǎn yě cài zhōu 。 chuī shì yuán lǎo lǐ zài páng biān kàn dé qīng chǔ ， tā méi kēng shēng ， yǎn lǐ què hán zhe lèi huā 。 dì èr tiān kāi fàn de shí hòu ， zhào yī màn yòu méi yǒu wǎn le 。 xiǎo tōng xùn yuán jí dé zhí jiào ： “ wǒ shuō zhèng wěi tóng zhì a ， gěi nǐ yì bǎi gè wǎn yě jià bú zhù nǐ zhè me ‘ diū ’ a ！ ” zhào yī màn xiào zhe shuō ： “ shì a ， shén me shí hòu cái néng bù ‘ diū ’ wǎn ne ？ ” jù hòu lái “ zhēn chá ” ， zhè ge cū cí dà wǎn yǐ jīng chéng le qī bān de cài pén le 。"
     },
     {
-      "单元": null,
+      "单元": 8,
       "课号": null,
       "栏目": null,
       "课题": null,
@@ -1395,7 +1316,7 @@
       "拼音": "yǒu shí hòu ， wǒ men huì yù dào yì xiē nán yǐ lǐ jiě huò bù hǎo jiě jué de wèn tí ， bù zhī dào gāi zěn me bàn 。 rú guǒ nǐ yù dào zhè lèi wèn tí ， xiàng bié rén qǐng jiào shì gè hǎo bàn fǎ 。 hé tóng xué jiāo liú ： xiàng bié rén qǐng jiào yīng gāi zhù yì shén me ？ rú ： ◇ zài bié rén fāng biàn de shí hòu qǐng jiào 。 ◇ bǎ xū yào jiě jué de wèn tí shuō qīng chǔ 。 ◇ bù guǎn bié rén shì fǒu néng bāng nǐ jiě jué wèn tí ， dōu yào xiàng bié rén biǎo shì gǎn xiè 。 bǎ nǐ yù dào de wèn tí tí chū lái ， xiàng bié rén qǐng jiào ， tīng tīng tā men yǒu shén me hǎo de jiàn yì 。"
     },
     {
-      "单元": null,
+      "单元": 8,
       "课号": null,
       "栏目": null,
       "课题": null,
@@ -1412,37 +1333,13 @@
   ],
   "园地": [
     {
-      "单元": null,
-      "标题": null,
+      "单元": 1,
+      "标题": "语文园地",
       "页码": [
         11,
-        12,
-        13,
-        25,
-        26,
-        27,
-        43,
-        44,
-        45,
-        55,
-        56,
-        57,
-        58,
-        59,
-        82,
-        83,
-        93,
-        94,
-        95,
-        107,
-        108
+        12
       ],
       "栏目": [
-        {
-          "名称": null,
-          "全文": "语文园地",
-          "拼音": "yǔ wén yuán dì"
-        },
         {
           "名称": "梳理与交流",
           "全文": "有新鲜感的词句往往能带给我们新奇的体验和感受。你读到过哪些有新鲜感的词句？和同学一起交流吧！ 窗外十分安静，树枝不摇了， 鸟儿不叫了，蝴蝶停在花朵上，好 看到这样的词句， 像都在听同学们读课文。＿＿我会多读几遍，然后 抄写下来。 我愿意我是一个更夫，整夜在 街上走，提了灯去追逐影子。",
@@ -1455,9 +1352,19 @@
         },
         {
           "名称": "日积月累",
-          "全文": "袁枚 所见牧童骑黄牛， 歌声振林樾。 意欲捕鸣蝉， 忽然闭口立。 金秋的阳光， 元 洒在树叶上， 洒在花瓣上， 也洒在我们的心上。 感受金秋时节的自然之美。 ◎ 运用多种方法理解难懂的词语。 ◎ 学习写日记，记录自己的见闻、感受。 语文园地",
-          "拼音": "yuán méi  suǒ jiàn mù tóng qí huáng niú ，  gē shēng zhèn lín yuè 。  yì yù bǔ míng chán ，  hū rán bì kǒu lì 。  jīn qiū de yáng guāng ，  yuán  sǎ zài shù yè shàng ，  sǎ zài huā bàn shàng ，  yě sǎ zài wǒ men de xīn shàng 。  gǎn shòu jīn qiū shí jié de zì rán zhī měi 。  ◎  yùn yòng duō zhǒng fāng fǎ lǐ jiě nán dǒng de cí yǔ 。  ◎  xué xí xiě rì jì ， jì lù zì jǐ de jiàn wén 、 gǎn shòu 。  yǔ wén yuán dì"
-        },
+          "全文": "袁枚 所见牧童骑黄牛， 歌声振林樾。 意欲捕鸣蝉， 忽然闭口立。",
+          "拼音": "yuán méi  suǒ jiàn mù tóng qí huáng niú ，  gē shēng zhèn lín yuè 。  yì yù bǔ míng chán ，  hū rán bì kǒu lì 。"
+        }
+      ]
+    },
+    {
+      "单元": 2,
+      "标题": "语文园地",
+      "页码": [
+        25,
+        26
+      ],
+      "栏目": [
         {
           "名称": "梳理与交流",
           "全文": "读书时遇到不理解的词语，你会怎么做？分小组完成下面的活动，看看哪个小组总结的方法多。 查字典 理解词语的方法",
@@ -1475,9 +1382,19 @@
         },
         {
           "名称": "日积月累",
-          "全文": "查慎行 舟夜书所见月黑见渔灯， 孤光一点萤。 微微风簇浪， 散作满河星。 元 猜测与推想，使我们的 阅读之旅充满了乐趣。 ◎ 了解预测的基本方法并尝试运用。 ◎ 尝试续编故事。 语文园地",
-          "拼音": "chá shèn xíng  zhōu yè shū suǒ jiàn yuè hēi jiàn yú dēng ，  gū guāng yì diǎn yíng 。  wēi wēi fēng cù làng ，  sàn zuò mǎn hé xīng 。  yuán  cāi cè yǔ tuī xiǎng ， shǐ wǒ men de  yuè dú zhī lǚ chōng mǎn le lè qù 。  ◎  liǎo jiě yù cè de jī běn fāng fǎ bìng cháng shì yùn yòng 。  ◎  cháng shì xù biān gù shì 。  yǔ wén yuán dì"
-        },
+          "全文": "查慎行 舟夜书所见月黑见渔灯， 孤光一点萤。 微微风簇浪， 散作满河星。",
+          "拼音": "chá shèn xíng  zhōu yè shū suǒ jiàn yuè hēi jiàn yú dēng ，  gū guāng yì diǎn yíng 。  wēi wēi fēng cù làng ，  sàn zuò mǎn hé xīng 。"
+        }
+      ]
+    },
+    {
+      "单元": 3,
+      "标题": "语文园地",
+      "页码": [
+        43,
+        44
+      ],
+      "栏目": [
         {
           "名称": "梳理与交流",
           "全文": "预测的方法对你的阅读有哪些帮助？你是怎么运用预测来阅读的？和同学交流你的心得。 一边读一边预测后面的内容，我感受到了阅读 的乐趣，也更好地理解了文章的意思。 学习了怎样预测后，我读书更仔细了，注意 到了更多的细节。 在图书馆选书时，我会先根据封面上的书名 和插图猜猜书的大致内容。",
@@ -1495,9 +1412,21 @@
         },
         {
           "名称": "日积月累",
-          "全文": "◎不迁怒，不贰过。 —《论语》 ◎爱人若爱其身。 —《墨子》 ◎仁者爱人，有礼者敬人。 —《孟子》 ◎与人善言，暖于布帛；伤人以言，深于矛戟。 —《荀子》 第 乘着想象的翅膀， 四 游历奇妙的童话王国， 单 看花儿跳舞， 元 听星星歌唱。 阅读童话，构筑充满童心的精神乐园。 ◎ 感受童话丰富的想象，体会其中的真善美。 ◎ 试着自己编童话、写童话。 语文园地",
-          "拼音": "◎ bù qiān nù ， bù èr guò 。  — 《 lún yǔ 》  ◎ ài rén ruò ài qí shēn 。  — 《 mò zi 》  ◎ rén zhě ài rén ， yǒu lǐ zhě jìng rén 。  — 《 mèng zi 》  ◎ yǔ rén shàn yán ， nuǎn yú bù bó ； shāng rén yǐ yán ， shēn yú máo jǐ 。  — 《 xún zi 》  dì  chéng zhe xiǎng xiàng de chì bǎng ，  sì  yóu lì qí miào de tóng huà wáng guó ，  dān  kàn huā ér tiào wǔ ，  yuán  tīng xīng xīng gē chàng 。  yuè dú tóng huà ， gòu zhù chōng mǎn tóng xīn de jīng shén lè yuán 。  ◎  gǎn shòu tóng huà fēng fù de xiǎng xiàng ， tǐ huì qí zhōng de zhēn shàn měi 。  ◎  shì zhe zì jǐ biān tóng huà 、 xiě tóng huà 。  yǔ wén yuán dì"
-        },
+          "全文": "◎不迁怒，不贰过。 —《论语》 ◎爱人若爱其身。 —《墨子》 ◎仁者爱人，有礼者敬人。 —《孟子》 ◎与人善言，暖于布帛；伤人以言，深于矛戟。 —《荀子》",
+          "拼音": "◎ bù qiān nù ， bù èr guò 。  — 《 lún yǔ 》  ◎ ài rén ruò ài qí shēn 。  — 《 mò zi 》  ◎ rén zhě ài rén ， yǒu lǐ zhě jìng rén 。  — 《 mèng zi 》  ◎ yǔ rén shàn yán ， nuǎn yú bù bó ； shāng rén yǐ yán ， shēn yú máo jǐ 。  — 《 xún zi 》"
+        }
+      ]
+    },
+    {
+      "单元": 4,
+      "标题": "语文园地",
+      "页码": [
+        55,
+        56,
+        57,
+        58
+      ],
+      "栏目": [
         {
           "名称": "梳理与交流",
           "全文": "你读过哪些童话故事？和同学交流你阅读童话的体会。 童话故事中充满了奇特的想象：神奇的宝葫芦能满足主人的一切愿望，蟋蟀可以在牛肚子里旅行，蚂蚁也有自己的纪律和准则。 在童话的世界里，植物、动物不但和人一样会说话，而且也有喜怒哀乐。 阅读童话，我们会经历很多不可思议的事情，认识一些令人钦佩的朋友，还能获得很多启示。",
@@ -1515,13 +1444,43 @@
         },
         {
           "名称": "日积月累",
-          "全文": "◎人心齐，泰山移。 ◎二人同心，其利断金。 ◎三个臭皮匠，顶个诸葛亮。 快乐读书吧 在那奇妙的王国里 在童话王国里，小蝌蚪四处寻找自己的妈妈，小壁虎着急地向别的动物借尾巴，雪孩子和小白兔在一起嬉戏玩耍，王子和公主过上了幸福的生活……在那里，一切都有可能发生，一切都妙不可言。 你读过吗 《安徒生童话》创造了一个奇妙的童话王国，这是丹麦作家安徒生送给全世界孩子和大人共同的礼物。善良的拇指姑娘，卖火柴的小女孩，坚定的锡兵，历经磨难的丑小鸭……这些故事里的主人公，一定会给你留下难以磨灭的印象。 “是的，我要和你一块儿去！”拇指姑娘说。她坐在鸟儿的 背上，把脚搁在他展开的双翼上，同时用腰带把自己紧紧地系 在他最结实的一根羽毛上。燕子就这样飞到空中，飞过了森林，飞过了海洋，飞过了常年积雪的高山。在寒冷的高空中，拇指 姑娘冻得发起抖来。于是她就钻到鸟儿温暖的羽毛下面，只把 她的小脑袋伸出来欣赏下面那些美丽的景致。 终于，他们来到了温暖的国度，那儿的阳光更加明亮。田 沟里、篱笆上，到处都结满了最美丽的绿色和紫色的葡萄。树 林里到处挂着柠檬和橙子。 —选自丹麦安徒生的《拇指姑娘》，叶君健译，有改动。 童话世界无奇不有。阅 我们可以把自己想象成 读时，充分发挥想象，能更 童话中的主人公，和故事中 好地领略童话的魅力。 的人物一起欢笑，一起悲伤。 相信你可以读更多 童话王国里还有许许多多动人的故事。 当你走进叶圣陶笔下《稻草人》的世界，你会知道在夜间的田野，星星怎样眨眼，月亮怎样微笑。你还会知道，田野里的人们有着怎样的辛苦和悲伤。 翻开德国格林兄弟搜集整理的《格林童话》，你能从一个个妙趣横生的故事中，感悟生活的真谛和做人的道理。灰姑娘虽然身处逆境，却仍然心怀美好，真诚待人；小裁缝勇敢乐观，用自己的智慧战胜巨人…… 童话，这个奇妙的王国， 等待着你去漫游，去发现。 （图）许敦谷 绘 生活中不缺少美，只是 缺少发现美的眼睛。 —— [法国] 罗丹 ◎ 体会作者是怎样留心观察周围事物的。 ◎ 仔细观察，把观察所得写下来。 看到下面的词语，你的眼前会浮现怎样的画面？选择一两个词语写句子。 懒洋洋 慢腾腾 颤巍巍 兴冲冲 静悄悄 空荡荡 乱糟糟 闹哄哄 用下面的句子开头，试着说一段话。 ◇ 车站的人可真多…… ◇ 我喜欢夏天的夜晚…… ◇ 阅览室里一片静悄悄……",
-          "拼音": "◎ rén xīn qí ， tài shān yí 。  ◎ èr rén tóng xīn ， qí lì duàn jīn 。  ◎ sān gè chòu pí jiàng ， dǐng gè zhū gě liàng 。  kuài lè dú shū ba  zài nà qí miào de wáng guó lǐ  zài tóng huà wáng guó lǐ ， xiǎo kē dǒu sì chù xún zhǎo zì jǐ de mā mā ， xiǎo bì hǔ zháo jí dì xiàng bié de dòng wù jiè wěi ba ， xuě hái zi hé xiǎo bái tù zài yì qǐ xī xì wán shuǎ ， wáng zǐ hé gōng zhǔ guò shàng le xìng fú de shēng huó … … zài nà lǐ ， yī qiè dōu yǒu kě néng fā shēng ， yī qiè dōu miào bù kě yán 。  nǐ dú guò ma  《 ān tú shēng tóng huà 》 chuàng zào le yí gè qí miào de tóng huà wáng guó ， zhè shì dān mài zuò jiā ān tú shēng sòng gěi quán shì jiè hái zi hé dà rén gòng tóng de lǐ wù 。 shàn liáng de mǔ zhǐ gū niáng ， mài huǒ chái de xiǎo nǚ hái ， jiān dìng de xī bīng ， lì jīng mó nàn de chǒu xiǎo yā … … zhè xiē gù shì lǐ de zhǔ rén gōng ， yí dìng huì gěi nǐ liú xià nán yǐ mó miè de yìn xiàng 。  “ shì de ， wǒ yào hé nǐ yī kuài ér qù ！ ” mǔ zhǐ gū niáng shuō 。 tā zuò zài niǎo ér de  bèi shàng ， bǎ jiǎo gē zài tā zhǎn kāi de shuāng yì shàng ， tóng shí yòng yāo dài bǎ zì jǐ jǐn jǐn dì xì  zài tā zuì jiē shí de yī gēn yǔ máo shàng 。 yàn zi jiù zhè yàng fēi dào kōng zhōng ， fēi guò le sēn lín ， fēi guò le hǎi yáng ， fēi guò le cháng nián jī xuě de gāo shān 。 zài hán lěng de gāo kōng zhōng ， mǔ zhǐ  gū niáng dòng dé fā qǐ dǒu lái 。 yú shì tā jiù zuān dào niǎo ér wēn nuǎn de yǔ máo xià miàn ， zhǐ bǎ  tā de xiǎo nǎo dài shēn chū lái xīn shǎng xià miàn nà xiē měi lì de jǐng zhì 。  zhōng yú ， tā men lái dào le wēn nuǎn de guó dù ， nà ér de yáng guāng gèng jiā míng liàng 。 tián  gōu lǐ 、 lí bā shàng ， dào chù dōu jié mǎn le zuì měi lì de lǜ sè hé zǐ sè de pú táo 。 shù  lín lǐ dào chù guà zhe níng méng hé chéng zi 。  — xuǎn zì dān mài ān tú shēng de 《 mǔ zhǐ gū niáng 》 ， yè jūn jiàn yì ， yǒu gǎi dòng 。  tóng huà shì jiè wú qí bù yǒu 。 yuè  wǒ men kě yǐ bǎ zì jǐ xiǎng xiàng chéng  dú shí ， chōng fèn fā huī xiǎng xiàng ， néng gèng  tóng huà zhōng de zhǔ rén gōng ， hé gù shì zhōng  hǎo dì lǐng lüè tóng huà de mèi lì 。  de rén wù yì qǐ huān xiào ， yì qǐ bēi shāng 。  xiāng xìn nǐ kě yǐ dú gèng duō  tóng huà wáng guó lǐ hái yǒu xǔ xǔ duō duō dòng rén de gù shì 。  dāng nǐ zǒu jìn yè shèng táo bǐ xià 《 dào cǎo rén 》 de shì jiè ， nǐ huì zhī dào zài yè jiān de tián yě ， xīng xīng zěn yàng zhǎ yǎn ， yuè liàng zěn yàng wēi xiào 。 nǐ hái huì zhī dào ， tián yě lǐ de rén men yǒu zhe zěn yàng de xīn kǔ hé bēi shāng 。  fān kāi dé guó gé lín xiōng dì sōu jí zhěng lǐ de 《 gé lín tóng huà 》 ， nǐ néng cóng yí gè gè miào qù héng shēng de gù shì zhōng ， gǎn wù shēng huó de zhēn dì hé zuò rén de dào lǐ 。 huī gū niáng suī rán shēn chù nì jìng ， què réng rán xīn huái měi hǎo ， zhēn chéng dài rén ； xiǎo cái féng yǒng gǎn lè guān ， yòng zì jǐ de zhì huì zhàn shèng jù rén … …  tóng huà ， zhè ge qí miào de wáng guó ，  děng dài zhe nǐ qù màn yóu ， qù fā xiàn 。  （ tú ） xǔ dūn gǔ  huì  shēng huó zhōng bù quē shǎo měi ， zhǐ shì  quē shǎo fā xiàn měi de yǎn jīng 。  — —  [ fǎ guó ]  luó dān  ◎  tǐ huì zuò zhě shì zěn yàng liú xīn guān chá zhōu wéi shì wù de 。  ◎  zǐ xì guān chá ， bǎ guān chá suǒ dé xiě xià lái 。  kàn dào xià miàn de cí yǔ ， nǐ de yǎn qián huì fú xiàn zěn yàng de huà miàn ？ xuǎn zé yī liǎng gè cí yǔ xiě jù zi 。  lǎn yáng yáng  màn téng téng  chàn wēi wēi  xìng chōng chōng  jìng qiāo qiāo  kōng dàng dàng  luàn zāo zāo  nào hōng hōng  yòng xià miàn de jù zi kāi tóu ， shì zhe shuō yī duàn huà 。  ◇  chē zhàn de rén kě zhēn duō … …  ◇  wǒ xǐ huān xià tiān de yè wǎn … …  ◇  yuè lǎn shì lǐ yī piàn jìng qiāo qiāo … …"
+          "全文": "◎人心齐，泰山移。 ◎二人同心，其利断金。 ◎三个臭皮匠，顶个诸葛亮。 快乐读书吧 在那奇妙的王国里 在童话王国里，小蝌蚪四处寻找自己的妈妈，小壁虎着急地向别的动物借尾巴，雪孩子和小白兔在一起嬉戏玩耍，王子和公主过上了幸福的生活……在那里，一切都有可能发生，一切都妙不可言。 你读过吗 《安徒生童话》创造了一个奇妙的童话王国，这是丹麦作家安徒生送给全世界孩子和大人共同的礼物。善良的拇指姑娘，卖火柴的小女孩，坚定的锡兵，历经磨难的丑小鸭……这些故事里的主人公，一定会给你留下难以磨灭的印象。 “是的，我要和你一块儿去！”拇指姑娘说。她坐在鸟儿的 背上，把脚搁在他展开的双翼上，同时用腰带把自己紧紧地系 在他最结实的一根羽毛上。燕子就这样飞到空中，飞过了森林，飞过了海洋，飞过了常年积雪的高山。在寒冷的高空中，拇指 姑娘冻得发起抖来。于是她就钻到鸟儿温暖的羽毛下面，只把 她的小脑袋伸出来欣赏下面那些美丽的景致。 终于，他们来到了温暖的国度，那儿的阳光更加明亮。田 沟里、篱笆上，到处都结满了最美丽的绿色和紫色的葡萄。树 林里到处挂着柠檬和橙子。 —选自丹麦安徒生的《拇指姑娘》，叶君健译，有改动。 童话世界无奇不有。阅 我们可以把自己想象成 读时，充分发挥想象，能更 童话中的主人公，和故事中 好地领略童话的魅力。 的人物一起欢笑，一起悲伤。 相信你可以读更多 童话王国里还有许许多多动人的故事。 当你走进叶圣陶笔下《稻草人》的世界，你会知道在夜间的田野，星星怎样眨眼，月亮怎样微笑。你还会知道，田野里的人们有着怎样的辛苦和悲伤。 翻开德国格林兄弟搜集整理的《格林童话》，你能从一个个妙趣横生的故事中，感悟生活的真谛和做人的道理。灰姑娘虽然身处逆境，却仍然心怀美好，真诚待人；小裁缝勇敢乐观，用自己的智慧战胜巨人…… 童话，这个奇妙的王国， 等待着你去漫游，去发现。 （图）许敦谷 绘",
+          "拼音": "◎ rén xīn qí ， tài shān yí 。  ◎ èr rén tóng xīn ， qí lì duàn jīn 。  ◎ sān gè chòu pí jiàng ， dǐng gè zhū gě liàng 。  kuài lè dú shū ba  zài nà qí miào de wáng guó lǐ  zài tóng huà wáng guó lǐ ， xiǎo kē dǒu sì chù xún zhǎo zì jǐ de mā mā ， xiǎo bì hǔ zháo jí dì xiàng bié de dòng wù jiè wěi ba ， xuě hái zi hé xiǎo bái tù zài yì qǐ xī xì wán shuǎ ， wáng zǐ hé gōng zhǔ guò shàng le xìng fú de shēng huó … … zài nà lǐ ， yī qiè dōu yǒu kě néng fā shēng ， yī qiè dōu miào bù kě yán 。  nǐ dú guò ma  《 ān tú shēng tóng huà 》 chuàng zào le yí gè qí miào de tóng huà wáng guó ， zhè shì dān mài zuò jiā ān tú shēng sòng gěi quán shì jiè hái zi hé dà rén gòng tóng de lǐ wù 。 shàn liáng de mǔ zhǐ gū niáng ， mài huǒ chái de xiǎo nǚ hái ， jiān dìng de xī bīng ， lì jīng mó nàn de chǒu xiǎo yā … … zhè xiē gù shì lǐ de zhǔ rén gōng ， yí dìng huì gěi nǐ liú xià nán yǐ mó miè de yìn xiàng 。  “ shì de ， wǒ yào hé nǐ yī kuài ér qù ！ ” mǔ zhǐ gū niáng shuō 。 tā zuò zài niǎo ér de  bèi shàng ， bǎ jiǎo gē zài tā zhǎn kāi de shuāng yì shàng ， tóng shí yòng yāo dài bǎ zì jǐ jǐn jǐn dì xì  zài tā zuì jiē shí de yī gēn yǔ máo shàng 。 yàn zi jiù zhè yàng fēi dào kōng zhōng ， fēi guò le sēn lín ， fēi guò le hǎi yáng ， fēi guò le cháng nián jī xuě de gāo shān 。 zài hán lěng de gāo kōng zhōng ， mǔ zhǐ  gū niáng dòng dé fā qǐ dǒu lái 。 yú shì tā jiù zuān dào niǎo ér wēn nuǎn de yǔ máo xià miàn ， zhǐ bǎ  tā de xiǎo nǎo dài shēn chū lái xīn shǎng xià miàn nà xiē měi lì de jǐng zhì 。  zhōng yú ， tā men lái dào le wēn nuǎn de guó dù ， nà ér de yáng guāng gèng jiā míng liàng 。 tián  gōu lǐ 、 lí bā shàng ， dào chù dōu jié mǎn le zuì měi lì de lǜ sè hé zǐ sè de pú táo 。 shù  lín lǐ dào chù guà zhe níng méng hé chéng zi 。  — xuǎn zì dān mài ān tú shēng de 《 mǔ zhǐ gū niáng 》 ， yè jūn jiàn yì ， yǒu gǎi dòng 。  tóng huà shì jiè wú qí bù yǒu 。 yuè  wǒ men kě yǐ bǎ zì jǐ xiǎng xiàng chéng  dú shí ， chōng fèn fā huī xiǎng xiàng ， néng gèng  tóng huà zhōng de zhǔ rén gōng ， hé gù shì zhōng  hǎo dì lǐng lüè tóng huà de mèi lì 。  de rén wù yì qǐ huān xiào ， yì qǐ bēi shāng 。  xiāng xìn nǐ kě yǐ dú gèng duō  tóng huà wáng guó lǐ hái yǒu xǔ xǔ duō duō dòng rén de gù shì 。  dāng nǐ zǒu jìn yè shèng táo bǐ xià 《 dào cǎo rén 》 de shì jiè ， nǐ huì zhī dào zài yè jiān de tián yě ， xīng xīng zěn yàng zhǎ yǎn ， yuè liàng zěn yàng wēi xiào 。 nǐ hái huì zhī dào ， tián yě lǐ de rén men yǒu zhe zěn yàng de xīn kǔ hé bēi shāng 。  fān kāi dé guó gé lín xiōng dì sōu jí zhěng lǐ de 《 gé lín tóng huà 》 ， nǐ néng cóng yí gè gè miào qù héng shēng de gù shì zhōng ， gǎn wù shēng huó de zhēn dì hé zuò rén de dào lǐ 。 huī gū niáng suī rán shēn chù nì jìng ， què réng rán xīn huái měi hǎo ， zhēn chéng dài rén ； xiǎo cái féng yǒng gǎn lè guān ， yòng zì jǐ de zhì huì zhàn shèng jù rén … …  tóng huà ， zhè ge qí miào de wáng guó ，  děng dài zhe nǐ qù màn yóu ， qù fā xiàn 。  （ tú ） xǔ dūn gǔ  huì"
+        }
+      ]
+    },
+    {
+      "单元": 6,
+      "标题": "语文园地",
+      "页码": [
+        81,
+        82
+      ],
+      "栏目": [
+        {
+          "名称": null,
+          "全文": "梳理与交流 你在阅读时关注段落中的关键语句了吗？结合读过的文章和同学交流。 有的时候，一段话的开头就表达了这段话的主 要意思，后面的内容都是围绕开头这句话来写的。 这样的句子也有可能在一段话的末尾或中间。 找到这样的句子，可以帮助我们更好地理解 一段话的意思。 我们习作的时候也可以学着这样写。 词句段运用 读一读，想象句子描写的情形，然后照样子写句子。 ◇ 各种各样的鱼多得数不清。 ◇ 夏天，树木长得葱葱茏茏。 ◇ 王老师急得直跺脚。 ◇ 他跑得像兔子一样快。 ◇ 妈妈累得＿＿。 ◇＿＿得＿＿。 看到下面的词语，你的眼前会浮现怎样的画面？选择一两个词语写句子。 懒洋洋 慢腾腾 颤巍巍 兴冲冲 静悄悄 空荡荡 乱糟糟 闹哄哄 用下面的句子开头，试着说一段话。 ◇ 车站的人可真多…… ◇ 我喜欢夏天的夜晚…… ◇ 阅览室里一片静悄悄……",
+          "拼音": "shū lǐ yǔ jiāo liú  nǐ zài yuè dú shí guān zhù duàn luò zhōng de guān jiàn yǔ jù le ma ？ jié hé dú guò de wén zhāng hé tóng xué jiāo liú 。  yǒu de shí hòu ， yī duàn huà de kāi tóu jiù biǎo dá le zhè duàn huà de zhǔ  yào yì si ， hòu miàn de nèi róng dōu shì wéi rào kāi tóu zhè jù huà lái xiě de 。  zhè yàng de jù zi yě yǒu kě néng zài yī duàn huà de mò wěi huò zhōng jiān 。  zhǎo dào zhè yàng de jù zi ， kě yǐ bāng zhù wǒ men gèng hǎo dì lǐ jiě  yī duàn huà de yì si 。  wǒ men xí zuò de shí hòu yě kě yǐ xué zhe zhè yàng xiě 。  cí jù duàn yùn yòng  dú yī dú ， xiǎng xiàng jù zi miáo xiě de qíng xíng ， rán hòu zhào yàng zi xiě jù zi 。  ◇  gè zhǒng gè yàng de yú duō dé shǔ bù qīng 。  ◇  xià tiān ， shù mù zhǎng dé cōng cōng lóng lóng 。  ◇  wáng lǎo shī jí dé zhí duò jiǎo 。  ◇  tā pǎo dé xiàng tù zi yí yàng kuài 。  ◇  mā mā lèi dé ＿ ＿ 。  ◇ ＿ ＿ dé ＿ ＿ 。  kàn dào xià miàn de cí yǔ ， nǐ de yǎn qián huì fú xiàn zěn yàng de huà miàn ？ xuǎn zé yī liǎng gè cí yǔ xiě jù zi 。  lǎn yáng yáng  màn téng téng  chàn wēi wēi  xìng chōng chōng  jìng qiāo qiāo  kōng dàng dàng  luàn zāo zāo  nào hōng hōng  yòng xià miàn de jù zi kāi tóu ， shì zhe shuō yī duàn huà 。  ◇  chē zhàn de rén kě zhēn duō … …  ◇  wǒ xǐ huān xià tiān de yè wǎn … …  ◇  yuè lǎn shì lǐ yī piàn jìng qiāo qiāo … …"
         },
         {
           "名称": "日积月累",
-          "全文": "李白 早发白帝城朝辞白帝彩云间， 千里江陵一日还。 两岸猿声啼不住， 轻舟已过万重山。 大自然赐给我们许多珍贵的 单 礼物，你发现了吗？ 元 探索自然，发现生命之美。 ◎ 感受课文生动的语言，积累喜欢的语句。 ◎ 留心生活，把自己的想法记录下来。 语文园地 梳理与交流 你有摘抄的习惯吗？平时是怎么做摘抄的？和同学说一说并分享你的摘抄本。 读书时，我会先画出写得好的语句，再抄写 下来。 我喜欢归类摘抄。把描写同类事物的语句分门 别类地写下来，经常翻看，对我的习作很有帮助。 摘抄时，遇到写得生动的语句，我会在旁边 写写感受，特别喜欢的还会背下来。 我会在合适的地方注明摘抄内容的出处。",
-          "拼音": "lǐ bái  zǎo fā bái dì chéng cháo cí bái dì cǎi yún jiān ，  qiān lǐ jiāng líng yī rì hái 。  liǎng àn yuán shēng tí bú zhù ，  qīng zhōu yǐ guò wàn zhòng shān 。  dà zì rán cì gěi wǒ men xǔ duō zhēn guì de  dān  lǐ wù ， nǐ fā xiàn le ma ？  yuán  tàn suǒ zì rán ， fā xiàn shēng mìng zhī měi 。  ◎  gǎn shòu kè wén shēng dòng de yǔ yán ， jī lěi xǐ huān de yǔ jù 。  ◎  liú xīn shēng huó ， bǎ zì jǐ de xiǎng fǎ jì lù xià lái 。  yǔ wén yuán dì  shū lǐ yǔ jiāo liú  nǐ yǒu zhāi chāo de xí guàn ma ？ píng shí shì zěn me zuò zhāi chāo de ？ hé tóng xué shuō yī shuō bìng fēn xiǎng nǐ de zhāi chāo běn 。  dú shū shí ， wǒ huì xiān huà chū xiě dé hǎo de yǔ jù ， zài chāo xiě  xià lái 。  wǒ xǐ huān guī lèi zhāi chāo 。 bǎ miáo xiě tóng lèi shì wù de yǔ jù fēn mén  bié lèi dì xiě xià lái ， jīng cháng fān kàn ， duì wǒ de xí zuò hěn yǒu bāng zhù 。  zhāi chāo shí ， yù dào xiě dé shēng dòng de yǔ jù ， wǒ huì zài páng biān  xiě xiě gǎn shòu ， tè bié xǐ huān de hái huì bèi xià lái 。  wǒ huì zài hé shì de dì fāng zhù míng zhāi chāo nèi róng de chū chǔ 。"
+          "全文": "李白 早发白帝城朝辞白帝彩云间， 千里江陵一日还。 两岸猿声啼不住， 轻舟已过万重山。",
+          "拼音": "lǐ bái  zǎo fā bái dì chéng cháo cí bái dì cǎi yún jiān ，  qiān lǐ jiāng líng yī rì hái 。  liǎng àn yuán shēng tí bú zhù ，  qīng zhōu yǐ guò wàn zhòng shān 。"
+        }
+      ]
+    },
+    {
+      "单元": 7,
+      "标题": "语文园地",
+      "页码": [
+        93,
+        94
+      ],
+      "栏目": [
+        {
+          "名称": null,
+          "全文": "梳理与交流 你有摘抄的习惯吗？平时是怎么做摘抄的？和同学说一说并分享你的摘抄本。 读书时，我会先画出写得好的语句，再抄写 下来。 我喜欢归类摘抄。把描写同类事物的语句分门 别类地写下来，经常翻看，对我的习作很有帮助。 摘抄时，遇到写得生动的语句，我会在旁边 写写感受，特别喜欢的还会背下来。 我会在合适的地方注明摘抄内容的出处。",
+          "拼音": "shū lǐ yǔ jiāo liú  nǐ yǒu zhāi chāo de xí guàn ma ？ píng shí shì zěn me zuò zhāi chāo de ？ hé tóng xué shuō yī shuō bìng fēn xiǎng nǐ de zhāi chāo běn 。  dú shū shí ， wǒ huì xiān huà chū xiě de hǎo de yǔ jù ， zài chāo xiě  xià lái 。  wǒ xǐ huān guī lèi zhāi chāo 。 bǎ miáo xiě tóng lèi shì wù de yǔ jù fēn mén  bié lèi dì xiě xià lái ， jīng cháng fān kàn ， duì wǒ de xí zuò hěn yǒu bāng zhù 。  zhāi chāo shí ， yù dào xiě dé shēng dòng de yǔ jù ， wǒ huì zài páng biān  xiě xiě gǎn shòu ， tè bié xǐ huān de hái huì bèi xià lái 。  wǒ huì zài hé shì de dì fāng zhù míng zhāi chāo nèi róng de chū chǔ 。"
         },
         {
           "名称": "识字加油站",
@@ -1535,13 +1494,28 @@
         },
         {
           "名称": "日积月累",
-          "全文": "王昌龄 采莲曲荷叶罗裙一色裁， 芙蓉向脸两边开。 乱入池中看不见， 闻歌始觉有人来。 美好的品质， 单 犹如温暖的阳光， 元 带给我们希望和力量。 感悟美好品质，获取精神力量。 ◎ 学习带着问题默读，理解课文内容。 ◎ 学写一件简单的事。 语文园地 梳理与交流 你在默读文章时有什么好的做法？和同学交流。 默读的时候不要发出声音，不要指读，也不要动唇，否则会影响阅读速度。 我默读时，会随时把不认识的字、不理解的词语画出来，读完后再想办法弄清楚它们的意思。 我会带着问题默读。一边读一边思考，能帮助我更好地理解内容。没读懂的地方我会标记出来，联系上下文进一步思考，或者向别人请教。",
-          "拼音": "wáng chāng líng  cǎi lián qū hé yè luó qún yī sè cái ，  fú róng xiàng liǎn liǎng biān kāi 。  luàn rù chí zhōng kàn bú jiàn ，  wén gē shǐ jué yǒu rén lái 。  měi hǎo de pǐn zhì ，  dān  yóu rú wēn nuǎn de yáng guāng ，  yuán  dài gěi wǒ men xī wàng hé lì liàng 。  gǎn wù měi hǎo pǐn zhì ， huò qǔ jīng shén lì liàng 。  ◎  xué xí dài zhe wèn tí mò dú ， lǐ jiě kè wén nèi róng 。  ◎  xué xiě yī jiàn jiǎn dān de shì 。  yǔ wén yuán dì  shū lǐ yǔ jiāo liú  nǐ zài mò dú wén zhāng shí yǒu shén me hǎo de zuò fǎ ？ hé tóng xué jiāo liú 。  mò dú de shí hòu bú yào fā chū shēng yīn ， bú yào zhǐ dú ， yě bú yào dòng chún ， fǒu zé huì yǐng xiǎng yuè dú sù dù 。  wǒ mò dú shí ， huì suí shí bǎ bù rèn shí de zì 、 bù lǐ jiě de cí yǔ huà chū lái ， dú wán hòu zài xiǎng bàn fǎ nòng qīng chǔ tā men de yì si 。  wǒ huì dài zhe wèn tí mò dú 。 yī biān dú yī biān sī kǎo ， néng bāng zhù wǒ gèng hǎo dì lǐ jiě nèi róng 。 méi dú dǒng de dì fāng wǒ huì biāo jì chū lái ， lián xì shàng xià wén jìn yí bù sī kǎo ， huò zhě xiàng bié rén qǐng jiào 。"
+          "全文": "王昌龄 采莲曲荷叶罗裙一色裁， 芙蓉向脸两边开。 乱入池中看不见， 闻歌始觉有人来。",
+          "拼音": "wáng chāng líng  cǎi lián qū hé yè luó qún yī sè cái ，  fú róng xiàng liǎn liǎng biān kāi 。  luàn rù chí zhōng kàn bú jiàn ，  wén gē shǐ jué yǒu rén lái 。"
+        }
+      ]
+    },
+    {
+      "单元": 8,
+      "标题": "语文园地",
+      "页码": [
+        107,
+        108
+      ],
+      "栏目": [
+        {
+          "名称": null,
+          "全文": "梳理与交流 你在默读文章时有什么好的做法？和同学交流。 默读的时候不要发出声音，不要指读，也不要动唇，否则会影响阅读速度。 我默读时，会随时把不认识的字、不理解的词语画出来，读完后再想办法弄清楚它们的意思。 我会带着问题默读。一边读一边思考，能帮助我更好地理解内容。没读懂的地方我会标记出来，联系上下文进一步思考，或者向别人请教。",
+          "拼音": "shū lǐ yǔ jiāo liú  nǐ zài mò dú wén zhāng shí yǒu shén me hǎo de zuò fǎ ？ hé tóng xué jiāo liú 。  mò dú de shí hòu bú yào fā chū shēng yīn ， bú yào zhǐ dú ， yě bú yào dòng chún ， fǒu zé huì yǐng xiǎng yuè dú sù dù 。  wǒ mò dú shí ， huì suí shí bǎ bù rèn shí de zì 、 bù lǐ jiě de cí yǔ huà chū lái ， dú wán hòu zài xiǎng bàn fǎ nòng qīng chǔ tā men de yì si 。  wǒ huì dài zhe wèn tí mò dú 。 yī biān dú yī biān sī kǎo ， néng bāng zhù wǒ gèng hǎo dì lǐ jiě nèi róng 。 méi dú dǒng de dì fāng wǒ huì biāo jì chū lái ， lián xì shàng xià wén jìn yí bù sī kǎo ， huò zhě xiàng bié rén qǐng jiào 。"
         },
         {
           "名称": "识字加油站",
           "全文": "瞪 眨 瞅 睁 瞧 目 怒目圆睁 眨眼 眼眶 目瞪口呆 耳闻目睹 睁 眨 瞪 瞅 怒 眶 呆 睹 词句段运用 读下面的句子，说说加点的词语是否可以互相调换，再选择一个词语写一句话。 ◇ 我军的伤员陆续从火线上抬下来。 ◇ 白求恩低下头，继续给伤员做手术。 ◇ 白求恩大夫在手术台旁，连续工作了六十九个小时。 社区要开读书交流会，需要提前准备哪些物品？请你帮志愿者列一份清单。 书籍： 文具： 设备： ：",
-          "拼音": "dèng  zhǎ  chǒu  zhēng  qiáo  mù  nù mù yuán zhēng  zhǎ yǎn  yǎn kuàng  mù dèng kǒu dāi  ěr wén mù dǔ  zhēng  zhǎ  dèng  chǒu  nù  kuàng  dāi  dǔ  cí jù duàn yùn yòng  dú xià miàn de jù zi ， shuō shuō jiā diǎn de cí yǔ shì fǒu kě yǐ hù xiāng diào huàn ， zài xuǎn zé yí gè cí yǔ xiě yī jù huà 。  ◇  wǒ jūn de shāng yuán lù xù cóng huǒ xiàn shàng tái xià lái 。  ◇  bái qiú ēn dī xià tou ， jì xù gěi shāng yuán zuò shǒu shù 。  ◇  bái qiú ēn dà fū zài shǒu shù tái páng ， lián xù gōng zuò le liù shí jiǔ gè xiǎo shí 。  shè qū yào kāi dú shū jiāo liú huì ， xū yào tí qián zhǔn bèi nǎ xiē wù pǐn ？ qǐng nǐ bāng zhì yuàn zhě liè yī fèn qīng dān 。  shū jí ：  wén jù ：  shè bèi ：  ："
+          "拼音": "dèng  zhǎ  chǒu  zhēng  qiáo  mù  nù mù yuán zhēng  zhǎ yǎn  yǎn kuàng  mù dèng kǒu dāi  ěr wén mù dǔ  zhēng  zhǎ  dèng  chǒu  nù  kuàng  dāi  dǔ  cí jù duàn yùn yòng  dú xià miàn de jù zi ， shuō shuō jiā diǎn de cí yǔ shì fǒu kě yǐ hù xiāng diào huàn ， zài xuǎn zé yí gè cí yǔ xiě yī jù huà 。  ◇  wǒ jūn de shāng yuán lù xù cóng huǒ xiàn shàng tái xià lái 。  ◇  bái qiú ēn dī xià tou ， jì xù gěi shāng yuán zuò shǒu shù 。  ◇  bái qiú ēn dài fū zài shǒu shù tái páng ， lián xù gōng zuò le liù shí jiǔ gè xiǎo shí 。  shè qū yào kāi dú shū jiāo liú huì ， xū yào tí qián zhǔn bèi nǎ xiē wù pǐn ？ qǐng nǐ bāng zhì yuàn zhě liè yī fèn qīng dān 。  shū jí ：  wén jù ：  shè bèi ：  ："
         },
         {
           "名称": "日积月累",
