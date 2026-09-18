@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 
 import '../models/pet.dart';
+import '../models/engagement_event.dart';
+import '../models/pet_mission.dart';
 import '../models/practice.dart';
 import '../models/textbook.dart';
 import '../services/learning_mastery.dart';
+import '../services/engagement_events.dart';
 import '../services/pet_growth.dart';
 import '../services/pet_companion.dart';
 import '../services/practice_progress.dart';
@@ -29,6 +32,11 @@ class _ModePageState extends State<ModePage> {
   PetProfile? _petProfile;
   TextbookMastery? _mastery;
   PetCompanionGuide? _guide;
+  PetDailyCompanion? _dailyCompanion;
+  EngagementEventStore? _engagementStore;
+  String? _surfaceEventId;
+  String? _invitationFlowId;
+  String? _invitationEventId;
 
   @override
   void initState() {
@@ -40,6 +48,9 @@ class _ModePageState extends State<ModePage> {
     final store = await PracticeProgressStore.open(widget.selection.fileName);
     final catalog = PracticeCatalog.fromTextbook(widget.textbook);
     final petStore = await PetGrowthStore.open();
+    final engagementStore =
+        _engagementStore ?? await EngagementEventStore.open();
+    final visit = await petStore.recordVisit(DateTime.now());
     final pet = await petStore.synchronize(
       textbookKey: widget.selection.fileName,
       textbook: widget.textbook,
@@ -48,15 +59,56 @@ class _ModePageState extends State<ModePage> {
       emitCelebrations: false,
     );
     if (mounted) {
+      _surfaceEventId ??= engagementStore.newId();
+      await engagementStore.append(
+        eventId: _surfaceEventId,
+        type: EngagementEventType.companionSurfaceViewed,
+        context: EngagementEventContext(
+          textbookKey: widget.selection.fileName,
+          surface: EngagementSurface.modePage,
+        ),
+      );
+      if (visit == PetVisitTransition.nextDay) {
+        await engagementStore.append(
+          type: EngagementEventType.nextDayReturn,
+          context: EngagementEventContext(
+            textbookKey: widget.selection.fileName,
+            surface: EngagementSurface.modePage,
+          ),
+        );
+      }
+      final guide = PetCompanionGuide.build(
+        profile: pet.profile,
+        mastery: pet.mastery,
+        catalog: catalog,
+        progress: store.progress,
+      );
+      if (guide.invitation != null) {
+        _invitationFlowId ??= engagementStore.newId();
+        _invitationEventId ??= engagementStore.newId();
+        await engagementStore.append(
+          eventId: _invitationEventId,
+          type: EngagementEventType.invitationPresented,
+          context: EngagementEventContext(
+            textbookKey: widget.selection.fileName,
+            surface: EngagementSurface.modePage,
+            launchSource: EngagementLaunchSource.invitation,
+            quickPracticeAction: guide.invitation!.action,
+            flowId: _invitationFlowId,
+          ),
+        );
+      }
+      if (!mounted) return;
       setState(() {
         _wrongCount = store.progress.wrongCountFor(catalog.questions);
         _petProfile = pet.profile;
         _mastery = pet.mastery;
-        _guide = PetCompanionGuide.build(
+        _guide = guide;
+        _engagementStore = engagementStore;
+        _dailyCompanion = PetDailyCompanion.build(
           profile: pet.profile,
-          mastery: pet.mastery,
-          catalog: catalog,
-          progress: store.progress,
+          anonymousInstallId: engagementStore.anonymousInstallId,
+          date: DateTime.now(),
         );
       });
     }
@@ -77,22 +129,39 @@ class _ModePageState extends State<ModePage> {
 
   Future<void> _openInvitation() async {
     final invitation = _guide?.invitation;
-    if (invitation == null) return;
+    final profile = _petProfile;
+    final eventStore = _engagementStore;
+    if (invitation == null || profile == null || eventStore == null) return;
+    final flowId = _invitationFlowId ?? eventStore.newId();
+    final mission = PetCompanionMission.forQuickPractice(
+      action: invitation.action,
+      petName: profile.name,
+      unlockedFurniture: profile.unlockedFurniture,
+    );
     final completed = await Navigator.of(context).push<bool>(
       MaterialPageRoute(
         builder: (_) => PracticePage(
           selection: widget.selection,
           textbook: widget.textbook,
           quickSession: invitation.session,
+          quickLaunch: QuickPracticeLaunch(
+            mission: mission,
+            flowId: flowId,
+            source: PetMissionSource.invitation,
+            roomId: profile.selectedRoom,
+          ),
+          engagementStore: eventStore,
         ),
       ),
     );
+    _invitationFlowId = null;
+    _invitationEventId = null;
     await _loadDashboard();
-    final profile = _petProfile;
-    if (mounted && completed == true && profile != null) {
+    final updatedProfile = _petProfile;
+    if (mounted && completed == true && updatedProfile != null) {
       showPetQuickReaction(
         context,
-        profile: profile,
+        profile: updatedProfile,
         action: invitation.action,
       );
     }
@@ -121,6 +190,7 @@ class _ModePageState extends State<ModePage> {
                     profile: _petProfile!,
                     mastery: _mastery!,
                     goal: _guide?.goal,
+                    greeting: _dailyCompanion?.greeting,
                     invitation: _guide?.invitation?.message,
                     onAcceptInvitation: _openInvitation,
                     onOpenHome: () async {

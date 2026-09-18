@@ -5,10 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:zh_textbook/models/pet.dart';
+import 'package:zh_textbook/models/engagement_event.dart';
 import 'package:zh_textbook/models/textbook.dart';
 import 'package:zh_textbook/screens/pet_home_page.dart';
 import 'package:zh_textbook/screens/practice_page.dart';
 import 'package:zh_textbook/services/pet_growth.dart';
+import 'package:zh_textbook/services/engagement_events.dart';
 import 'package:zh_textbook/services/textbook_repository.dart';
 
 void main() {
@@ -181,5 +183,89 @@ void main() {
 
     expect(find.text('1/3'), findsOneWidget);
     expect(find.text('3/3'), findsOneWidget);
+  });
+
+  testWidgets('激活家具显示语义状态并确认一次性解锁提示', (tester) async {
+    SharedPreferences.setMockInitialValues({
+      'pet_growth_profile': jsonEncode({
+        'version': 5,
+        'profile': const PetProfile(
+          selectedRoom: 'study-room',
+          unlockedFurniture: {'study-desk', 'desk-lamp'},
+          furnitureStates: {
+            'study-desk': FurnitureVisualState.ready,
+            'desk-lamp': FurnitureVisualState.active,
+          },
+          pendingFurnitureReveals: {'desk-lamp'},
+        ).toJson(),
+      }),
+    });
+    await tester.pumpWidget(const MaterialApp(home: PetHomePage()));
+    await tester.pump();
+    expect(
+      find.byKey(const ValueKey('furniture-active-desk-lamp')),
+      findsOneWidget,
+    );
+    expect(find.byIcon(Icons.auto_awesome), findsOneWidget);
+    await tester.pump(const Duration(seconds: 1));
+    await tester.pumpAndSettle();
+    final reopened = await PetGrowthStore.open();
+    expect(reopened.profile.pendingFurnitureReveals, isEmpty);
+  });
+
+  testWidgets('提前退出三题记录开始和退出但不记录完成', (tester) async {
+    SharedPreferences.setMockInitialValues({
+      'pet_growth_profile': jsonEncode({
+        'version': 5,
+        'profile': const PetProfile(
+          majorStage: 1,
+          selectedRoom: 'study-room',
+          unlockedFurniture: {'study-desk', 'desk-lamp'},
+        ).toJson(),
+      }),
+    });
+    final textbook = Textbook.fromJsonString(
+      File(
+        '../json_reviewed/zh-lang-grade2b-textbook-struct.json',
+      ).readAsStringSync(),
+    );
+    await tester.pumpWidget(
+      MaterialApp(
+        home: PetHomePage(
+          selection: const TextbookSelection(
+            grade: 2,
+            semester: Semester.second,
+          ),
+          textbook: textbook,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('room-study-room')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('furniture-desk-lamp')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byTooltip('返回'));
+    await tester.pumpAndSettle();
+
+    final events = (await EngagementEventStore.open()).events;
+    expect(
+      events.where(
+        (event) => event.type == EngagementEventType.quickPracticeStarted,
+      ),
+      hasLength(1),
+    );
+    expect(
+      events.where(
+        (event) => event.type == EngagementEventType.quickPracticeExited,
+      ),
+      hasLength(1),
+    );
+    expect(
+      events.where(
+        (event) => event.type == EngagementEventType.quickPracticeCompleted,
+      ),
+      isEmpty,
+    );
   });
 }

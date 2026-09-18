@@ -4,6 +4,10 @@ enum PetExpression { happy, wink, starry, radiant }
 
 enum PetCelebrationType { lesson, unit }
 
+enum FurnitureVisualState { ready, active }
+
+enum PetVisitTransition { sameDay, nextDay, neutral }
+
 const defaultPetName = '小语';
 
 String? normalizePetName(String input) {
@@ -237,6 +241,11 @@ class PetProfile {
     this.selectedDecoration = 'none',
     this.selectedRoom = 'living-room',
     this.unlockedFurniture = const {},
+    this.furnitureStates = const {},
+    this.pendingFurnitureReveals = const {},
+    this.furnitureStateInitialized = true,
+    this.lastVisitDate,
+    this.lastMissionKind,
   });
 
   factory PetProfile.fromJson(Map<String, dynamic> json) => PetProfile(
@@ -276,6 +285,34 @@ class PetProfile {
     unlockedFurniture: json['unlocked_furniture'] is List
         ? (json['unlocked_furniture'] as List).whereType<String>().toSet()
         : const {},
+    furnitureStates: json['furniture_states'] is Map
+        ? {
+            for (final entry in (json['furniture_states'] as Map).entries)
+              if (entry.key is String && entry.value is String)
+                entry.key as String: FurnitureVisualState.values.firstWhere(
+                  (value) => value.name == entry.value,
+                  orElse: () => FurnitureVisualState.ready,
+                ),
+          }
+        : {
+            for (final id
+                in json['unlocked_furniture'] is List
+                    ? (json['unlocked_furniture'] as List).whereType<String>()
+                    : const <String>[])
+              id: FurnitureVisualState.ready,
+          },
+    pendingFurnitureReveals: json['pending_furniture_reveals'] is List
+        ? (json['pending_furniture_reveals'] as List)
+              .whereType<String>()
+              .toSet()
+        : const {},
+    furnitureStateInitialized: json.containsKey('furniture_states'),
+    lastVisitDate: json['last_visit_date'] is String
+        ? json['last_visit_date'] as String
+        : null,
+    lastMissionKind: json['last_mission_kind'] is String
+        ? json['last_mission_kind'] as String
+        : null,
   );
 
   final String name;
@@ -289,6 +326,14 @@ class PetProfile {
   final String selectedDecoration;
   final String selectedRoom;
   final Set<String> unlockedFurniture;
+  final Map<String, FurnitureVisualState> furnitureStates;
+  final Set<String> pendingFurnitureReveals;
+  final bool furnitureStateInitialized;
+  final String? lastVisitDate;
+  final String? lastMissionKind;
+
+  FurnitureVisualState furnitureState(String id) =>
+      furnitureStates[id] ?? FurnitureVisualState.ready;
 
   Map<String, dynamic> toJson() => {
     'name': name,
@@ -302,6 +347,12 @@ class PetProfile {
     'selected_decoration': selectedDecoration,
     'selected_room': selectedRoom,
     'unlocked_furniture': unlockedFurniture.toList()..sort(),
+    'furniture_states': {
+      for (final entry in furnitureStates.entries) entry.key: entry.value.name,
+    },
+    'pending_furniture_reveals': pendingFurnitureReveals.toList()..sort(),
+    'last_visit_date': lastVisitDate,
+    'last_mission_kind': lastMissionKind,
   };
 
   PetProfile copyWith({
@@ -316,6 +367,13 @@ class PetProfile {
     String? selectedDecoration,
     String? selectedRoom,
     Set<String>? unlockedFurniture,
+    Map<String, FurnitureVisualState>? furnitureStates,
+    Set<String>? pendingFurnitureReveals,
+    bool? furnitureStateInitialized,
+    String? lastVisitDate,
+    bool clearLastVisitDate = false,
+    String? lastMissionKind,
+    bool clearLastMissionKind = false,
   }) => PetProfile(
     name: name ?? this.name,
     species: species ?? this.species,
@@ -328,6 +386,17 @@ class PetProfile {
     selectedDecoration: selectedDecoration ?? this.selectedDecoration,
     selectedRoom: selectedRoom ?? this.selectedRoom,
     unlockedFurniture: unlockedFurniture ?? this.unlockedFurniture,
+    furnitureStates: furnitureStates ?? this.furnitureStates,
+    pendingFurnitureReveals:
+        pendingFurnitureReveals ?? this.pendingFurnitureReveals,
+    furnitureStateInitialized:
+        furnitureStateInitialized ?? this.furnitureStateInitialized,
+    lastVisitDate: clearLastVisitDate
+        ? null
+        : lastVisitDate ?? this.lastVisitDate,
+    lastMissionKind: clearLastMissionKind
+        ? null
+        : lastMissionKind ?? this.lastMissionKind,
   );
 }
 

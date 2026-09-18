@@ -1,13 +1,17 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
 
 import '../models/ocr.dart';
+import '../models/engagement_event.dart';
+import '../models/pet_mission.dart';
 import '../models/practice.dart';
 import '../models/quick_practice.dart';
 import '../models/speech_assessment.dart';
 import '../models/textbook.dart';
 import '../services/ocr_engine.dart';
+import '../services/engagement_events.dart';
 import '../services/pet_growth.dart';
 import '../services/practice_progress.dart';
 import '../services/quick_practice.dart';
@@ -15,6 +19,7 @@ import '../services/speech_engine.dart';
 import '../services/textbook_repository.dart';
 import '../widgets/writing_pad.dart';
 import '../widgets/pet_celebration.dart';
+import '../widgets/pet_practice_companion.dart';
 
 class PracticePage extends StatefulWidget {
   const PracticePage({
@@ -23,12 +28,16 @@ class PracticePage extends StatefulWidget {
     required this.textbook,
     this.mistakesOnly = false,
     this.quickSession,
+    this.quickLaunch,
+    this.engagementStore,
   });
 
   final TextbookSelection selection;
   final Textbook textbook;
   final bool mistakesOnly;
   final QuickPracticeSession? quickSession;
+  final QuickPracticeLaunch? quickLaunch;
+  final EngagementEventStore? engagementStore;
 
   @override
   State<PracticePage> createState() => _PracticePageState();
@@ -56,6 +65,17 @@ class _PracticePageState extends State<PracticePage> {
   bool _playing = false;
   bool _recording = false;
   int _quickIndex = 0;
+  QuickPracticeSession? _quickSession;
+  QuickPracticeLaunch? _quickLaunch;
+  EngagementEventStore? _engagementStore;
+  PetPracticeMood _petMood = PetPracticeMood.idle;
+  int _missionSteps = 0;
+  Timer? _thinkingTimer;
+  Timer? _reactionTimer;
+  DateTime? _quickStartedAt;
+  bool _quickFlowCompleted = false;
+  final Set<String> _recordedExitFlows = {};
+  String? _quickStartEventId;
 
   @override
   void initState() {
@@ -66,6 +86,8 @@ class _PracticePageState extends State<PracticePage> {
         .toList(growable: false);
     _regularChapterId = _chapters.first.id;
     _mistakesOnly = widget.mistakesOnly;
+    _quickSession = widget.quickSession;
+    _quickLaunch = widget.quickLaunch;
     _selectedChapterId = _mistakesOnly ? _allMistakes : _regularChapterId;
     _openProgress();
   }
@@ -73,6 +95,11 @@ class _PracticePageState extends State<PracticePage> {
   @override
   void dispose() {
     if (_recording) SpeechEngine.instance.cancelRecording();
+    _thinkingTimer?.cancel();
+    _reactionTimer?.cancel();
+    if (_quickSession != null && !_quickFlowCompleted) {
+      unawaited(_recordQuickExit());
+    }
     super.dispose();
   }
 
@@ -81,6 +108,8 @@ class _PracticePageState extends State<PracticePage> {
       final catalog = PracticeCatalog.fromTextbook(widget.textbook);
       final store = await PracticeProgressStore.open(widget.selection.fileName);
       final petStore = await PetGrowthStore.open();
+      final engagementStore =
+          widget.engagementStore ?? await EngagementEventStore.open();
       await petStore.synchronize(
         textbookKey: widget.selection.fileName,
         textbook: widget.textbook,
@@ -89,11 +118,25 @@ class _PracticePageState extends State<PracticePage> {
         emitCelebrations: false,
       );
       if (!mounted) return;
+      if (_quickSession != null) {
+        _quickLaunch ??= QuickPracticeLaunch(
+          mission: PetCompanionMission.forQuickPractice(
+            action: _quickSession!.action,
+            petName: petStore.profile.name,
+            unlockedFurniture: petStore.profile.unlockedFurniture,
+          ),
+          flowId: engagementStore.newId(),
+          source: PetMissionSource.invitation,
+          roomId: petStore.profile.selectedRoom,
+        );
+      }
       setState(() {
         _catalog = catalog;
         _store = store;
         _petStore = petStore;
+        _engagementStore = engagementStore;
       });
+      if (_quickSession != null) await _recordQuickStart();
       await _chooseQuestion();
     } catch (error, stackTrace) {
       debugPrintStack(label: '练习页初始化失败：$error', stackTrace: stackTrace);
@@ -107,7 +150,7 @@ class _PracticePageState extends State<PracticePage> {
     if (catalog == null || store == null || _selecting) return;
     _selecting = true;
     try {
-      final quickSession = widget.quickSession;
+      final quickSession = _quickSession;
       if (quickSession != null) {
         final attempt = quickSession.attempts[_quickIndex];
         final selected = catalog.questions
@@ -118,8 +161,10 @@ class _PracticePageState extends State<PracticePage> {
           _direction = attempt.direction;
           _question = selected;
           _graded = false;
+          _petMood = PetPracticeMood.idle;
         });
         _writingPadKey.currentState?.clear();
+        _scheduleThinkingReaction();
         return;
       }
       final directions = PracticeDirection.values.toList()..shuffle(_random);
@@ -278,6 +323,7 @@ class _PracticePageState extends State<PracticePage> {
         _graded = true;
         _grading = false;
       });
+      _onQuickGraded(correct);
       await _syncPetGrowth();
     } catch (error, stackTrace) {
       debugPrintStack(label: 'OCR 批改失败：$error', stackTrace: stackTrace);
@@ -353,6 +399,7 @@ class _PracticePageState extends State<PracticePage> {
       await store.record(question.attemptId(_direction), correct: correct);
       if (mounted) {
         setState(() => _graded = true);
+        _onQuickGraded(correct);
         await _syncPetGrowth();
       }
     } catch (error, stackTrace) {
@@ -399,17 +446,186 @@ class _PracticePageState extends State<PracticePage> {
   }
 
   Future<void> _advanceQuickPractice() async {
-    final session = widget.quickSession;
+    final session = _quickSession;
     if (session == null) {
       await _chooseQuestion();
       return;
     }
     if (_quickIndex == session.attempts.length - 1) {
-      if (mounted) Navigator.of(context).pop(true);
+      await _finishQuickPractice();
       return;
     }
     setState(() => _quickIndex += 1);
     await _chooseQuestion();
+  }
+
+  void _scheduleThinkingReaction() {
+    _thinkingTimer?.cancel();
+    if (_quickSession == null) return;
+    _thinkingTimer = Timer(const Duration(seconds: 10), () {
+      if (mounted && !_graded) {
+        setState(() => _petMood = PetPracticeMood.thinking);
+      }
+    });
+  }
+
+  void _onQuickGraded(bool correct) {
+    if (_quickSession == null || !mounted) return;
+    _thinkingTimer?.cancel();
+    _reactionTimer?.cancel();
+    setState(() {
+      _missionSteps = _quickIndex + 1;
+      _petMood = correct
+          ? PetPracticeMood.celebrate
+          : PetPracticeMood.encourage;
+    });
+    _reactionTimer = Timer(const Duration(milliseconds: 1400), () {
+      if (mounted) setState(() => _petMood = PetPracticeMood.idle);
+    });
+  }
+
+  Future<void> _recordQuickStart() async {
+    final store = _engagementStore;
+    final launch = _quickLaunch;
+    final session = _quickSession;
+    if (store == null || launch == null || session == null) return;
+    _quickStartedAt = DateTime.now();
+    _quickFlowCompleted = false;
+    _quickStartEventId ??= store.newId();
+    await store.append(
+      eventId: _quickStartEventId,
+      type: EngagementEventType.quickPracticeStarted,
+      context: _engagementContext(launch),
+    );
+  }
+
+  Future<void> _recordQuickExit() async {
+    final store = _engagementStore;
+    final launch = _quickLaunch;
+    if (store == null || launch == null) return;
+    if (!_recordedExitFlows.add(launch.flowId)) return;
+    await store.append(
+      eventId: store.newId(),
+      type: EngagementEventType.quickPracticeExited,
+      context: _engagementContext(launch, includeDuration: true),
+    );
+  }
+
+  Future<void> _finishQuickPractice() async {
+    final store = _engagementStore;
+    final launch = _quickLaunch;
+    final petStore = _petStore;
+    if (launch == null || petStore == null) {
+      if (mounted) Navigator.of(context).pop(true);
+      return;
+    }
+    _quickFlowCompleted = true;
+    await store?.append(
+      eventId: store.newId(),
+      type: EngagementEventType.quickPracticeCompleted,
+      context: _engagementContext(launch, includeDuration: true),
+    );
+    await petStore.activateFurniture(
+      launch.mission.targetFurnitureId,
+      launch.mission.kind.name,
+    );
+    if (!mounted) return;
+    final repeat = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => PetMissionCompletionDialog(
+        petName: petStore.profile.name,
+        mission: launch.mission,
+      ),
+    );
+    if (repeat != true) {
+      if (mounted) Navigator.of(context).pop(true);
+      return;
+    }
+    await _repeatQuickPractice(launch);
+  }
+
+  Future<void> _repeatQuickPractice(QuickPracticeLaunch completedLaunch) async {
+    final store = _engagementStore;
+    final catalog = _catalog;
+    final progress = _store;
+    final session = _quickSession;
+    if (store == null ||
+        catalog == null ||
+        progress == null ||
+        session == null) {
+      if (mounted) Navigator.of(context).pop(true);
+      return;
+    }
+    final selection = QuickPracticeSelector.select(
+      catalog: catalog,
+      progress: progress.progress,
+      action: session.action,
+    );
+    if (!selection.isAvailable) {
+      if (mounted) Navigator.of(context).pop(true);
+      return;
+    }
+    final nextFlowId = store.newId();
+    await store.append(
+      eventId: store.newId(),
+      type: EngagementEventType.repeatPracticeStarted,
+      context: EngagementEventContext(
+        textbookKey: widget.selection.fileName,
+        surface: EngagementSurface.quickPractice,
+        launchSource: EngagementLaunchSource.repeat,
+        quickPracticeAction: session.action,
+        missionKind: completedLaunch.mission.kind,
+        roomId: completedLaunch.roomId,
+        furnitureId: completedLaunch.furnitureId,
+        flowId: completedLaunch.flowId,
+        parentFlowId: completedLaunch.parentFlowId,
+      ),
+    );
+    if (!mounted) return;
+    setState(() {
+      _quickSession = selection.session;
+      _quickLaunch = completedLaunch.repeat(nextFlowId: nextFlowId);
+      _quickIndex = 0;
+      _missionSteps = 0;
+      _graded = false;
+      _petMood = PetPracticeMood.idle;
+      _quickStartEventId = null;
+    });
+    await _recordQuickStart();
+    await _chooseQuestion();
+  }
+
+  EngagementEventContext _engagementContext(
+    QuickPracticeLaunch launch, {
+    bool includeDuration = false,
+  }) => EngagementEventContext(
+    textbookKey: widget.selection.fileName,
+    surface: EngagementSurface.quickPractice,
+    launchSource: switch (launch.source) {
+      PetMissionSource.invitation => EngagementLaunchSource.invitation,
+      PetMissionSource.furniture => EngagementLaunchSource.furniture,
+    },
+    quickPracticeAction: _quickSession?.action,
+    missionKind: launch.mission.kind,
+    roomId: launch.roomId,
+    furnitureId: launch.furnitureId,
+    durationBucket: includeDuration ? _durationBucket() : null,
+    flowId: launch.flowId,
+    parentFlowId: launch.parentFlowId,
+  );
+
+  EngagementDurationBucket _durationBucket() {
+    final elapsed = DateTime.now().difference(
+      _quickStartedAt ?? DateTime.now(),
+    );
+    if (elapsed < const Duration(minutes: 1)) {
+      return EngagementDurationBucket.underMinute;
+    }
+    if (elapsed <= const Duration(minutes: 3)) {
+      return EngagementDurationBucket.oneToThreeMinutes;
+    }
+    return EngagementDurationBucket.overThreeMinutes;
   }
 
   String get _unitName => widget.textbook.index
@@ -435,7 +651,7 @@ class _PracticePageState extends State<PracticePage> {
     return LayoutBuilder(
       builder: (context, constraints) {
         final wide = constraints.maxWidth >= 900;
-        final quick = widget.quickSession != null;
+        final quick = _quickSession != null;
         final toc = _PracticeToc(
           textbook: widget.textbook,
           catalog: catalog,
@@ -515,7 +731,7 @@ class _PracticePageState extends State<PracticePage> {
     padding: const EdgeInsets.all(24),
     children: [
       Text(
-        widget.quickSession != null
+        _quickSession != null
             ? widget.selection.label
             : _mistakesOnly
             ? _selectedChapterId == _allMistakes
@@ -528,8 +744,8 @@ class _PracticePageState extends State<PracticePage> {
       ),
       const SizedBox(height: 8),
       Text(
-        widget.quickSession != null
-            ? quickPracticeActionLabel(widget.quickSession!.action)
+        _quickSession != null
+            ? quickPracticeActionLabel(_quickSession!.action)
             : _mistakesOnly && _selectedChapterId == _allMistakes
             ? '整本教材错题专项'
             : _chapter.name,
@@ -543,10 +759,10 @@ class _PracticePageState extends State<PracticePage> {
         runSpacing: 8,
         crossAxisAlignment: WrapCrossAlignment.center,
         children: [
-          if (widget.quickSession != null)
+          if (_quickSession != null)
             QuickPracticeProgressIndicator(
               current: _quickIndex + 1,
-              total: widget.quickSession!.attempts.length,
+              total: _quickSession!.attempts.length,
             )
           else
             Text('已练习 ${store.progress.completedCount}'),
@@ -570,6 +786,17 @@ class _PracticePageState extends State<PracticePage> {
         ],
       ),
       const SizedBox(height: 20),
+      if (_quickSession != null &&
+          _quickLaunch != null &&
+          _petStore != null) ...[
+        PetPracticeCompanion(
+          profile: _petStore!.profile,
+          mission: _quickLaunch!.mission,
+          mood: _petMood,
+          completedSteps: _missionSteps,
+        ),
+        const SizedBox(height: 12),
+      ],
       if (_question == null)
         Card(
           child: Padding(
@@ -592,8 +819,8 @@ class _PracticePageState extends State<PracticePage> {
           onPlay: _playDictation,
           onReadAloud: _toggleReadAloud,
           nextLabel:
-              widget.quickSession != null &&
-                  _quickIndex == widget.quickSession!.attempts.length - 1
+              _quickSession != null &&
+                  _quickIndex == _quickSession!.attempts.length - 1
               ? '完成陪练'
               : '下一题',
           onNext: _graded ? _advanceQuickPractice : null,

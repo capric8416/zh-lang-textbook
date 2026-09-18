@@ -1,4 +1,5 @@
 import '../models/pet.dart';
+import '../models/pet_mission.dart';
 import '../models/practice.dart';
 import '../models/quick_practice.dart';
 import 'learning_mastery.dart';
@@ -104,6 +105,53 @@ class PetCompanionGuide {
           return stage != 0 ? stage : a.kind.compareTo(b.kind);
         });
     return candidates.firstOrNull;
+  }
+}
+
+class PetDailyCompanion {
+  const PetDailyCompanion({required this.alignmentX, required this.greeting});
+
+  final double alignmentX;
+  final String greeting;
+
+  static PetDailyCompanion build({
+    required PetProfile profile,
+    required String anonymousInstallId,
+    required DateTime date,
+  }) {
+    final local = date.toLocal();
+    final day = '${local.year}-${local.month}-${local.day}';
+    final seed = _stableHash(
+      '$anonymousInstallId:$day:${profile.selectedRoom}',
+    );
+    const positions = [-0.28, 0.0, 0.28];
+    final mission = PetMissionKind.values
+        .where((value) => value.name == profile.lastMissionKind)
+        .firstOrNull;
+    final greetings = mission == null
+        ? [
+            '${profile.name}已经在房间里等你啦！',
+            '${profile.name}今天换了个舒服的位置。',
+            '${profile.name}想陪你轻松学一会儿。',
+          ]
+        : [
+            '${profile.name}还记得我们一起${petMissionKindLabel(mission)}呢！',
+            '${profile.name}正在看看上次完成的小任务。',
+            '${profile.name}准备好再陪你完成三题啦！',
+          ];
+    return PetDailyCompanion(
+      alignmentX: positions[seed % positions.length],
+      greeting: greetings[(seed ~/ positions.length) % greetings.length],
+    );
+  }
+
+  static int _stableHash(String value) {
+    var hash = 0x811c9dc5;
+    for (final code in value.codeUnits) {
+      hash ^= code;
+      hash = (hash * 0x01000193) & 0x7fffffff;
+    }
+    return hash;
   }
 }
 

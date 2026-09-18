@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import '../models/pet.dart';
+import '../models/engagement_event.dart';
+import '../models/pet_mission.dart';
 import '../models/practice.dart';
 import '../models/quick_practice.dart';
 import '../models/textbook.dart';
 import '../services/pet_growth.dart';
+import '../services/engagement_events.dart';
 import '../services/learning_mastery.dart';
 import '../services/pet_companion.dart';
 import '../services/practice_progress.dart';
@@ -28,6 +31,11 @@ class _PetHomePageState extends State<PetHomePage> {
   PracticeProgressStore? _progressStore;
   PracticeCatalog? _catalog;
   PetCompanionGuide? _guide;
+  PetDailyCompanion? _dailyCompanion;
+  EngagementEventStore? _engagementStore;
+  String? _surfaceEventId;
+  String? _invitationFlowId;
+  String? _invitationEventId;
   String _message = '选一个喜欢的伙伴吧';
   @override
   void initState() {
@@ -37,6 +45,9 @@ class _PetHomePageState extends State<PetHomePage> {
 
   Future<void> _open() async {
     final store = await PetGrowthStore.open();
+    final engagementStore =
+        _engagementStore ?? await EngagementEventStore.open();
+    final visit = await store.recordVisit(DateTime.now());
     final selection = widget.selection;
     final textbook = widget.textbook;
     final progressStore = selection == null
@@ -53,18 +64,65 @@ class _PetHomePageState extends State<PetHomePage> {
             progress: progressStore.progress,
           );
     if (!mounted) return;
+    _surfaceEventId ??= engagementStore.newId();
+    await engagementStore.append(
+      eventId: _surfaceEventId,
+      type: EngagementEventType.companionSurfaceViewed,
+      context: EngagementEventContext(
+        textbookKey: selection?.fileName,
+        surface: EngagementSurface.petHome,
+        roomId: store.profile.selectedRoom,
+      ),
+    );
+    if (visit == PetVisitTransition.nextDay) {
+      await engagementStore.append(
+        type: EngagementEventType.nextDayReturn,
+        context: EngagementEventContext(
+          textbookKey: selection?.fileName,
+          surface: EngagementSurface.petHome,
+          roomId: store.profile.selectedRoom,
+        ),
+      );
+    }
+    final guide = mastery == null || catalog == null || progressStore == null
+        ? null
+        : PetCompanionGuide.build(
+            profile: store.profile,
+            mastery: mastery,
+            catalog: catalog,
+            progress: progressStore.progress,
+          );
+    if (guide?.invitation != null) {
+      _invitationFlowId ??= engagementStore.newId();
+      _invitationEventId ??= engagementStore.newId();
+      await engagementStore.append(
+        eventId: _invitationEventId,
+        type: EngagementEventType.invitationPresented,
+        context: EngagementEventContext(
+          textbookKey: selection?.fileName,
+          surface: EngagementSurface.petHome,
+          launchSource: EngagementLaunchSource.invitation,
+          quickPracticeAction: guide!.invitation!.action,
+          roomId: store.profile.selectedRoom,
+          flowId: _invitationFlowId,
+        ),
+      );
+    }
+    if (!mounted) return;
     setState(() {
       _store = store;
       _progressStore = progressStore;
       _catalog = catalog;
-      _guide = mastery == null || catalog == null || progressStore == null
-          ? null
-          : PetCompanionGuide.build(
-              profile: store.profile,
-              mastery: mastery,
-              catalog: catalog,
-              progress: progressStore.progress,
-            );
+      _guide = guide;
+      _engagementStore = engagementStore;
+      _dailyCompanion = PetDailyCompanion.build(
+        profile: store.profile,
+        anonymousInstallId: engagementStore.anonymousInstallId,
+        date: DateTime.now(),
+      );
+      if (_message == '选一个喜欢的伙伴吧') {
+        _message = _dailyCompanion!.greeting;
+      }
     });
   }
 
@@ -106,35 +164,64 @@ class _PetHomePageState extends State<PetHomePage> {
       _showUnavailable(result.reason ?? '当前无法开始三题陪练');
       return;
     }
-    await _openQuickPractice(result.session!, action);
+    await _openQuickPractice(result.session!, action, furniture: furniture);
   }
 
   Future<void> _openInvitation() async {
     final invitation = _guide?.invitation;
     if (invitation == null) return;
     await _openQuickPractice(invitation.session, invitation.action);
+    _invitationFlowId = null;
+    _invitationEventId = null;
   }
 
   Future<void> _openQuickPractice(
     QuickPracticeSession session,
-    QuickPracticeAction action,
-  ) async {
+    QuickPracticeAction action, {
+    PetFurniture? furniture,
+  }) async {
     final selection = widget.selection;
     final textbook = widget.textbook;
-    if (selection == null || textbook == null) return;
+    final profile = _store?.profile;
+    final eventStore = _engagementStore;
+    if (selection == null ||
+        textbook == null ||
+        profile == null ||
+        eventStore == null) {
+      return;
+    }
+    final flowId = furniture == null
+        ? _invitationFlowId ?? eventStore.newId()
+        : eventStore.newId();
+    final mission = PetCompanionMission.forQuickPractice(
+      action: action,
+      petName: profile.name,
+      furnitureId: furniture?.id,
+      unlockedFurniture: profile.unlockedFurniture,
+    );
     final completed = await Navigator.of(context).push<bool>(
       MaterialPageRoute(
         builder: (_) => PracticePage(
           selection: selection,
           textbook: textbook,
           quickSession: session,
+          quickLaunch: QuickPracticeLaunch(
+            mission: mission,
+            flowId: flowId,
+            source: furniture == null
+                ? PetMissionSource.invitation
+                : PetMissionSource.furniture,
+            roomId: profile.selectedRoom,
+            furnitureId: furniture?.id,
+          ),
+          engagementStore: eventStore,
         ),
       ),
     );
     await _refreshAfterPractice(completed: completed == true);
-    final profile = _store?.profile;
-    if (mounted && completed == true && profile != null) {
-      showPetQuickReaction(context, profile: profile, action: action);
+    final updatedProfile = _store?.profile;
+    if (mounted && completed == true && updatedProfile != null) {
+      showPetQuickReaction(context, profile: updatedProfile, action: action);
     }
   }
 
@@ -206,8 +293,13 @@ class _PetHomePageState extends State<PetHomePage> {
           const SizedBox(height: 12),
           PetRoomScene(
             profile: profile,
+            petAlignmentX: _dailyCompanion?.alignmentX ?? 0,
             onFurnitureTap: _activateFurniture,
             actionDescription: _furnitureActionDescription,
+            onRevealShown: (id) async {
+              await store.acknowledgeFurnitureReveal(id);
+              if (mounted) setState(() {});
+            },
           ),
           const SizedBox(height: 12),
           Card(

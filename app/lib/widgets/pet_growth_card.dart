@@ -10,6 +10,7 @@ class PetGrowthCard extends StatelessWidget {
     required this.profile,
     required this.mastery,
     this.goal,
+    this.greeting,
     this.invitation,
     this.onAcceptInvitation,
     this.onOpenHome,
@@ -18,6 +19,7 @@ class PetGrowthCard extends StatelessWidget {
   final PetProfile profile;
   final TextbookMastery mastery;
   final String? goal;
+  final String? greeting;
   final String? invitation;
   final VoidCallback? onAcceptInvitation;
   final VoidCallback? onOpenHome;
@@ -73,6 +75,10 @@ class PetGrowthCard extends StatelessWidget {
                       fontWeight: FontWeight.w600,
                     ),
                   ),
+                  if (greeting != null) ...[
+                    const SizedBox(height: 6),
+                    Text(greeting!, key: const ValueKey('pet-daily-greeting')),
+                  ],
                   const SizedBox(height: 10),
                   Text(
                     lesson == null

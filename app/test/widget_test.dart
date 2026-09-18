@@ -13,10 +13,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:zh_textbook/main.dart';
 import 'package:zh_textbook/models/practice.dart';
+import 'package:zh_textbook/models/engagement_event.dart';
 import 'package:zh_textbook/models/textbook.dart';
 import 'package:zh_textbook/screens/mode_page.dart';
 import 'package:zh_textbook/screens/practice_page.dart';
 import 'package:zh_textbook/services/numeric_pinyin.dart';
+import 'package:zh_textbook/services/engagement_events.dart';
 import 'package:zh_textbook/services/practice_progress.dart';
 import 'package:zh_textbook/services/textbook_repository.dart';
 
@@ -115,8 +117,33 @@ void main() {
     await tester.tap(find.byKey(const ValueKey('pet-practice-invitation')));
     await tester.pumpAndSettle();
     expect(find.text('宠物三题陪练'), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('pet-practice-companion')),
+      findsOneWidget,
+    );
+    await tester.pump(const Duration(seconds: 10));
+    expect(find.textContaining('慢慢想'), findsOneWidget);
     await tester.tap(find.byTooltip('返回'));
     await tester.pumpAndSettle();
+    final events = (await EngagementEventStore.open()).events;
+    expect(
+      events.where(
+        (event) => event.type == EngagementEventType.invitationPresented,
+      ),
+      hasLength(2),
+    );
+    expect(
+      events.where(
+        (event) => event.type == EngagementEventType.quickPracticeStarted,
+      ),
+      hasLength(1),
+    );
+    expect(
+      events.where(
+        (event) => event.type == EngagementEventType.quickPracticeExited,
+      ),
+      hasLength(1),
+    );
   });
 
   testWidgets('练习页可以从错题数量快捷进入专项模式', (WidgetTester tester) async {

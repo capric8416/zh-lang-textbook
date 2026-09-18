@@ -3,12 +3,14 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:zh_textbook/models/pet.dart';
+import 'package:zh_textbook/models/pet_mission.dart';
 import 'package:zh_textbook/models/practice.dart';
 import 'package:zh_textbook/models/quick_practice.dart';
 import 'package:zh_textbook/services/learning_mastery.dart';
 import 'package:zh_textbook/widgets/pet_celebration.dart';
 import 'package:zh_textbook/widgets/pet_growth_card.dart';
 import 'package:zh_textbook/widgets/pet_quick_reaction.dart';
+import 'package:zh_textbook/widgets/pet_practice_companion.dart';
 
 void main() {
   testWidgets('成长卡显示全局成长和下一课进度', (tester) async {
@@ -119,6 +121,113 @@ void main() {
 
     await tester.pump(const Duration(seconds: 2));
     expect(find.byKey(const ValueKey('pet-quick-reaction')), findsNothing);
+  });
+
+  testWidgets('三题中宠物显示思考、鼓励和任务进度', (tester) async {
+    final mission = PetCompanionMission.forQuickPractice(
+      action: QuickPracticeAction.characters,
+      petName: '豆豆',
+    );
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: PetPracticeCompanion(
+            profile: const PetProfile(name: '豆豆'),
+            mission: mission,
+            mood: PetPracticeMood.thinking,
+            completedSteps: 0,
+          ),
+        ),
+      ),
+    );
+    expect(find.textContaining('慢慢想'), findsOneWidget);
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: PetPracticeCompanion(
+            profile: const PetProfile(name: '豆豆'),
+            mission: mission,
+            mood: PetPracticeMood.encourage,
+            completedSteps: 1,
+          ),
+        ),
+      ),
+    );
+    expect(find.textContaining('继续试'), findsOneWidget);
+    expect(
+      tester
+          .widget<LinearProgressIndicator>(
+            find.byKey(const ValueKey('pet-mission-progress')),
+          )
+          .value,
+      closeTo(1 / 3, 0.001),
+    );
+  });
+
+  testWidgets('减少动态效果时答对反馈使用零时长缩放', (tester) async {
+    final mission = PetCompanionMission.forQuickPractice(
+      action: QuickPracticeAction.mixedReview,
+      petName: '豆豆',
+    );
+    await tester.pumpWidget(
+      MaterialApp(
+        home: MediaQuery(
+          data: const MediaQueryData(disableAnimations: true),
+          child: Scaffold(
+            body: PetPracticeCompanion(
+              profile: const PetProfile(name: '豆豆'),
+              mission: mission,
+              mood: PetPracticeMood.celebrate,
+              completedSteps: 2,
+            ),
+          ),
+        ),
+      ),
+    );
+    expect(find.textContaining('答对啦'), findsOneWidget);
+    expect(
+      tester.widget<AnimatedScale>(find.byType(AnimatedScale)).duration,
+      Duration.zero,
+    );
+  });
+
+  testWidgets('任务完成可自愿再练也可正常返回', (tester) async {
+    bool? result;
+    final mission = PetCompanionMission.forQuickPractice(
+      action: QuickPracticeAction.mixedReview,
+      petName: '豆豆',
+    );
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Builder(
+          builder: (context) => FilledButton(
+            onPressed: () async {
+              result = await showDialog<bool>(
+                context: context,
+                barrierDismissible: false,
+                builder: (_) =>
+                    PetMissionCompletionDialog(petName: '豆豆', mission: mission),
+              );
+            },
+            child: const Text('完成'),
+          ),
+        ),
+      ),
+    );
+    await tester.tap(find.text('完成'));
+    await tester.pumpAndSettle();
+    expect(find.text('再练三题'), findsOneWidget);
+    expect(find.textContaining('豆豆想问'), findsOneWidget);
+    await tester.tap(find.byKey(const ValueKey('repeat-quick-practice')));
+    await tester.pumpAndSettle();
+    expect(result, isTrue);
+
+    await tester.tap(find.text('完成'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('先回去看看'));
+    await tester.pumpAndSettle();
+    expect(result, isFalse);
   });
 }
 

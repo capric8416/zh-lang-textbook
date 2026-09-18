@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:zh_textbook/models/pet.dart';
+import 'package:zh_textbook/models/pet_mission.dart';
 import 'package:zh_textbook/models/practice.dart';
 import 'package:zh_textbook/models/quick_practice.dart';
 import 'package:zh_textbook/models/textbook.dart';
@@ -273,6 +274,130 @@ void main() {
     expect(guide.goal, contains('2 道题'));
     expect(guide.invitation?.message, '豆豆想和你一起整理三个错题');
     expect(guide.invitation?.action, QuickPracticeAction.mistakeFirst);
+  });
+
+  test('三题任务按来源确定家具且始终包含三个步骤', () {
+    final invited = PetCompanionMission.forQuickPractice(
+      action: QuickPracticeAction.readAloud,
+      petName: '豆豆',
+    );
+    final furniture = PetCompanionMission.forQuickPractice(
+      action: QuickPracticeAction.mixedReview,
+      petName: '豆豆',
+      furnitureId: 'desk-lamp',
+    );
+
+    expect(invited.kind, PetMissionKind.bloomFlower);
+    expect(invited.targetFurnitureId, 'flower-pot');
+    expect(invited.source, PetMissionSource.invitation);
+    expect(invited.steps, hasLength(3));
+    expect(furniture.kind, PetMissionKind.lightLamp);
+    expect(furniture.targetFurnitureId, 'desk-lamp');
+    expect(furniture.source, PetMissionSource.furniture);
+  });
+
+  test('旧档案补齐家具状态但不重放历史解锁提示', () {
+    final legacy = PetProfile.fromJson({
+      'major_stage': 1,
+      'unlocked_furniture': ['pet-bed', 'study-desk', 'shade-tree'],
+    });
+    expect(legacy.furnitureStateInitialized, isFalse);
+
+    final result = PetGrowthEngine.synchronize(
+      profile: legacy,
+      textbookKey: 'grade2b',
+      textbook: textbook,
+      catalog: const PracticeCatalog([]),
+      progress: const PracticeProgress({}),
+      emitCelebrations: false,
+    );
+    expect(result.profile.furnitureStateInitialized, isTrue);
+    expect(result.profile.pendingFurnitureReveals, isEmpty);
+    expect(
+      result.profile.furnitureState('desk-lamp'),
+      FurnitureVisualState.ready,
+    );
+  });
+
+  test('新家具只标记一次并可激活和确认展示', () async {
+    final first = PetGrowthEngine.synchronize(
+      profile: const PetProfile(),
+      textbookKey: 'grade2b',
+      textbook: textbook,
+      catalog: const PracticeCatalog([]),
+      progress: const PracticeProgress({}),
+      emitCelebrations: false,
+    );
+    expect(first.profile.pendingFurnitureReveals, contains('study-desk'));
+    final repeated = PetGrowthEngine.synchronize(
+      profile: first.profile,
+      textbookKey: 'grade2b',
+      textbook: textbook,
+      catalog: const PracticeCatalog([]),
+      progress: const PracticeProgress({}),
+      emitCelebrations: false,
+    );
+    expect(
+      repeated.profile.pendingFurnitureReveals,
+      first.profile.pendingFurnitureReveals,
+    );
+
+    SharedPreferences.setMockInitialValues({
+      'pet_growth_profile': jsonEncode({
+        'version': 5,
+        'profile': first.profile.toJson(),
+      }),
+    });
+    final store = await PetGrowthStore.open();
+    expect(await store.activateFurniture('study-desk', 'fillBookcase'), isTrue);
+    expect(
+      store.profile.furnitureState('study-desk'),
+      FurnitureVisualState.active,
+    );
+    expect(store.profile.lastMissionKind, 'fillBookcase');
+    expect(await store.acknowledgeFurnitureReveal('study-desk'), isTrue);
+    expect(
+      store.profile.pendingFurnitureReveals,
+      isNot(contains('study-desk')),
+    );
+  });
+
+  test('回访只将相邻日识别为次日且忽略时钟回拨', () async {
+    final store = await PetGrowthStore.open();
+    expect(
+      await store.recordVisit(DateTime(2026, 9, 17, 8)),
+      PetVisitTransition.neutral,
+    );
+    expect(
+      await store.recordVisit(DateTime(2026, 9, 17, 20)),
+      PetVisitTransition.sameDay,
+    );
+    expect(
+      await store.recordVisit(DateTime(2026, 9, 18, 8)),
+      PetVisitTransition.nextDay,
+    );
+    expect(
+      await store.recordVisit(DateTime(2026, 9, 16, 8)),
+      PetVisitTransition.neutral,
+    );
+    expect(store.profile.lastVisitDate, '2026-09-18');
+  });
+
+  test('每日位置同日稳定且问候不包含断签压力', () {
+    final first = PetDailyCompanion.build(
+      profile: const PetProfile(name: '豆豆'),
+      anonymousInstallId: 'install',
+      date: DateTime(2026, 9, 18, 8),
+    );
+    final repeated = PetDailyCompanion.build(
+      profile: const PetProfile(name: '豆豆'),
+      anonymousInstallId: 'install',
+      date: DateTime(2026, 9, 18, 22),
+    );
+    expect(repeated.alignmentX, first.alignmentX);
+    expect(repeated.greeting, first.greeting);
+    expect(first.greeting, isNot(contains('错过')));
+    expect(first.greeting, isNot(contains('断签')));
   });
 }
 

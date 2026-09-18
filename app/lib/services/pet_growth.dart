@@ -115,6 +115,17 @@ class PetGrowthEngine {
       ...profile.unlockedFurniture,
       ...furnitureForStage(majorStage),
     };
+    final newlyUnlockedFurniture = unlockedFurniture.difference(
+      profile.unlockedFurniture,
+    );
+    final furnitureStates = {
+      ...profile.furnitureStates,
+      for (final id in unlockedFurniture)
+        id: profile.furnitureStates[id] ?? FurnitureVisualState.ready,
+    };
+    final pendingFurnitureReveals = profile.furnitureStateInitialized
+        ? {...profile.pendingFurnitureReveals, ...newlyUnlockedFurniture}
+        : <String>{};
     final normalizedBreed = unlockedBreeds.contains(profile.breed)
         ? profile.breed
         : 'default';
@@ -131,6 +142,10 @@ class PetGrowthEngine {
         unlockedBreeds.length != profile.unlockedBreeds.length ||
         unlockedDecorations.length != profile.unlockedDecorations.length ||
         unlockedFurniture.length != profile.unlockedFurniture.length ||
+        !profile.furnitureStateInitialized ||
+        furnitureStates.length != profile.furnitureStates.length ||
+        pendingFurnitureReveals.length !=
+            profile.pendingFurnitureReveals.length ||
         normalizedBreed != profile.breed ||
         normalizedDecoration != profile.selectedDecoration ||
         normalizedRoom != profile.selectedRoom;
@@ -145,6 +160,9 @@ class PetGrowthEngine {
         selectedDecoration: normalizedDecoration,
         selectedRoom: normalizedRoom,
         unlockedFurniture: unlockedFurniture,
+        furnitureStates: furnitureStates,
+        pendingFurnitureReveals: pendingFurnitureReveals,
+        furnitureStateInitialized: true,
       ),
       mastery: mastery,
       celebrations: [...lessonCelebrations, ...unitCelebrations],
@@ -176,6 +194,44 @@ class PetGrowthStore {
     return _save();
   }
 
+  Future<bool> activateFurniture(String id, String missionKind) async {
+    if (!_profile.unlockedFurniture.contains(id)) return false;
+    _profile = _profile.copyWith(
+      furnitureStates: {
+        ..._profile.furnitureStates,
+        id: FurnitureVisualState.active,
+      },
+      lastMissionKind: missionKind,
+    );
+    return _save();
+  }
+
+  Future<bool> acknowledgeFurnitureReveal(String id) async {
+    if (!_profile.pendingFurnitureReveals.contains(id)) return false;
+    _profile = _profile.copyWith(
+      pendingFurnitureReveals: {..._profile.pendingFurnitureReveals}
+        ..remove(id),
+    );
+    return _save();
+  }
+
+  Future<PetVisitTransition> recordVisit(DateTime value) async {
+    final localDate = _localDate(value);
+    final previous = _profile.lastVisitDate;
+    if (previous == localDate) return PetVisitTransition.sameDay;
+    final previousDate = previous == null ? null : DateTime.tryParse(previous);
+    final currentDate = DateTime.tryParse(localDate)!;
+    final transition =
+        previousDate != null && currentDate.difference(previousDate).inDays == 1
+        ? PetVisitTransition.nextDay
+        : PetVisitTransition.neutral;
+    if (previousDate == null || currentDate.isAfter(previousDate)) {
+      _profile = _profile.copyWith(lastVisitDate: localDate);
+      await _save();
+    }
+    return transition;
+  }
+
   Future<bool> selectDecoration(String id) async {
     if (!_profile.unlockedDecorations.contains(id)) return false;
     _profile = _profile.copyWith(selectedDecoration: id);
@@ -190,8 +246,15 @@ class PetGrowthStore {
 
   Future<bool> _save() async => _preferences.setString(
     _key,
-    jsonEncode({'version': 4, 'profile': _profile.toJson()}),
+    jsonEncode({'version': 5, 'profile': _profile.toJson()}),
   );
+
+  static String _localDate(DateTime value) {
+    final local = value.toLocal();
+    return '${local.year.toString().padLeft(4, '0')}-'
+        '${local.month.toString().padLeft(2, '0')}-'
+        '${local.day.toString().padLeft(2, '0')}';
+  }
 
   static Future<PetGrowthStore> open() async {
     final preferences = await SharedPreferences.getInstance();

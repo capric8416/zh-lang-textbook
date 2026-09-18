@@ -11,11 +11,15 @@ class PetRoomScene extends StatelessWidget {
     required this.profile,
     this.onFurnitureTap,
     this.actionDescription,
+    this.onRevealShown,
+    this.petAlignmentX = 0,
   });
 
   final PetProfile profile;
   final ValueChanged<PetFurniture>? onFurnitureTap;
   final String? Function(PetFurniture)? actionDescription;
+  final ValueChanged<String>? onRevealShown;
+  final double petAlignmentX;
 
   @override
   Widget build(BuildContext context) {
@@ -62,10 +66,13 @@ class PetRoomScene extends StatelessWidget {
                         ? null
                         : () => onFurnitureTap?.call(item),
                     actionDescription: actionDescription?.call(item),
+                    state: profile.furnitureState(item.id),
+                    reveal: profile.pendingFurnitureReveals.contains(item.id),
+                    onRevealShown: onRevealShown,
                   ),
                 ),
               Align(
-                alignment: const Alignment(0, 0.3),
+                alignment: Alignment(petAlignmentX, 0.3),
                 child: PetAvatar(
                   size: 126,
                   appearance: PetAppearance.fromBreed(profile.breed),
@@ -120,11 +127,17 @@ class _FurnitureTile extends StatefulWidget {
     required this.item,
     required this.onTap,
     required this.actionDescription,
+    required this.state,
+    required this.reveal,
+    required this.onRevealShown,
   });
 
   final PetFurniture item;
   final VoidCallback? onTap;
   final String? actionDescription;
+  final FurnitureVisualState state;
+  final bool reveal;
+  final ValueChanged<String>? onRevealShown;
 
   @override
   State<_FurnitureTile> createState() => _FurnitureTileState();
@@ -134,6 +147,7 @@ class _FurnitureTileState extends State<_FurnitureTile>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
   bool _started = false;
+  bool _revealScheduled = false;
 
   @override
   void initState() {
@@ -150,6 +164,16 @@ class _FurnitureTileState extends State<_FurnitureTile>
     if (!_started && widget.onTap != null) {
       _started = true;
       if (!MediaQuery.disableAnimationsOf(context)) _controller.forward();
+    }
+    if (widget.reveal && !_revealScheduled) {
+      _revealScheduled = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        if (!mounted) return;
+        if (!MediaQuery.disableAnimationsOf(context)) {
+          await Future<void>.delayed(const Duration(milliseconds: 900));
+        }
+        if (mounted) widget.onRevealShown?.call(widget.item.id);
+      });
     }
   }
 
@@ -174,12 +198,25 @@ class _FurnitureTileState extends State<_FurnitureTile>
           Stack(
             clipBehavior: Clip.none,
             children: [
-              Icon(_icon(widget.item.id), size: 30),
+              Icon(
+                _icon(widget.item.id, widget.state),
+                key: widget.state == FurnitureVisualState.active
+                    ? ValueKey('furniture-active-${widget.item.id}')
+                    : null,
+                size: 30,
+                color: _activeColor(widget.item.id, widget.state),
+              ),
               if (widget.onTap != null)
                 const Positioned(
                   right: -12,
                   top: -9,
                   child: Icon(Icons.play_circle_fill, size: 16),
+                ),
+              if (widget.reveal)
+                const Positioned(
+                  left: -12,
+                  top: -10,
+                  child: Icon(Icons.auto_awesome, size: 16),
                 ),
             ],
           ),
@@ -230,16 +267,32 @@ class _FurnitureTileState extends State<_FurnitureTile>
     );
   }
 
-  IconData _icon(String id) => switch (id) {
-    'pet-bed' => Icons.bed_outlined,
-    'soft-rug' => Icons.texture,
-    'toy-box' => Icons.toys_outlined,
-    'study-desk' => Icons.desk_outlined,
-    'desk-lamp' => Icons.light_outlined,
-    'bookcase' => Icons.shelves,
-    'shade-tree' => Icons.park_outlined,
-    'flower-pot' => Icons.local_florist_outlined,
-    'garden-swing' => Icons.deck_outlined,
-    _ => Icons.chair_outlined,
-  };
+  IconData _icon(String id, FurnitureVisualState state) =>
+      switch ((id, state)) {
+        ('bookcase', FurnitureVisualState.active) => Icons.auto_stories,
+        ('flower-pot', FurnitureVisualState.active) => Icons.local_florist,
+        ('desk-lamp', FurnitureVisualState.active) => Icons.lightbulb,
+        ('toy-box', FurnitureVisualState.active) => Icons.inventory_2,
+        ('pet-bed', _) => Icons.bed_outlined,
+        ('soft-rug', _) => Icons.texture,
+        ('toy-box', _) => Icons.toys_outlined,
+        ('study-desk', _) => Icons.desk_outlined,
+        ('desk-lamp', _) => Icons.light_outlined,
+        ('bookcase', _) => Icons.shelves,
+        ('shade-tree', _) => Icons.park_outlined,
+        ('flower-pot', _) => Icons.local_florist_outlined,
+        ('garden-swing', _) => Icons.deck_outlined,
+        _ => Icons.chair_outlined,
+      };
+
+  Color? _activeColor(String id, FurnitureVisualState state) {
+    if (state != FurnitureVisualState.active) return null;
+    return switch (id) {
+      'desk-lamp' => const Color(0xffffb703),
+      'flower-pot' => const Color(0xffe85d75),
+      'bookcase' => const Color(0xff6d8f3d),
+      'toy-box' => const Color(0xff3d9be9),
+      _ => null,
+    };
+  }
 }

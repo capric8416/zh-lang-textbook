@@ -1,46 +1,4 @@
-## Purpose
-
-Define the offline pet-home experience, personalization, and lightweight interactions.
-## Requirements
-### Requirement: Pet home shows the current companion
-The system SHALL provide a dedicated pet-home screen reachable from the growth card, showing and allowing rename of the selected companion, its breed, decoration, growth points, major stage, next-unlock goal, contextual learning invitation, switchable rooms, and automatically placed furniture.
-
-#### Scenario: Open pet home
-- **WHEN** the learner taps the growth card action
-- **THEN** the pet-home screen opens without changing textbook state and shows the named pet, current guidance, and last selected room
-
-#### Scenario: Rename pet
-- **WHEN** the learner chooses rename and submits a valid name
-- **THEN** the pet home immediately displays and persists the new name
-
-#### Scenario: Switch rooms
-- **WHEN** the learner taps another unlocked room tab
-- **THEN** the corresponding room theme and furniture layout are shown immediately and the selected room is persisted
-
-### Requirement: Unlocked breeds can be selected
-The system SHALL show dog and cat catalog entries, indicate locked entries and required stage, and allow selecting only unlocked breeds.
-
-#### Scenario: Select breed
-- **WHEN** an unlocked breed is tapped
-- **THEN** it is persisted and the preview updates
-
-### Requirement: Learning-earned decorations are selectable
-The system SHALL expose deterministic collars, scarves, and backgrounds unlocked by growth and preserve the selected decoration across restarts.
-
-#### Scenario: Select decoration
-- **WHEN** an unlocked decoration is tapped
-- **THEN** it is persisted and rendered by the preview
-
-### Requirement: Interactions are lightweight and non-competitive
-The system SHALL provide petting, greeting, and tail-wagging feedback without cost, cooldown penalty, hunger, decay, score, or learning impact.
-
-#### Scenario: Interaction
-- **WHEN** an interaction control is tapped
-- **THEN** brief local feedback is shown and learning data remains unchanged
-
-#### Scenario: Reduced motion
-- **WHEN** disabled animations are requested
-- **THEN** feedback is static or immediate
+## MODIFIED Requirements
 
 ### Requirement: Learning-earned furniture is selectable by room
 The system SHALL expose a small catalog of furniture associated with rooms, unlock furniture deterministically by major stage, place unlocked furniture in fixed slots without requiring manual layout editing, make configured furniture accessible as current-textbook learning entry points, visually distinguish actionable furniture with brief motion-aware cues, and render persistent semantic states earned through unlocks and completed missions.
@@ -77,6 +35,8 @@ The system SHALL expose a small catalog of furniture associated with rooms, unlo
 - **WHEN** the learner taps furniture without a learning action
 - **THEN** it remains decorative and does not alter progress or rewards
 
+## ADDED Requirements
+
 ### Requirement: Pet home varies daily without pressure
 The system SHALL choose a stable daily pet position and friendly greeting from anonymous installation, local date, selected room, and recent activity category without creating a reward or obligation.
 
@@ -91,14 +51,3 @@ The system SHALL choose a stable daily pet position and friendly greeting from a
 #### Scenario: Learner revisits on the same day
 - **WHEN** the same room is reopened on the same local date
 - **THEN** the pet position remains stable and no duplicate next-day return is recorded
-
-### Requirement: Companion offers a contextual lightweight task
-The system SHALL present one named-pet invitation derived from current-textbook progress and launch it through the existing quick-practice selector.
-
-#### Scenario: Current mistakes exist
-- **WHEN** the learner has current mistakes and opens a companion surface
-- **THEN** the invitation prioritizes a three-question mistake activity
-
-#### Scenario: No current mistakes exist
-- **WHEN** no current mistakes exist and at least three compatible attempts are available
-- **THEN** the invitation offers an available mixed, character, or read-aloud three-question activity
