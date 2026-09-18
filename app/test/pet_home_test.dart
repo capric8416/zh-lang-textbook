@@ -8,6 +8,7 @@ import 'package:zh_textbook/models/pet.dart';
 import 'package:zh_textbook/models/textbook.dart';
 import 'package:zh_textbook/screens/pet_home_page.dart';
 import 'package:zh_textbook/screens/practice_page.dart';
+import 'package:zh_textbook/services/pet_growth.dart';
 import 'package:zh_textbook/services/textbook_repository.dart';
 
 void main() {
@@ -19,8 +20,7 @@ void main() {
     expect(find.text('宠物之家'), findsOneWidget);
     expect(find.byKey(const ValueKey('pet-room-living-room')), findsOneWidget);
     expect(find.byKey(const ValueKey('furniture-pet-bed')), findsNothing);
-    await tester.drag(find.byType(ListView), const Offset(0, -500));
-    await tester.pumpAndSettle();
+    await tester.scrollUntilVisible(find.text('学习装饰'), 300);
     expect(find.text('摸摸头'), findsOneWidget);
     expect(find.text('打个招呼'), findsOneWidget);
     expect(find.text('摇尾巴'), findsOneWidget);
@@ -68,6 +68,7 @@ void main() {
     expect(find.byKey(const ValueKey('pet-room-study-room')), findsOneWidget);
     expect(find.byKey(const ValueKey('furniture-study-desk')), findsOneWidget);
     expect(find.byKey(const ValueKey('furniture-desk-lamp')), findsOneWidget);
+    expect(find.byIcon(Icons.play_circle_fill), findsNWidgets(2));
     await tester.drag(find.byType(ListView), const Offset(0, -500));
     await tester.pumpAndSettle();
     expect(find.textContaining('小书柜（大阶段3解锁）'), findsOneWidget);
@@ -75,6 +76,25 @@ void main() {
     final stored = await SharedPreferences.getInstance();
     final raw = stored.getString('pet_growth_profile');
     expect(raw, contains('study-room'));
+  });
+
+  testWidgets('宠物可以改名并持久化', (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    await tester.pumpWidget(const MaterialApp(home: PetHomePage()));
+    await tester.pumpAndSettle();
+    await tester.scrollUntilVisible(
+      find.byKey(const ValueKey('rename-pet')),
+      250,
+    );
+    await tester.tap(find.byKey(const ValueKey('rename-pet')));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byKey(const ValueKey('pet-name-field')), '豆豆');
+    await tester.tap(find.text('保存'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('豆豆'), findsOneWidget);
+    final reopened = await PetGrowthStore.open();
+    expect(reopened.profile.name, '豆豆');
   });
 
   testWidgets('学习家具进入当前教材三题陪练并可提前返回', (tester) async {
@@ -136,7 +156,10 @@ void main() {
     await tester.tap(find.byKey(const ValueKey('furniture-desk-lamp')));
     await tester.pumpAndSettle();
     Navigator.of(tester.element(find.byType(PracticePage))).pop(true);
-    await tester.pumpAndSettle();
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 200));
+    expect(find.byKey(const ValueKey('pet-quick-reaction')), findsOneWidget);
+    await tester.pump(const Duration(seconds: 2));
     await tester.drag(find.byType(ListView), const Offset(0, -420));
     await tester.pumpAndSettle();
     expect(find.text('三题陪练完成，真棒！'), findsOneWidget);

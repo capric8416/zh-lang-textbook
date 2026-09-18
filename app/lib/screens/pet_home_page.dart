@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import '../models/pet.dart';
 import '../models/practice.dart';
+import '../models/quick_practice.dart';
 import '../models/textbook.dart';
 import '../services/pet_growth.dart';
+import '../services/learning_mastery.dart';
+import '../services/pet_companion.dart';
 import '../services/practice_progress.dart';
 import '../services/quick_practice.dart';
 import '../services/textbook_repository.dart';
 import '../widgets/pet_room_scene.dart';
+import '../widgets/pet_quick_reaction.dart';
 import 'practice_page.dart';
 
 class PetHomePage extends StatefulWidget {
@@ -23,6 +27,7 @@ class _PetHomePageState extends State<PetHomePage> {
   PetGrowthStore? _store;
   PracticeProgressStore? _progressStore;
   PracticeCatalog? _catalog;
+  PetCompanionGuide? _guide;
   String _message = '选一个喜欢的伙伴吧';
   @override
   void initState() {
@@ -40,11 +45,26 @@ class _PetHomePageState extends State<PetHomePage> {
     final catalog = textbook == null
         ? null
         : PracticeCatalog.fromTextbook(textbook);
+    final mastery = textbook == null || catalog == null || progressStore == null
+        ? null
+        : calculateTextbookMastery(
+            textbook: textbook,
+            catalog: catalog,
+            progress: progressStore.progress,
+          );
     if (!mounted) return;
     setState(() {
       _store = store;
       _progressStore = progressStore;
       _catalog = catalog;
+      _guide = mastery == null || catalog == null || progressStore == null
+          ? null
+          : PetCompanionGuide.build(
+              profile: store.profile,
+              mastery: mastery,
+              catalog: catalog,
+              progress: progressStore.progress,
+            );
     });
   }
 
@@ -86,16 +106,36 @@ class _PetHomePageState extends State<PetHomePage> {
       _showUnavailable(result.reason ?? '当前无法开始三题陪练');
       return;
     }
+    await _openQuickPractice(result.session!, action);
+  }
+
+  Future<void> _openInvitation() async {
+    final invitation = _guide?.invitation;
+    if (invitation == null) return;
+    await _openQuickPractice(invitation.session, invitation.action);
+  }
+
+  Future<void> _openQuickPractice(
+    QuickPracticeSession session,
+    QuickPracticeAction action,
+  ) async {
+    final selection = widget.selection;
+    final textbook = widget.textbook;
+    if (selection == null || textbook == null) return;
     final completed = await Navigator.of(context).push<bool>(
       MaterialPageRoute(
         builder: (_) => PracticePage(
           selection: selection,
           textbook: textbook,
-          quickSession: result.session,
+          quickSession: session,
         ),
       ),
     );
     await _refreshAfterPractice(completed: completed == true);
+    final profile = _store?.profile;
+    if (mounted && completed == true && profile != null) {
+      showPetQuickReaction(context, profile: profile, action: action);
+    }
   }
 
   Future<void> _refreshAfterPractice({required bool completed}) async {
@@ -109,6 +149,18 @@ class _PetHomePageState extends State<PetHomePage> {
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(SnackBar(content: Text(message)));
+  }
+
+  Future<void> _renamePet() async {
+    final store = _store;
+    if (store == null) return;
+    final name = await showDialog<String>(
+      context: context,
+      builder: (context) => _RenamePetDialog(initialName: store.profile.name),
+    );
+    if (name == null || !await store.rename(name) || !mounted) return;
+    await _open();
+    if (mounted) setState(() => _message = '以后就叫我$name吧！');
   }
 
   String? _furnitureActionDescription(PetFurniture furniture) =>
@@ -163,6 +215,23 @@ class _PetHomePageState extends State<PetHomePage> {
               padding: const EdgeInsets.all(20),
               child: Column(
                 children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        profile.name,
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                      IconButton(
+                        key: const ValueKey('rename-pet'),
+                        tooltip: '修改宠物名字',
+                        onPressed: _renamePet,
+                        icon: const Icon(Icons.edit_outlined),
+                      ),
+                    ],
+                  ),
                   Text(
                     _message,
                     style: Theme.of(context).textTheme.titleMedium,
@@ -170,6 +239,21 @@ class _PetHomePageState extends State<PetHomePage> {
                   Text(
                     '成长值 ${profile.growthPoints} · 大阶段 ${profile.majorStage}',
                   ),
+                  if (_guide != null) ...[
+                    const SizedBox(height: 8),
+                    Text(
+                      _guide!.goal,
+                      key: const ValueKey('pet-next-unlock'),
+                      textAlign: TextAlign.center,
+                    ),
+                    if (_guide!.invitation != null)
+                      FilledButton.tonalIcon(
+                        key: const ValueKey('pet-home-invitation'),
+                        onPressed: _openInvitation,
+                        icon: const Icon(Icons.pets_outlined),
+                        label: Text(_guide!.invitation!.message),
+                      ),
+                  ],
                   Wrap(
                     spacing: 8,
                     children: [
@@ -266,4 +350,59 @@ class _PetHomePageState extends State<PetHomePage> {
       ),
     );
   }
+}
+
+class _RenamePetDialog extends StatefulWidget {
+  const _RenamePetDialog({required this.initialName});
+
+  final String initialName;
+
+  @override
+  State<_RenamePetDialog> createState() => _RenamePetDialogState();
+}
+
+class _RenamePetDialogState extends State<_RenamePetDialog> {
+  late final TextEditingController _controller;
+  String? _error;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: widget.initialName);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _submit() {
+    final normalized = normalizePetName(_controller.text);
+    if (normalized == null) {
+      setState(() => _error = '请输入一个名字');
+    } else {
+      Navigator.pop(context, normalized);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) => AlertDialog(
+    title: const Text('给伙伴取名字'),
+    content: TextField(
+      key: const ValueKey('pet-name-field'),
+      controller: _controller,
+      autofocus: true,
+      maxLength: 8,
+      decoration: InputDecoration(labelText: '宠物名字', errorText: _error),
+      onSubmitted: (_) => _submit(),
+    ),
+    actions: [
+      TextButton(
+        onPressed: () => Navigator.pop(context),
+        child: const Text('取消'),
+      ),
+      FilledButton(onPressed: _submit, child: const Text('保存')),
+    ],
+  );
 }

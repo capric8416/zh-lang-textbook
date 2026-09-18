@@ -4,6 +4,16 @@ enum PetExpression { happy, wink, starry, radiant }
 
 enum PetCelebrationType { lesson, unit }
 
+const defaultPetName = '小语';
+
+String? normalizePetName(String input) {
+  final normalized = input.trim().replaceAll(RegExp(r'\s+'), ' ');
+  if (normalized.isEmpty || normalized.runes.any((rune) => rune < 0x20)) {
+    return null;
+  }
+  return String.fromCharCodes(normalized.runes.take(8));
+}
+
 class PetRoom {
   const PetRoom({required this.id, required this.name});
 
@@ -216,6 +226,7 @@ PetDecoration petDecoration(String id) => petDecorations.firstWhere(
 
 class PetProfile {
   const PetProfile({
+    this.name = defaultPetName,
     this.species = PetSpecies.dog,
     this.breed = 'default',
     this.growthPoints = 0,
@@ -229,6 +240,9 @@ class PetProfile {
   });
 
   factory PetProfile.fromJson(Map<String, dynamic> json) => PetProfile(
+    name: json['name'] is String
+        ? normalizePetName(json['name'] as String) ?? defaultPetName
+        : defaultPetName,
     species: PetSpecies.values.firstWhere(
       (value) => value.name == json['species'],
       orElse: () => PetSpecies.dog,
@@ -264,6 +278,7 @@ class PetProfile {
         : const {},
   );
 
+  final String name;
   final PetSpecies species;
   final String breed;
   final int growthPoints;
@@ -276,6 +291,7 @@ class PetProfile {
   final Set<String> unlockedFurniture;
 
   Map<String, dynamic> toJson() => {
+    'name': name,
     'species': species.name,
     'breed': breed,
     'growth_points': growthPoints,
@@ -289,6 +305,7 @@ class PetProfile {
   };
 
   PetProfile copyWith({
+    String? name,
     int? growthPoints,
     int? majorStage,
     Set<String>? claimedEvents,
@@ -300,6 +317,7 @@ class PetProfile {
     String? selectedRoom,
     Set<String>? unlockedFurniture,
   }) => PetProfile(
+    name: name ?? this.name,
     species: species ?? this.species,
     breed: breed ?? this.breed,
     growthPoints: growthPoints ?? this.growthPoints,

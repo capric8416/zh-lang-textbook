@@ -390,7 +390,11 @@ class _PracticePageState extends State<PracticePage> {
       emitCelebrations: true,
     );
     if (mounted && result.celebrations.isNotEmpty) {
-      await showPetCelebrations(context, result.celebrations);
+      await showPetCelebrations(
+        context,
+        result.celebrations,
+        petName: result.profile.name,
+      );
     }
   }
 

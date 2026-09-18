@@ -169,6 +169,13 @@ class PetGrowthStore {
     return _save();
   }
 
+  Future<bool> rename(String name) async {
+    final normalized = normalizePetName(name);
+    if (normalized == null) return false;
+    _profile = _profile.copyWith(name: normalized);
+    return _save();
+  }
+
   Future<bool> selectDecoration(String id) async {
     if (!_profile.unlockedDecorations.contains(id)) return false;
     _profile = _profile.copyWith(selectedDecoration: id);
@@ -183,7 +190,7 @@ class PetGrowthStore {
 
   Future<bool> _save() async => _preferences.setString(
     _key,
-    jsonEncode({'version': 3, 'profile': _profile.toJson()}),
+    jsonEncode({'version': 4, 'profile': _profile.toJson()}),
   );
 
   static Future<PetGrowthStore> open() async {

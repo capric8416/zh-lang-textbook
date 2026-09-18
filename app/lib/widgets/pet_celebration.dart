@@ -7,8 +7,9 @@ import 'pet_avatar.dart';
 
 Future<void> showPetCelebrations(
   BuildContext context,
-  List<PetCelebration> celebrations,
-) async {
+  List<PetCelebration> celebrations, {
+  String petName = defaultPetName,
+}) async {
   for (final celebration in celebrations) {
     if (!context.mounted) return;
     await showGeneralDialog<void>(
@@ -21,6 +22,7 @@ Future<void> showPetCelebrations(
       transitionDuration: Duration.zero,
       pageBuilder: (context, _, _) => _PetCelebrationOverlay(
         celebration: celebration,
+        petName: petName,
         reduceMotion: MediaQuery.disableAnimationsOf(context),
       ),
     );
@@ -30,10 +32,12 @@ Future<void> showPetCelebrations(
 class _PetCelebrationOverlay extends StatefulWidget {
   const _PetCelebrationOverlay({
     required this.celebration,
+    required this.petName,
     required this.reduceMotion,
   });
 
   final PetCelebration celebration;
+  final String petName;
   final bool reduceMotion;
 
   @override
@@ -125,6 +129,7 @@ class _PetCelebrationOverlayState extends State<_PetCelebrationOverlay>
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
+                              Text('${widget.petName}也来庆祝！'),
                               Text(
                                 '${celebration.threshold}% 达成！',
                                 style: Theme.of(context).textTheme.titleMedium
@@ -181,6 +186,7 @@ class _PetCelebrationOverlayState extends State<_PetCelebrationOverlay>
                   ),
                   const SizedBox(height: 8),
                   Text(widget.celebration.unitName ?? ''),
+                  Text('${widget.petName}为你骄傲！'),
                 ],
               ),
             ),

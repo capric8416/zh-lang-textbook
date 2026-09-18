@@ -4,12 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:zh_textbook/models/pet.dart';
 import 'package:zh_textbook/models/practice.dart';
+import 'package:zh_textbook/models/quick_practice.dart';
 import 'package:zh_textbook/services/learning_mastery.dart';
 import 'package:zh_textbook/widgets/pet_celebration.dart';
 import 'package:zh_textbook/widgets/pet_growth_card.dart';
+import 'package:zh_textbook/widgets/pet_quick_reaction.dart';
 
 void main() {
   testWidgets('成长卡显示全局成长和下一课进度', (tester) async {
+    var invited = false;
     final lesson = LessonMastery(
       chapterId: 'chapter-1',
       chapterName: '找春天',
@@ -26,8 +29,15 @@ void main() {
       MaterialApp(
         home: Scaffold(
           body: PetGrowthCard(
-            profile: const PetProfile(growthPoints: 180, majorStage: 2),
+            profile: const PetProfile(
+              name: '豆豆',
+              growthPoints: 180,
+              majorStage: 2,
+            ),
             mastery: mastery,
+            goal: '再掌握 2 道题，小台灯就会解锁！',
+            invitation: '豆豆想陪你轻松练三题',
+            onAcceptInvitation: () => invited = true,
           ),
         ),
       ),
@@ -37,13 +47,18 @@ void main() {
     expect(find.byKey(const ValueKey('pet-avatar')), findsOneWidget);
     expect(find.text('成长值 180'), findsOneWidget);
     expect(find.text('大阶段 2'), findsOneWidget);
+    expect(find.text('豆豆 · 小狗'), findsOneWidget);
+    expect(find.textContaining('小台灯'), findsOneWidget);
     expect(find.textContaining('找春天  3/5（60%）'), findsOneWidget);
+    await tester.tap(find.byKey(const ValueKey('pet-practice-invitation')));
+    expect(invited, isTrue);
   });
 
   testWidgets('庆祝动画先显示课文反应再显示单元礼花', (tester) async {
     await tester.pumpWidget(
       const MaterialApp(
         home: _CelebrationHarness(
+          petName: '豆豆',
           celebrations: [
             PetCelebration.lesson(title: '找春天', threshold: 80),
             PetCelebration.unit(unitName: '第一单元'),
@@ -59,6 +74,7 @@ void main() {
       findsOneWidget,
     );
     expect(find.text('80% 达成！'), findsOneWidget);
+    expect(find.text('豆豆也来庆祝！'), findsOneWidget);
 
     await tester.pump(const Duration(milliseconds: 2200));
     await tester.pump();
@@ -92,19 +108,52 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byKey(const ValueKey('pet-lesson-celebration')), findsNothing);
   });
+
+  testWidgets('普通三题完成显示短暂宠物动作反馈', (tester) async {
+    await tester.pumpWidget(const MaterialApp(home: _QuickReactionHarness()));
+
+    await tester.tap(find.text('完成三题'));
+    await tester.pump(const Duration(milliseconds: 500));
+    expect(find.byKey(const ValueKey('pet-quick-reaction')), findsOneWidget);
+    expect(find.textContaining('叼来一朵小花'), findsOneWidget);
+
+    await tester.pump(const Duration(seconds: 2));
+    expect(find.byKey(const ValueKey('pet-quick-reaction')), findsNothing);
+  });
 }
 
 class _CelebrationHarness extends StatelessWidget {
-  const _CelebrationHarness({required this.celebrations});
+  const _CelebrationHarness({required this.celebrations, this.petName = '小语'});
 
   final List<PetCelebration> celebrations;
+  final String petName;
 
   @override
   Widget build(BuildContext context) => Scaffold(
     body: Center(
       child: FilledButton(
-        onPressed: () => unawaited(showPetCelebrations(context, celebrations)),
+        onPressed: () => unawaited(
+          showPetCelebrations(context, celebrations, petName: petName),
+        ),
         child: const Text('庆祝'),
+      ),
+    ),
+  );
+}
+
+class _QuickReactionHarness extends StatelessWidget {
+  const _QuickReactionHarness();
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+    body: Center(
+      child: FilledButton(
+        onPressed: () => showPetQuickReaction(
+          context,
+          profile: const PetProfile(name: '豆豆'),
+          action: QuickPracticeAction.readAloud,
+        ),
+        child: const Text('完成三题'),
       ),
     ),
   );

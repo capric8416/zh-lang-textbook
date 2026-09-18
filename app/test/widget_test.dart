@@ -108,6 +108,15 @@ void main() {
     expect(find.textContaining('1 道当前错题'), findsOneWidget);
     expect(find.byKey(const ValueKey('pet-growth-card')), findsOneWidget);
     expect(find.textContaining('成长值'), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('pet-practice-invitation')),
+      findsOneWidget,
+    );
+    await tester.tap(find.byKey(const ValueKey('pet-practice-invitation')));
+    await tester.pumpAndSettle();
+    expect(find.text('宠物三题陪练'), findsOneWidget);
+    await tester.tap(find.byTooltip('返回'));
+    await tester.pumpAndSettle();
   });
 
   testWidgets('练习页可以从错题数量快捷进入专项模式', (WidgetTester tester) async {

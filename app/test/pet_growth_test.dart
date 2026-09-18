@@ -5,9 +5,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:zh_textbook/models/pet.dart';
 import 'package:zh_textbook/models/practice.dart';
+import 'package:zh_textbook/models/quick_practice.dart';
 import 'package:zh_textbook/models/textbook.dart';
 import 'package:zh_textbook/services/learning_mastery.dart';
 import 'package:zh_textbook/services/pet_growth.dart';
+import 'package:zh_textbook/services/pet_companion.dart';
 import 'package:zh_textbook/services/practice_progress.dart';
 
 void main() {
@@ -196,6 +198,7 @@ void main() {
       'claimed_events': <String>[],
     });
     expect(legacy.unlockedBreeds, {'default'});
+    expect(legacy.name, defaultPetName);
     final unlocked = PetGrowthEngine.breedsForStage(legacy.majorStage);
     expect(unlocked, containsAll(<String>['default', 'shiba', 'corgi']));
     expect(PetGrowthEngine.decorationsForStage(2), contains('red-scarf'));
@@ -232,10 +235,44 @@ void main() {
     expect(await store.selectDecoration('blue-collar'), isTrue);
     expect(await store.selectRoom('unknown-room'), isFalse);
     expect(await store.selectRoom('study-room'), isTrue);
+    expect(await store.rename('  小 春  '), isTrue);
+    expect(await store.rename('   '), isFalse);
     final reopened = await PetGrowthStore.open();
     expect(reopened.profile.breed, 'shiba');
     expect(reopened.profile.selectedDecoration, 'blue-collar');
     expect(reopened.profile.selectedRoom, 'study-room');
+    expect(reopened.profile.name, '小 春');
+  });
+
+  test('陪伴引导显示下一解锁并优先邀请整理错题', () {
+    final questions = [
+      _question('first-0', firstChapterId),
+      _question('first-1', firstChapterId),
+      _question('first-2', firstChapterId),
+    ];
+    final progress = PracticeProgress({
+      questions.first.attemptId(PracticeDirection.writeHanzi):
+          const QuestionProgress(wrongCount: 1),
+    });
+    final mastery = calculateTextbookMastery(
+      textbook: textbook,
+      catalog: PracticeCatalog(questions),
+      progress: progress,
+    );
+    final guide = PetCompanionGuide.build(
+      profile: const PetProfile(
+        name: '豆豆',
+        unlockedFurniture: {'pet-bed', 'study-desk', 'shade-tree'},
+      ),
+      mastery: mastery,
+      catalog: PracticeCatalog(questions),
+      progress: progress,
+    );
+
+    expect(guide.goal, contains('小台灯'));
+    expect(guide.goal, contains('2 道题'));
+    expect(guide.invitation?.message, '豆豆想和你一起整理三个错题');
+    expect(guide.invitation?.action, QuickPracticeAction.mistakeFirst);
   });
 }
 

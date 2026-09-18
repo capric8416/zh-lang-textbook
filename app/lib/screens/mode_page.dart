@@ -5,9 +5,11 @@ import '../models/practice.dart';
 import '../models/textbook.dart';
 import '../services/learning_mastery.dart';
 import '../services/pet_growth.dart';
+import '../services/pet_companion.dart';
 import '../services/practice_progress.dart';
 import '../services/textbook_repository.dart';
 import '../widgets/pet_growth_card.dart';
+import '../widgets/pet_quick_reaction.dart';
 import 'practice_page.dart';
 import 'review_page.dart';
 import 'pet_home_page.dart';
@@ -26,6 +28,7 @@ class _ModePageState extends State<ModePage> {
   int? _wrongCount;
   PetProfile? _petProfile;
   TextbookMastery? _mastery;
+  PetCompanionGuide? _guide;
 
   @override
   void initState() {
@@ -49,6 +52,12 @@ class _ModePageState extends State<ModePage> {
         _wrongCount = store.progress.wrongCountFor(catalog.questions);
         _petProfile = pet.profile;
         _mastery = pet.mastery;
+        _guide = PetCompanionGuide.build(
+          profile: pet.profile,
+          mastery: pet.mastery,
+          catalog: catalog,
+          progress: store.progress,
+        );
       });
     }
   }
@@ -64,6 +73,29 @@ class _ModePageState extends State<ModePage> {
       ),
     );
     await _loadDashboard();
+  }
+
+  Future<void> _openInvitation() async {
+    final invitation = _guide?.invitation;
+    if (invitation == null) return;
+    final completed = await Navigator.of(context).push<bool>(
+      MaterialPageRoute(
+        builder: (_) => PracticePage(
+          selection: widget.selection,
+          textbook: widget.textbook,
+          quickSession: invitation.session,
+        ),
+      ),
+    );
+    await _loadDashboard();
+    final profile = _petProfile;
+    if (mounted && completed == true && profile != null) {
+      showPetQuickReaction(
+        context,
+        profile: profile,
+        action: invitation.action,
+      );
+    }
   }
 
   @override
@@ -88,6 +120,9 @@ class _ModePageState extends State<ModePage> {
                   PetGrowthCard(
                     profile: _petProfile!,
                     mastery: _mastery!,
+                    goal: _guide?.goal,
+                    invitation: _guide?.invitation?.message,
+                    onAcceptInvitation: _openInvitation,
                     onOpenHome: () async {
                       await Navigator.of(context).push(
                         MaterialPageRoute<void>(

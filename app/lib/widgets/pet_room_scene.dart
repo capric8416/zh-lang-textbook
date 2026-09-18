@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 
 import '../models/pet.dart';
@@ -112,7 +114,7 @@ class PetRoomScene extends StatelessWidget {
   };
 }
 
-class _FurnitureTile extends StatelessWidget {
+class _FurnitureTile extends StatefulWidget {
   const _FurnitureTile({
     super.key,
     required this.item,
@@ -123,6 +125,39 @@ class _FurnitureTile extends StatelessWidget {
   final PetFurniture item;
   final VoidCallback? onTap;
   final String? actionDescription;
+
+  @override
+  State<_FurnitureTile> createState() => _FurnitureTileState();
+}
+
+class _FurnitureTileState extends State<_FurnitureTile>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+  bool _started = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 900),
+    );
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_started && widget.onTap != null) {
+      _started = true;
+      if (!MediaQuery.disableAnimationsOf(context)) _controller.forward();
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -136,9 +171,20 @@ class _FurnitureTile extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(_icon(item.id), size: 30),
+          Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Icon(_icon(widget.item.id), size: 30),
+              if (widget.onTap != null)
+                const Positioned(
+                  right: -12,
+                  top: -9,
+                  child: Icon(Icons.play_circle_fill, size: 16),
+                ),
+            ],
+          ),
           Text(
-            item.name,
+            widget.item.name,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: Theme.of(context).textTheme.labelSmall,
@@ -146,21 +192,41 @@ class _FurnitureTile extends StatelessWidget {
         ],
       ),
     );
-    return Semantics(
-      button: onTap != null,
-      label: actionDescription == null
-          ? item.name
-          : '${item.name}，$actionDescription',
-      child: onTap == null
-          ? tile
-          : Material(
-              color: Colors.transparent,
-              child: InkWell(
-                borderRadius: BorderRadius.circular(14),
-                onTap: onTap,
-                child: tile,
-              ),
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        final wave = math.sin(_controller.value * math.pi);
+        return Transform.translate(
+          offset: widget.item.id == 'bookcase'
+              ? Offset(0, -4 * wave)
+              : Offset.zero,
+          child: Transform.rotate(
+            angle: widget.item.id == 'flower-pot' || widget.item.id == 'toy-box'
+                ? 0.06 * wave
+                : 0,
+            child: Transform.scale(
+              scale: widget.item.id == 'desk-lamp' ? 1 + 0.1 * wave : 1,
+              child: child,
             ),
+          ),
+        );
+      },
+      child: Semantics(
+        button: widget.onTap != null,
+        label: widget.actionDescription == null
+            ? widget.item.name
+            : '${widget.item.name}，${widget.actionDescription}',
+        child: widget.onTap == null
+            ? tile
+            : Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(14),
+                  onTap: widget.onTap,
+                  child: tile,
+                ),
+              ),
+      ),
     );
   }
 

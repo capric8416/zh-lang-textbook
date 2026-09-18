@@ -9,11 +9,17 @@ class PetGrowthCard extends StatelessWidget {
     super.key,
     required this.profile,
     required this.mastery,
+    this.goal,
+    this.invitation,
+    this.onAcceptInvitation,
     this.onOpenHome,
   });
 
   final PetProfile profile;
   final TextbookMastery mastery;
+  final String? goal;
+  final String? invitation;
+  final VoidCallback? onAcceptInvitation;
   final VoidCallback? onOpenHome;
 
   @override
@@ -43,7 +49,7 @@ class PetGrowthCard extends StatelessWidget {
                     children: [
                       Expanded(
                         child: Text(
-                          '${petBreed(profile.breed).name}成长伙伴',
+                          '${profile.name} · ${petBreed(profile.breed).name}',
                           style: Theme.of(context).textTheme.titleMedium
                               ?.copyWith(fontWeight: FontWeight.w800),
                         ),
@@ -79,6 +85,25 @@ class PetGrowthCard extends StatelessWidget {
                     minHeight: 8,
                     borderRadius: BorderRadius.circular(99),
                   ),
+                  if (goal != null) ...[
+                    const SizedBox(height: 10),
+                    Row(
+                      children: [
+                        const Icon(Icons.lock_open_outlined, size: 18),
+                        const SizedBox(width: 6),
+                        Expanded(child: Text(goal!)),
+                      ],
+                    ),
+                  ],
+                  if (invitation != null) ...[
+                    const SizedBox(height: 12),
+                    FilledButton.tonalIcon(
+                      key: const ValueKey('pet-practice-invitation'),
+                      onPressed: onAcceptInvitation,
+                      icon: const Icon(Icons.pets_outlined),
+                      label: Text(invitation!),
+                    ),
+                  ],
                 ],
               ),
             ),
