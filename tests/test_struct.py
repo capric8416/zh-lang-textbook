@@ -42,6 +42,19 @@ class SourceFirstPinyinTest(unittest.TestCase):
 
         self.assertEqual(result.split(" "), ["bú", "yào", "zháo", "jí"])
 
+    def test_reviewed_contextual_readings_override_old_source_reading(self) -> None:
+        cases = {
+            "好奇": ["hào", "qí"],
+            "肚子": ["dǔ", "zi"],
+            "一些": ["yì", "xiē"],
+            "一样": ["yí", "yàng"],
+        }
+
+        for text, expected in cases.items():
+            with self.subTest(text=text):
+                old_source = {index: "x" for index in range(len(text))}
+                self.assertEqual(annotate(text, old_source).split(" "), expected)
+
 
 if __name__ == "__main__":
     unittest.main()

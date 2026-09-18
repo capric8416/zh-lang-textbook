@@ -44,6 +44,7 @@ def parse_page(
 
     footer = footer_json(regions.footer)
     page_no = footer["页码"] if footer else None
+    body_unit = body_unit_label(regions.body + regions.sidebar, width)
 
     # 封面、版权页、目录没有印刷页码，不做课文/课后抽取。少数跨页选文的
     # 起始页恰好没有页码，但有明确栏目标签，仍需解析并由 parse_pages 推断页码。
@@ -131,6 +132,11 @@ def parse_page(
                         item for item in after_notes if item["文本"] not in known_notes
                     )
 
+    # 有些版本把“第X单元”放在独立导语页的正文区，而不是页眉。
+    # 导语页上的学习提示不是课文，但该单元号需要传给后续页。
+    if body_unit and lesson and lesson.get("课号") is None:
+        lesson = None
+
     if appendix:
         kind = "附录页"
     elif garden and lesson:
@@ -150,7 +156,7 @@ def parse_page(
     result = {
         "pdf页序": index + 1,
         "页码": int(page_no) if page_no and page_no.isdigit() else None,
-        "单元": unit_label(head["文本"] if head else None),
+        "单元": unit_label(head["文本"] if head else None) or body_unit,
         "课文": lesson,
         "园地": garden,
         "附录": appendix,
@@ -180,6 +186,7 @@ def parse_page(
 
 
 UNIT_RE = re.compile(r"^第([一二三四五六七八九十]+)单元[·・]?(\S*)")
+BODY_UNIT_RE = re.compile(r"^第([一二三四五六七八九十]+)单元$")
 CN_NUM = "一二三四五六七八九十"
 
 
@@ -189,6 +196,22 @@ def unit_label(text: str | None) -> dict | None:
     if not m:
         return None
     return {"单元": CN_NUM.index(m.group(1)[0]) + 1, "类型": m.group(2) or None}
+
+
+def body_unit_label(lines: list, page_width: float) -> dict | None:
+    """正文区右侧竖排的“第X单元”导语标题。"""
+    chars = [
+        char
+        for line in lines
+        for char in line.visible_chars()
+        if char.bbox[0] >= page_width * 0.8
+        and char.bbox[3] - char.bbox[1] >= 24
+    ]
+    text = "".join(char.char for char in sorted(chars, key=lambda char: char.bbox[1]))
+    match = BODY_UNIT_RE.match(text)
+    if match:
+        return {"单元": CN_NUM.index(match.group(1)[0]) + 1, "类型": None}
+    return None
 
 
 LOOKBACK = 20  # 往前回溯多少页去找当前课的课号/课题
@@ -246,7 +269,12 @@ def parse_pages(pdf_path: str, indexes: list[int], full: bool = False) -> dict:
                 and not page["课文"]["课题"]
             )
             plain = unlabelled and not page["课文"]["标题"]
-            if prev in ("园地", "附录") and not page["园地"] and not page["附录"]:
+            if (
+                prev in ("园地", "附录")
+                and not page["单元"]
+                and not page["园地"]
+                and not page["附录"]
+            ):
                 continuation = unlabelled if prev == "园地" else plain
                 if continuation or not page["课文"]:
                     page = parse_page(doc, i, full, prefer=prev)

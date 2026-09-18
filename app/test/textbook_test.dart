@@ -36,6 +36,50 @@ void main() {
     );
   });
 
+  test('二年级上册 reviewed 结构和倒查标记可以解析', () {
+    final source = File(
+      '../json_reviewed/zh-lang-grade2a-textbook-struct.json',
+    ).readAsStringSync();
+    final textbook = Textbook.fromJsonString(source);
+
+    expect(textbook.schemaVersion, 2);
+    expect(textbook.index, hasLength(9));
+    expect(textbook.chaptersById, hasLength(39));
+    expect(textbook.chapter('u02-literacy-01')?.name, '场景歌');
+    expect(textbook.highlights.forField('u01-reading-01', 'title'), isNotEmpty);
+    expect(textbook.highlights.forSegment('u01-reading-01-s001'), isNotEmpty);
+  });
+
+  test('一年级上册 reviewed 结构和拼音单元可以解析', () {
+    final source = File(
+      '../json_reviewed/zh-lang-grade1a-textbook-struct.json',
+    ).readAsStringSync();
+    final textbook = Textbook.fromJsonString(source);
+
+    expect(textbook.schemaVersion, 2);
+    expect(textbook.index, hasLength(10));
+    expect(textbook.chaptersById, hasLength(45));
+    expect(textbook.chapter('intro-01')?.name, '我是中国人');
+    expect(textbook.chapter('u02-pinyin-04')?.name, 'ddttnnll');
+    expect(textbook.highlights.forSegment('u02-pinyin-04-s001'), isNotEmpty);
+  });
+
+  test('一年级下册 reviewed 结构和倒查标记可以解析', () {
+    final source = File(
+      '../json_reviewed/zh-lang-grade1b-textbook-struct.json',
+    ).readAsStringSync();
+    final textbook = Textbook.fromJsonString(source);
+
+    expect(textbook.schemaVersion, 2);
+    expect(textbook.index, hasLength(9));
+    expect(textbook.chaptersById, hasLength(39));
+    expect(textbook.chapter('u01-literacy-01')?.name, '春夏秋冬');
+    expect(
+      textbook.highlights.forSegment('u01-literacy-01-line-01'),
+      isNotEmpty,
+    );
+  });
+
   test('练习题由附录引用、词表和背诵诗词生成', () {
     final source = File(
       '../json_reviewed/zh-lang-grade2b-textbook-struct.json',

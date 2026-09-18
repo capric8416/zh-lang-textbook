@@ -23,8 +23,9 @@ from .semantics import (
     recognize_strip_groups,
 )
 
-# 必须整行就是标题：识字表里「语文园地一 亭 咨 询 …」这种行不算
-TITLE_RE = re.compile(r"^语文园地[一二三四五六七八九十]+$")
+# 必须整行就是标题：高年级版本可能只写“语文园地”，
+# 识字表里「语文园地一 亭 咨 询 …」这种行仍不算。
+TITLE_RE = re.compile(r"^语文园地(?:[一二三四五六七八九十]+)?$")
 # 黑体小标题里，「我爱阅读」是整篇选文，按课文处理，不算园地栏目
 SELECTION_LABELS = ("我爱阅读",)
 FZHTJW_SELECTION_LABELS = ("和大人一起读",)
