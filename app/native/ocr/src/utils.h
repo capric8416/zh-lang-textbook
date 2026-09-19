@@ -21,6 +21,11 @@ cv::Mat GetRotatedCropImage(const cv::Mat &image, std::vector<cv::Point> points)
 
 void Trim(std::string &s);
 
+// ncnn's Windows file loader uses narrow fopen; convert Unicode paths to an
+// ASCII short path when possible so model loading also works under Chinese
+// user/profile directories.
+std::string NcnnPath(const std::string &path);
+
 }   // namespace OCR
 
 #endif  // UTILS_H_

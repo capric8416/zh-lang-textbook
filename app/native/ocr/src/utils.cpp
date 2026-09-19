@@ -4,6 +4,10 @@
 #include <string_view>
 #include <thread>
 
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
 #include <opencv2/imgproc.hpp>
 
 #include "clipper2/clipper.h"
@@ -12,6 +16,47 @@
 
 namespace OCR
 {
+
+std::string NcnnPath(const std::string &path)
+{
+#ifdef _WIN32
+    auto utf8_to_wide = [](const std::string &value) {
+        if (value.empty()) return std::wstring{};
+        const int size = MultiByteToWideChar(CP_UTF8, 0, value.c_str(),
+            static_cast<int>(value.size()), nullptr, 0);
+        std::wstring result(size, L'\0');
+        MultiByteToWideChar(CP_UTF8, 0, value.c_str(),
+            static_cast<int>(value.size()), result.data(), size);
+        return result;
+    };
+    auto wide_to_utf8 = [](const std::wstring &value) {
+        if (value.empty()) return std::string{};
+        const int size = WideCharToMultiByte(CP_UTF8, 0, value.c_str(),
+            static_cast<int>(value.size()), nullptr, 0, nullptr, nullptr);
+        std::string result(size, '\0');
+        WideCharToMultiByte(CP_UTF8, 0, value.c_str(),
+            static_cast<int>(value.size()), result.data(), size, nullptr, nullptr);
+        return result;
+    };
+
+    const std::wstring wide = utf8_to_wide(path);
+    if (wide.empty()) return path;
+    const std::wstring probe = GetFileAttributesW((wide + L".param").c_str()) != INVALID_FILE_ATTRIBUTES
+        ? wide + L".param" : wide;
+    const DWORD required = GetShortPathNameW(probe.c_str(), nullptr, 0);
+    if (required == 0) return path;
+    std::wstring short_path(required, L'\0');
+    const DWORD written = GetShortPathNameW(probe.c_str(), short_path.data(), required);
+    if (written == 0 || written >= required) return path;
+    short_path.resize(written);
+    if (probe != wide && short_path.size() >= 6 &&
+        short_path.compare(short_path.size() - 6, 6, L".param") == 0)
+        short_path.resize(short_path.size() - 6);
+    return wide_to_utf8(short_path);
+#else
+    return path;
+#endif
+}
 
 int GetThreads(const int threads)
 {

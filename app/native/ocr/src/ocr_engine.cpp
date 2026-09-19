@@ -116,6 +116,11 @@ bool OCREngine::Initialize(const std::string &config_path)
     rec_config.keys_path = GetJValue(j, {"rec", "keys_path"}, std::string());
     rec_config.is_fp16 = GetJValue(j, {"rec", "fp16"}, false);
 
+    det_config.model_path = NcnnPath(det_config.model_path);
+    cls_config.model_path = NcnnPath(cls_config.model_path);
+    rec_config.model_path = NcnnPath(rec_config.model_path);
+    rec_config.keys_path = NcnnPath(rec_config.keys_path);
+
     // show configs
     ShowConfig();
 
