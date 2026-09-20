@@ -119,6 +119,34 @@ def annotate(text: str, known: dict[int, str] | None = None) -> str:
 
 
 def _lesson_text(lesson: dict) -> tuple[str, str]:
+    # 三上第二单元《古诗三首》跨页排版：注释栏与三首诗交错，PDF 文本层
+    # 会把“注释”“〔字词〕释义”和脚注序号插进正文。这里按教材原文重建
+    # 诗题与诗句，保证后续 reviewed 结构能逐首、逐句展示。
+    if (
+        lesson.get("标题") == "阅读古诗三首"
+        and (lesson.get("单元") or {}).get("单元") == 2
+    ):
+        text = "\n".join(
+            [
+                "望洞庭",
+                "湖光秋月两相和，",
+                "潭面无风镜未磨。",
+                "遥望洞庭山水翠，",
+                "白银盘里一青螺。",
+                "山行",
+                "远上寒山石径斜，",
+                "白云生处有人家。",
+                "停车坐爱枫林晚，",
+                "霜叶红于二月花。",
+                "夜书所见",
+                "萧萧梧叶送寒声，",
+                "江上秋风动客情。",
+                "知有儿童挑促织，",
+                "夜深篱落一灯明。",
+            ]
+        )
+        return text, annotate(text)
+
     parts: list[str] = []
     known: dict[int, str] = {}
     pos = 0
@@ -881,6 +909,12 @@ def build(data: dict) -> dict:
             and merged[-1].get("课号") is not None
         ):
             previous = merged[-1]
+            if (
+                previous.get("标题") == "阅读古诗三首"
+                and (previous.get("单元") or {}).get("单元") == 2
+            ):
+                # 专门版式清理已经重建了三首诗，续页只剩注释和课后题。
+                continue
             previous["全文"] += lesson["全文"]
             previous["拼音"] = (
                 f"{previous['拼音']} {lesson['拼音']}".strip()
