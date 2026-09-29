@@ -8,7 +8,7 @@
   },
   "index": [
     {
-      "name": "第一单元·阅读",
+      "name": "第一单元",
       "chapters": [
         {
           "name": "小蝌蚪找妈妈",
@@ -49,7 +49,7 @@
       "id": "u01"
     },
     {
-      "name": "第二单元·识字",
+      "name": "第二单元",
       "chapters": [
         {
           "name": "场景歌",
@@ -84,7 +84,7 @@
       "id": "u02"
     },
     {
-      "name": "第三单元·阅读",
+      "name": "第三单元",
       "chapters": [
         {
           "name": "彩虹",
@@ -113,7 +113,7 @@
       "id": "u03"
     },
     {
-      "name": "第四单元·阅读",
+      "name": "第四单元",
       "chapters": [
         {
           "name": "古诗二首",
@@ -160,7 +160,7 @@
       "id": "u04"
     },
     {
-      "name": "第五单元·阅读",
+      "name": "第五单元",
       "chapters": [
         {
           "name": "坐井观天",
@@ -189,7 +189,7 @@
       "id": "u05"
     },
     {
-      "name": "第六单元·阅读",
+      "name": "第六单元",
       "chapters": [
         {
           "name": "八角楼上",
@@ -224,7 +224,7 @@
       "id": "u06"
     },
     {
-      "name": "第七单元·阅读",
+      "name": "第七单元",
       "chapters": [
         {
           "name": "古诗二首",
@@ -265,7 +265,7 @@
       "id": "u07"
     },
     {
-      "name": "第八单元·阅读",
+      "name": "第八单元",
       "chapters": [
         {
           "name": "称赞",
@@ -317,7 +317,7 @@
   ],
   "contents": [
     {
-      "name": "第一单元·阅读",
+      "name": "第一单元",
       "chapters": [
         {
           "name": "小蝌蚪找妈妈",
@@ -661,7 +661,7 @@
             },
             {
               "zh": "粗心的小朋友却得不到它。",
-              "pinyin": "cū xīn de xiǎo péng you què dé bú dào tā 。",
+              "pinyin": "cū xīn de xiǎo péng you què dé bu dào tā 。",
               "id": "u01-reading-03-line-27"
             }
           ],
@@ -719,7 +719,7 @@
               "text": [
                 {
                   "zh": "体会每组加点词的不同意思，选一组演一演。",
-                  "pinyin": "tǐ huì měi zǔ jiā diǎn cí de bù tóng yì si ， xuǎn yī zǔ yǎn yī yǎn 。",
+                  "pinyin": "tǐ huì měi zǔ jiā diǎn cí de bù tóng yì si ， xuǎn yì zǔ yǎn yi yǎn 。",
                   "id": "u01-garden-section-02-s001"
                 },
                 {
@@ -739,7 +739,7 @@
                 },
                 {
                   "zh": "读一读，用加点的词语说说你的日常生活。",
-                  "pinyin": "dú yī dú ， yòng jiā diǎn de cí yǔ shuō shuō nǐ de rì cháng shēng huó 。",
+                  "pinyin": "dú yi dú ， yòng jiā diǎn de cí yǔ shuō shuō nǐ de rì cháng shēng huó 。",
                   "id": "u01-garden-section-02-s005"
                 },
                 {
@@ -910,12 +910,12 @@
                 },
                 {
                   "zh": "河马说：“听说在南极有一种很冷很冷的东西，叫作冰。”",
-                  "pinyin": "hé mǎ shuō ： “ tīng shuō zài nán jí yǒu yī zhǒng hěn lěng hěn lěng de dōng xī ， jiào zuò bīng 。 ”",
+                  "pinyin": "hé mǎ shuō ： “ tīng shuō zài nán jí yǒu yì zhǒng hěn lěng hěn lěng de dōng xī ， jiào zuò bīng 。 ”",
                   "id": "u01-garden-story-01-s003"
                 },
                 {
                   "zh": "狮子大王听了，立刻给南极的企鹅写了一封信，请他寄一块冰来。",
-                  "pinyin": "shī zi dà wáng tīng le ， lì kè gěi nán jí de qǐ é xiě le yī fēng xìn ， qǐng tā jì yī kuài bīng lái 。",
+                  "pinyin": "shī zi dà wáng tīng le ， lì kè gěi nán jí de qǐ é xiě le yì fēng xìn ， qǐng tā jì yí kuài bīng lái 。",
                   "id": "u01-garden-story-01-s004"
                 },
                 {
@@ -925,12 +925,12 @@
                 },
                 {
                   "zh": "他说：“啊，狮子大王想要一块冰，太容易了，我这里可是冰天雪地啊。”",
-                  "pinyin": "tā shuō ： “ ā ， shī zi dà wáng xiǎng yào yī kuài bīng ， tài róng yì le ， wǒ zhè lǐ kě shì bīng tiān xuě dì a 。 ”",
+                  "pinyin": "tā shuō ： “ ā ， shī zi dà wáng xiǎng yào yí kuài bīng ， tài róng yì le ， wǒ zhè lǐ kě shì bīng tiān xuě dì a 。 ”",
                   "id": "u01-garden-story-01-s006"
                 },
                 {
                   "zh": "企鹅挑了一块冰，装在袋子里，给狮子大王寄去。",
-                  "pinyin": "qǐ é tiāo le yī kuài bīng ， zhuāng zài dài zi lǐ ， gěi shī zi dà wáng jì qù 。",
+                  "pinyin": "qǐ é tiāo le yí kuài bīng ， zhuāng zài dài zi lǐ ， gěi shī zi dà wáng jì qù 。",
                   "id": "u01-garden-story-01-s007"
                 },
                 {
@@ -945,12 +945,12 @@
                 },
                 {
                   "zh": "他打开一看，觉得好奇怪：“呀，怎么是一袋水？”",
-                  "pinyin": "tā dǎ kāi yī kàn ， jué de hào qí guài ： “ ya ， zěn me shì yī dài shuǐ ？ ”",
+                  "pinyin": "tā dǎ kāi yí kàn ， jué de hào qí guài ： “ ya ， zěn me shì yí dài shuǐ ？ ”",
                   "id": "u01-garden-story-01-s010"
                 },
                 {
                   "zh": "狮子大王生气地把箱子退回去了，还给企鹅写了一封信。",
-                  "pinyin": "shī zi dà wáng shēng qì dì bǎ xiāng zi tuì huí qù le ， huán gěi qǐ é xiě le yī fēng xìn 。",
+                  "pinyin": "shī zi dà wáng shēng qì dì bǎ xiāng zi tuì huí qù le ， huán gěi qǐ é xiě le yì fēng xìn 。",
                   "id": "u01-garden-story-01-s011"
                 },
                 {
@@ -960,7 +960,7 @@
                 },
                 {
                   "zh": "狮子大王的信上写着：“我请你寄块冰来，你为什么寄来一袋水？”",
-                  "pinyin": "shī zi dà wáng de xìn shàng xiě zhe ： “ wǒ qǐng nǐ jì kuài bīng lái ， nǐ wèi shén me jì lái yī dài shuǐ ？ ”",
+                  "pinyin": "shī zi dà wáng de xìn shàng xiě zhe ： “ wǒ qǐng nǐ jì kuài bīng lái ， nǐ wèi shén me jì lái yí dài shuǐ ？ ”",
                   "id": "u01-garden-story-01-s013"
                 },
                 {
@@ -1015,7 +1015,7 @@
                 },
                 {
                   "zh": "先猜猜看，再打开童话故事书，我们一起来读一读。",
-                  "pinyin": "xiān cāi cāi kàn ， zài dǎ kāi tóng huà gù shì shū ， wǒ men yì qǐ lái dú yī dú 。",
+                  "pinyin": "xiān cāi cāi kàn ， zài dǎ kāi tóng huà gù shì shū ， wǒ men yì qǐ lái dú yi dú 。",
                   "id": "u01-reading-club-story-01-s004"
                 },
                 {
@@ -1040,7 +1040,7 @@
       "id": "u01"
     },
     {
-      "name": "第二单元·识字",
+      "name": "第二单元",
       "chapters": [
         {
           "name": "场景歌",
@@ -1513,12 +1513,12 @@
               "text": [
                 {
                   "zh": "读书的时候，遇到了不认识的字，该怎么办？",
-                  "pinyin": "dú shū de shí hòu ， yù dào le bù rèn shí de zì ， gāi zěn me bàn ？",
+                  "pinyin": "dú shū de shí hòu ， yù dào le bú rèn shí de zì ， gāi zěn me bàn ？",
                   "id": "u02-garden-section-01-s001"
                 },
                 {
                   "zh": "遇到不认识的字，可以用部首查字法查 字典，如“诚”字。",
-                  "pinyin": "yù dào bù rèn shí de zì ， kě yǐ yòng bù shǒu chá zì fǎ chá zì diǎn ， rú “ chéng ” zì 。。",
+                  "pinyin": "yù dào bú rèn shí de zì ， kě yǐ yòng bù shǒu chá zì fǎ chá zì diǎn ， rú “ chéng ” zì 。。",
                   "id": "u02-garden-section-01-s002"
                 },
                 {
@@ -1568,7 +1568,7 @@
                 },
                 {
                   "zh": "再数数“诚”字除去部首还有几画，然后在相应笔画数的位置找到“诚”字和它在正文中的页码。",
-                  "pinyin": "zài shù shù “ chéng ” zì chú qù bù shǒu hái yǒu jǐ huà ， rán hòu zài xiāng yìng bǐ huà shù de wèi zhì zhǎo dào “ chéng ” zì hé tā zài zhèng wén zhōng de yè mǎ 。",
+                  "pinyin": "zài shǔ shù “ chéng ” zì chú qù bù shǒu hái yǒu jǐ huà ， rán hòu zài xiāng yìng bǐ huà shù de wèi zhì zhǎo dào “ chéng ” zì hé tā zài zhèng wén zhōng de yè mǎ 。",
                   "id": "u02-garden-section-01-s012"
                 },
                 {
@@ -1578,7 +1578,7 @@
                 },
                 {
                   "zh": "查一查下面的部首在“检字表”的哪一页。",
-                  "pinyin": "chá yī chá xià miàn de bù shǒu zài “ jiǎn zì biǎo ” de nǎ yī yè 。",
+                  "pinyin": "chá yi chá xià miàn de bù shǒu zài “ jiǎn zì biǎo ” de nǎ yí yè 。",
                   "id": "u02-garden-section-01-s014"
                 },
                 {
@@ -1602,7 +1602,7 @@
               },
               "title": {
                 "zh": "数九歌",
-                "pinyin": "shù jiǔ gē"
+                "pinyin": "shǔ jiǔ gē"
               },
               "author": {},
               "dynasty": {},
@@ -1707,7 +1707,7 @@
       "id": "u02"
     },
     {
-      "name": "第三单元·阅读",
+      "name": "第三单元",
       "chapters": [
         {
           "name": "彩虹",
@@ -1815,7 +1815,7 @@
             },
             {
               "zh": "天气好的时候，在屋后的山上玩，会看到一只只小山雀在林间欢快地蹦来跳去，它们是我最喜欢的宝贝。",
-              "pinyin": "tiān qì hǎo de shí hou ， zài wū hòu de shān shàng wán ， huì kàn dào yì zhī zhī xiǎo shān què zài lín jiān huān kuài de bèng lái tiào qù ， tā men shì wǒ zuì xǐ huan de bǎo bèi 。",
+              "pinyin": "tiān qì hǎo de shí hou ， zài wū hòu de shān shàng wán ， huì kàn dào yì zhī zhī xiǎo shān què zài lín jiān huān kuài de bèng lái tiào qù ， tā men shì wǒ zuì xǐ huān de bǎo bèi 。",
               "id": "u03-reading-05-s005"
             },
             {
@@ -1825,7 +1825,7 @@
             },
             {
               "zh": "每到春天，外婆家屋后的山上，开满了姹紫嫣红的杜鹃花，还有许许多多说不出名字的野花。",
-              "pinyin": "měi dào chūn tiān ， wài pó jiā wū hòu de shān shàng ， kāi mǎn le chà zǐ yān hóng de dù juān huā ， hái yǒu xǔ xǔ duō duō shuō bù chū míng zi de yě huā 。",
+              "pinyin": "měi dào chūn tiān ， wài pó jiā wū hòu de shān shàng ， kāi mǎn le chà zǐ yān hóng de dù juān huā ， hái yǒu xǔ xǔ duō duō shuō bu chū míng zi de yě huā 。",
               "id": "u03-reading-05-s007"
             },
             {
@@ -1996,7 +1996,7 @@
               "text": [
                 {
                   "zh": "比一比，填一填。",
-                  "pinyin": "bǐ yī bǐ ， tián yī tián 。",
+                  "pinyin": "bǐ yi bǐ ， tián yi tián 。",
                   "id": "u03-garden-section-02-s001"
                 },
                 {
@@ -2006,17 +2006,17 @@
                 },
                 {
                   "zh": "给下面的句子加上标点，再读一读。",
-                  "pinyin": "gěi xià miàn de jù zi jiā shàng biāo diǎn ， zài dú yī dú 。",
+                  "pinyin": "gěi xià miàn de jù zi jiā shàng biāo diǎn ， zài dú yi dú 。",
                   "id": "u03-garden-section-02-s003"
                 },
                 {
                   "zh": "◇ 一阵秋风吹过( )树叶像蝴蝶一样飘落下来( )",
-                  "pinyin": "◇  yī zhèn qiū fēng chuī guò ( ) shù yè xiàng hú dié yí yàng piāo luò xià lái ( )",
+                  "pinyin": "◇  yí zhèn qiū fēng chuī guò ( ) shù yè xiàng hú dié yí yàng piāo luò xià lái ( )",
                   "id": "u03-garden-section-02-s004"
                 },
                 {
                   "zh": "◇ 我打开窗户一看( )竟然下雪了( )",
-                  "pinyin": "◇  wǒ dǎ kāi chuāng hù yī kàn ( ) jìng rán xià xuě le ( )",
+                  "pinyin": "◇  wǒ dǎ kāi chuāng hù yí kàn ( ) jìng rán xià xuě le ( )",
                   "id": "u03-garden-section-02-s005"
                 },
                 {
@@ -2031,7 +2031,7 @@
                 },
                 {
                   "zh": "我积累了一些词语和句子。老师说在平时的学习中主动积累是一个好习惯。",
-                  "pinyin": "wǒ jī lěi le yī xiē cí yǔ hé jù zi 。 lǎo shī shuō zài píng shí de xué xí zhōng zhǔ dòng jī lěi shì yī gè hǎo xí guàn 。",
+                  "pinyin": "wǒ jī lěi le yì xiē cí yǔ hé jù zi 。 lǎo shī shuō zài píng shí de xué xí zhōng zhǔ dòng jī lěi shì yí gè hǎo xí guàn 。",
                   "id": "u03-garden-section-02-s008"
                 },
                 {
@@ -2046,7 +2046,7 @@
                 },
                 {
                   "zh": "你积累了哪些词句？我们来交流一下吧。",
-                  "pinyin": "nǐ jī lěi le nǎ xiē cí jù ？ wǒ men lái jiāo liú yī xià ba 。",
+                  "pinyin": "nǐ jī lěi le nǎ xiē cí jù ？ wǒ men lái jiāo liú yí xià ba 。",
                   "id": "u03-garden-section-02-s011"
                 },
                 {
@@ -2123,7 +2123,7 @@
                 },
                 {
                   "zh": "选一件介绍给同学，说一说：你做的是什么？",
-                  "pinyin": "xuǎn yī jiàn jiè shào gěi tóng xué ， shuō yī shuō ： nǐ zuò de shì shén me ？",
+                  "pinyin": "xuǎn yí jiàn jiè shào gěi tóng xué ， shuō yi shuō ： nǐ zuò de shì shén me ？",
                   "id": "u03-garden-section-03-s003"
                 },
                 {
@@ -2168,7 +2168,7 @@
                 },
                 {
                   "zh": "一天夜里，祖逖翻来覆去睡不着，他想：怎样才能为国家效力呢？",
-                  "pinyin": "yī tiān yè lǐ ， zǔ tì fān lái fù qù shuì bù zhe ， tā xiǎng ： zěn yàng cái néng wèi guó jiā xiào lì ne ？",
+                  "pinyin": "yì tiān yè lǐ ， zǔ tì fān lái fù qù shuì bu zhe ， tā xiǎng ： zěn yàng cái néng wèi guó jiā xiào lì ne ？",
                   "id": "u03-garden-story-01-s002"
                 },
                 {
@@ -2188,7 +2188,7 @@
                 },
                 {
                   "zh": "从此以后，无论是寒冬还是酷暑，无论是刮风还是下雨，一听到鸡叫，他们就立刻起身练武。",
-                  "pinyin": "cóng cǐ yǐ hòu ， wú lùn shì hán dōng hái shì kù shǔ ， wú lùn shì guā fēng hái shì xià yǔ ， yī tīng dào jī jiào ， tā men jiù lì kè qǐ shēn liàn wǔ 。",
+                  "pinyin": "cóng cǐ yǐ hòu ， wú lùn shì hán dōng hái shì kù shǔ ， wú lùn shì guā fēng hái shì xià yǔ ， yì tīng dào jī jiào ， tā men jiù lì kè qǐ shēn liàn wǔ 。",
                   "id": "u03-garden-story-01-s006"
                 },
                 {
@@ -2218,7 +2218,7 @@
       "id": "u03"
     },
     {
-      "name": "第四单元·阅读",
+      "name": "第四单元",
       "chapters": [
         {
           "name": "古诗二首",
@@ -2396,7 +2396,7 @@
             },
             {
               "zh": "那些叫不出名字的奇形怪状的岩石，正等你去给它们起名字呢！",
-              "pinyin": "nà xiē jiào bù chū míng zi de qí xíng guài zhuàng de yán shí ， zhèng děng nǐ qù gěi tā men qǐ míng zi ne ！",
+              "pinyin": "nà xiē jiào bu chū míng zi de qí xíng guài zhuàng de yán shí ， zhèng děng nǐ qù gěi tā men qǐ míng zi ne ！",
               "id": "u04-reading-08-s014"
             }
           ],
@@ -2586,7 +2586,7 @@
               "text": [
                 {
                   "zh": "读一读，和同学交流你的发现。",
-                  "pinyin": "dú yī dú ， hé tóng xué jiāo liú nǐ de fā xiàn 。",
+                  "pinyin": "dú yi dú ， hé tóng xué jiāo liú nǐ de fā xiàn 。",
                   "id": "u04-garden-section-02-s001"
                 },
                 {
@@ -2626,7 +2626,7 @@
                 },
                 {
                   "zh": "◇ 那美丽如画的山水，怎能不令人流连忘返？",
-                  "pinyin": "◇  nà měi lì rú huà de shān shuǐ ， zěn néng bù lìng rén liú lián wàng fǎn ？",
+                  "pinyin": "◇  nà měi lì rú huà de shān shuǐ ， zěn néng bú lìng rén liú lián wàng fǎn ？",
                   "id": "u04-garden-section-02-s009"
                 },
                 {
@@ -2636,7 +2636,7 @@
                 },
                 {
                   "zh": "◇ 去还是不去？小明拿不定主意，很烦恼。",
-                  "pinyin": "◇  qù hái shì bù qù ？xiǎo míng ná bù dìng zhǔ yì ， hěn fán nǎo 。",
+                  "pinyin": "◇  qù hái shì bú qù ？xiǎo míng ná bú dìng zhǔ yì ， hěn fán nǎo 。",
                   "id": "u04-garden-section-02-s011"
                 },
                 {
@@ -2739,7 +2739,7 @@
                 },
                 {
                   "zh": "写的时候注意，一段话的开头要空两格，标点符号一般也要占一格。",
-                  "pinyin": "xiě de shí hòu zhù yì ， yī duàn huà de kāi tóu yào kōng liǎng gé ， biāo diǎn fú hào yì bān yě yào zhàn yī gé 。",
+                  "pinyin": "xiě de shí hòu zhù yì ， yí duàn huà de kāi tóu yào kōng liǎng gé ， biāo diǎn fú hào yì bān yě yào zhàn yì gé 。",
                   "id": "u04-garden-section-04-s007"
                 }
               ],
@@ -2779,7 +2779,7 @@
                 },
                 {
                   "zh": "一艘艘船上装满了鱼和虾。",
-                  "pinyin": "yī sōu sōu chuán shàng zhuāng mǎn le yú hé xiā 。",
+                  "pinyin": "yì sōu sōu chuán shàng zhuāng mǎn le yú hé xiā 。",
                   "id": "u04-garden-story-01-s004"
                 },
                 {
@@ -2819,7 +2819,7 @@
                 },
                 {
                   "zh": "有金黄的稻子、雪白的棉花，还有一大片一大片绿油油的菜地。",
-                  "pinyin": "yǒu jīn huáng de dào zi 、 xuě bái de mián huā ， hái yǒu yī dà piàn yī dà piàn lǜ yóu yóu de cài dì 。",
+                  "pinyin": "yǒu jīn huáng de dào zi 、 xuě bái de mián huā ， hái yǒu yí dà piàn yí dà piàn lǜ yóu yóu de cài dì 。",
                   "id": "u04-garden-story-01-s012"
                 },
                 {
@@ -2839,7 +2839,7 @@
                 },
                 {
                   "zh": "他画的草原一眼望不到边。",
-                  "pinyin": "tā huà de cǎo yuán yī yǎn wàng bú dào biān 。",
+                  "pinyin": "tā huà de cǎo yuán yì yǎn wàng bu dào biān 。",
                   "id": "u04-garden-story-01-s016"
                 },
                 {
@@ -2889,7 +2889,7 @@
       "id": "u04"
     },
     {
-      "name": "第五单元·阅读",
+      "name": "第五单元",
       "chapters": [
         {
           "name": "坐井观天",
@@ -3230,7 +3230,7 @@
               "text": [
                 {
                   "zh": "读一读，注意加点的字，看谁读得准。",
-                  "pinyin": "dú yī dú ， zhù yì jiā diǎn de zì ， kàn shuí dú dé zhǔn 。",
+                  "pinyin": "dú yi dú ， zhù yì jiā diǎn de zì ， kàn shuí dú dé zhǔn 。",
                   "id": "u05-garden-section-02-s001"
                 },
                 {
@@ -3290,7 +3290,7 @@
                 },
                 {
                   "zh": "读一读，猜一猜词语的意思。",
-                  "pinyin": "dú yī dú ， cāi yī cāi cí yǔ de yì si 。",
+                  "pinyin": "dú yi dú ， cāi yi cāi cí yǔ de yì si 。",
                   "id": "u05-garden-section-02-s013"
                 },
                 {
@@ -3300,7 +3300,7 @@
                 },
                 {
                   "zh": "注意下面句子中加点的词语，仿照例子在括号中加上合适的词语，再读一读。",
-                  "pinyin": "zhù yì xià miàn jù zi zhōng jiā diǎn de cí yǔ ， fǎng zhào lì zi zài kuò hào zhōng jiā shàng hé shì de cí yǔ ， zài dú yī dú 。",
+                  "pinyin": "zhù yì xià miàn jù zi zhōng jiā diǎn de cí yǔ ， fǎng zhào lì zi zài kuò hào zhōng jiā shàng hé shì de cí yǔ ， zài dú yi dú 。",
                   "id": "u05-garden-section-02-s015"
                 },
                 {
@@ -3397,12 +3397,12 @@
                 },
                 {
                   "zh": "比如，你想和小丽调换一下值日的时间，该怎样跟她商量呢？",
-                  "pinyin": "bǐ rú ， nǐ xiǎng hé xiǎo lì diào huàn yī xià zhí rì de shí jiān ， gāi zěn yàng gēn tā shāng liáng ne ？",
+                  "pinyin": "bǐ rú ， nǐ xiǎng hé xiǎo lì diào huàn yí xià zhí rì de shí jiān ， gāi zěn yàng gēn tā shāng liáng ne ？",
                   "id": "u05-garden-section-05-s003"
                 },
                 {
                   "zh": "小丽，我想跟你商量一件事情。我可以和你调换一下值日的时间吗？今天是我奶奶的生日，我想早一点儿回家。",
-                  "pinyin": "xiǎo lì ， wǒ xiǎng gēn nǐ shāng liáng yī jiàn shì qíng 。 wǒ kě yǐ hé nǐ diào huàn yī xià zhí rì de shí jiān ma ？ jīn tiān shì wǒ nǎi nǎi de shēng rì ， wǒ xiǎng zǎo yì diǎn ér huí jiā 。",
+                  "pinyin": "xiǎo lì ， wǒ xiǎng gēn nǐ shāng liáng yí jiàn shì qíng 。 wǒ kě yǐ hé nǐ diào huàn yí xià zhí rì de shí jiān ma ？ jīn tiān shì wǒ nǎi nǎi de shēng rì ， wǒ xiǎng zǎo yì diǎn ér huí jiā 。",
                   "id": "u05-garden-section-05-s004"
                 },
                 {
@@ -3422,7 +3422,7 @@
                 },
                 {
                   "zh": "和同学说一说。",
-                  "pinyin": "hé tóng xué shuō yī shuō 。",
+                  "pinyin": "hé tóng xué shuō yi shuō 。",
                   "id": "u05-garden-section-05-s008"
                 },
                 {
@@ -3492,7 +3492,7 @@
                 },
                 {
                   "zh": "那个人不慌不忙地指了指刻的记号，说：“不用着急，宝剑是从这儿掉下去的，等船靠了岸，我就从这儿跳下去，准能把宝剑捞上来。”",
-                  "pinyin": "nà ge rén bù huāng bù máng dì zhǐ le zhǐ kè de jì hào ， shuō ： “ bù yòng zháo jí ， bǎo jiàn shì cóng zhè ér diào xià qù de ， děng chuán kào le àn ， wǒ jiù cóng zhè ér tiào xià qù ， zhǔn néng bǎ bǎo jiàn lāo shàng lái 。 ”",
+                  "pinyin": "nà ge rén bù huāng bù máng dì zhǐ le zhǐ kè de jì hào ， shuō ： “ bú yòng zháo jí ， bǎo jiàn shì cóng zhè ér diào xià qù de ， děng chuán kào le àn ， wǒ jiù cóng zhè ér tiào xià qù ， zhǔn néng bǎ bǎo jiàn lāo shàng lái 。 ”",
                   "id": "u05-garden-story-01-s006"
                 }
               ],
@@ -3507,7 +3507,7 @@
       "id": "u05"
     },
     {
-      "name": "第六单元·阅读",
+      "name": "第六单元",
       "chapters": [
         {
           "name": "八角楼上",
@@ -3885,7 +3885,7 @@
               "text": [
                 {
                   "zh": "读一读，和同学交流你的发现。",
-                  "pinyin": "dú yī dú ， hé tóng xué jiāo liú nǐ de fā xiàn 。",
+                  "pinyin": "dú yi dú ， hé tóng xué jiāo liú nǐ de fā xiàn 。",
                   "id": "u06-garden-section-02-s001"
                 },
                 {
@@ -3973,7 +3973,7 @@
                 },
                 {
                   "zh": "你有事情想告诉别人，那个人刚好不在，暂时又联系不上，怎么办呢？这时候可以写张留言条。",
-                  "pinyin": "nǐ yǒu shì qíng xiǎng gào sù bié rén ， nà ge rén gāng hǎo bù zài ， zàn shí yòu lián xì bù shàng ， zěn me bàn ne ？ zhè shí hòu kě yǐ xiě zhāng liú yán tiáo 。",
+                  "pinyin": "nǐ yǒu shì qíng xiǎng gào sù bié rén ， nà ge rén gāng hǎo bú zài ， zàn shí yòu lián xì bu shàng ， zěn me bàn ne ？ zhè shí hòu kě yǐ xiě zhāng liú yán tiáo 。",
                   "id": "u06-garden-section-04-s002"
                 },
                 {
@@ -4023,12 +4023,12 @@
                 },
                 {
                   "zh": "从下面选择一种情况，写一张留言条。",
-                  "pinyin": "cóng xià miàn xuǎn zé yī zhǒng qíng kuàng ， xiě yī zhāng liú yán tiáo 。",
+                  "pinyin": "cóng xià miàn xuǎn zé yì zhǒng qíng kuàng ， xiě yì zhāng liú yán tiáo 。",
                   "id": "u06-garden-section-04-s012"
                 },
                 {
                   "zh": "◇ 去办公室还书，老师不在。",
-                  "pinyin": "◇  qù bàn gōng shì huán shū ， lǎo shī bù zài 。",
+                  "pinyin": "◇  qù bàn gōng shì huán shū ， lǎo shī bú zài 。",
                   "id": "u06-garden-section-04-s013"
                 },
                 {
@@ -4063,12 +4063,12 @@
                 },
                 {
                   "zh": "他常常一边放牛，一边替八路军放哨。",
-                  "pinyin": "tā cháng cháng yī biān fàng niú ， yī biān tì bā lù jūn fàng shào 。",
+                  "pinyin": "tā cháng cháng yì biān fàng niú ， yì biān tì bā lù jūn fàng shào 。",
                   "id": "u06-garden-story-01-s002"
                 },
                 {
                   "zh": "有一天，日寇来扫荡，走到山口迷了路。",
-                  "pinyin": "yǒu yī tiān ， rì kòu lái sǎo dàng ， zǒu dào shān kǒu mí le lù 。",
+                  "pinyin": "yǒu yì tiān ， rì kòu lái sǎo dàng ， zǒu dào shān kǒu mí le lù 。",
                   "id": "u06-garden-story-01-s003"
                 },
                 {
@@ -4103,7 +4103,7 @@
       "id": "u06"
     },
     {
-      "name": "第七单元·阅读",
+      "name": "第七单元",
       "chapters": [
         {
           "name": "古诗二首",
@@ -4254,7 +4254,7 @@
             },
             {
               "zh": "无论是海水、船只，还是蓝色的远方，都看不见了。",
-              "pinyin": "wú lùn shì hǎi shuǐ 、 chuán zhī ， hái shi lán sè de yuǎn fāng ， dōu kàn bú jiàn le 。",
+              "pinyin": "wú lùn shì hǎi shuǐ 、 chuán zhī ， hái shi lán sè de yuǎn fāng ， dōu kàn bu jiàn le 。",
               "id": "u07-reading-19-s005"
             },
             {
@@ -4269,7 +4269,7 @@
             },
             {
               "zh": "霎时，四周变暗了，无论是天空，还是天空中的太阳，都看不见了。",
-              "pinyin": "shà shí ， sì zhōu biàn àn le ， wú lùn shì tiān kōng ， hái shi tiān kōng zhōng de tài yáng ， dōu kàn bú jiàn le 。",
+              "pinyin": "shà shí ， sì zhōu biàn àn le ， wú lùn shì tiān kōng ， hái shi tiān kōng zhōng de tài yáng ， dōu kàn bu jiàn le 。",
               "id": "u07-reading-19-s008"
             },
             {
@@ -4289,7 +4289,7 @@
             },
             {
               "zh": "房屋、街道、树木、桥梁，甚至行人和小黑猫，雾把一切都藏了起来，什么都看不见了。",
-              "pinyin": "fáng wū 、 jiē dào 、 shù mù 、 qiáo liáng ， shèn zhì xíng rén hé xiǎo hēi māo ， wù bǎ yí qiè dōu cáng le qǐ lái ， shén me dōu kàn bú jiàn le 。",
+              "pinyin": "fáng wū 、 jiē dào 、 shù mù 、 qiáo liáng ， shèn zhì xíng rén hé xiǎo hēi māo ， wù bǎ yí qiè dōu cáng le qǐ lái ， shén me dōu kàn bu jiàn le 。",
               "id": "u07-reading-19-s012"
             },
             {
@@ -4536,7 +4536,7 @@
               "text": [
                 {
                   "zh": "读一读，你还能说出这样的词语吗？",
-                  "pinyin": "dú yī dú ， nǐ hái néng shuō chū zhè yàng de cí yǔ ma ？",
+                  "pinyin": "dú yi dú ， nǐ hái néng shuō chū zhè yàng de cí yǔ ma ？",
                   "id": "u07-garden-section-01-s001"
                 },
                 {
@@ -4560,7 +4560,7 @@
               "text": [
                 {
                   "zh": "用部首查字法查下面的字，并填一填。",
-                  "pinyin": "yòng bù shǒu chá zì fǎ chá xià miàn de zì ， bìng tián yī tián 。",
+                  "pinyin": "yòng bù shǒu chá zì fǎ chá xià miàn de zì ， bìng tián yi tián 。",
                   "id": "u07-garden-section-02-s001"
                 },
                 {
@@ -4595,12 +4595,12 @@
                 },
                 {
                   "zh": "读一读，注意加点的字。你整理了哪些容易写错的字？和同学交流。",
-                  "pinyin": "dú yī dú ， zhù yì jiā diǎn de zì 。 nǐ zhěng lǐ le nǎ xiē róng yì xiě cuò de zì ？ hé tóng xué jiāo liú 。",
+                  "pinyin": "dú yi dú ， zhù yì jiā diǎn de zì 。 nǐ zhěng lǐ le nǎ xiē róng yì xiě cuò de zì ？ hé tóng xué jiāo liú 。",
                   "id": "u07-garden-section-02-s008"
                 },
                 {
                   "zh": "加点的字我曾经写错过。我把正确的写在改错本上，会经常看一看。",
-                  "pinyin": "jiā diǎn de zì wǒ céng jīng xiě cuò guò 。 wǒ bǎ zhèng què de xiě zài gǎi cuò běn shàng ， huì jīng cháng kàn yī kàn 。",
+                  "pinyin": "jiā diǎn de zì wǒ céng jīng xiě cuò guò 。 wǒ bǎ zhèng què de xiě zài gǎi cuò běn shàng ， huì jīng cháng kàn yi kàn 。",
                   "id": "u07-garden-section-02-s009"
                 },
                 {
@@ -4630,7 +4630,7 @@
                 },
                 {
                   "zh": "你见过下面这些词语描写的景象吗？选一两个，跟同学说一说当时的情景。",
-                  "pinyin": "nǐ jiàn guò xià miàn zhè xiē cí yǔ miáo xiě de jǐng xiàng ma ？ xuǎn yī liǎng gè ， gēn tóng xué shuō yī shuō dāng shí de qíng jǐng 。",
+                  "pinyin": "nǐ jiàn guò xià miàn zhè xiē cí yǔ miáo xiě de jǐng xiàng ma ？ xuǎn yì liǎng gè ， gēn tóng xué shuō yi shuō dāng shí de qíng jǐng 。",
                   "id": "u07-garden-section-02-s015"
                 },
                 {
@@ -4732,7 +4732,7 @@
                 },
                 {
                   "zh": "先和同学说一说，再写下来，分享自己的奇思妙想。",
-                  "pinyin": "xiān hé tóng xué shuō yī shuō ， zài xiě xià lái ， fēn xiǎng zì jǐ de qí sī miào xiǎng 。",
+                  "pinyin": "xiān hé tóng xué shuō yi shuō ， zài xiě xià lái ， fēn xiǎng zì jǐ de qí sī miào xiǎng 。",
                   "id": "u07-garden-section-03-s005"
                 },
                 {
@@ -4762,7 +4762,7 @@
               "text": [
                 {
                   "zh": "天空飘着一片霞，水上游来一群鸭。",
-                  "pinyin": "tiān kōng piāo zhe yī piàn xiá ， shuǐ shàng yóu lái yī qún yā 。",
+                  "pinyin": "tiān kōng piāo zhe yí piàn xiá ， shuǐ shàng yóu lái yì qún yā 。",
                   "id": "u07-garden-story-01-s001"
                 },
                 {
@@ -4792,7 +4792,7 @@
       "id": "u07"
     },
     {
-      "name": "第八单元·阅读",
+      "name": "第八单元",
       "chapters": [
         {
           "name": "称赞",
@@ -4920,7 +4920,7 @@
           "text": [
             {
               "zh": "松鼠和小熊住在一座山上。",
-              "pinyin": "sōng shǔ hé xiǎo xióng zhù zài yī zuò shān shàng 。",
+              "pinyin": "sōng shǔ hé xiǎo xióng zhù zài yí zuò shān shàng 。",
               "id": "u08-reading-22-s001"
             },
             {
@@ -4935,7 +4935,7 @@
             },
             {
               "zh": "松鼠折了一只纸船，放在小溪里。",
-              "pinyin": "sōng shǔ zhé le yī zhī zhǐ chuán ， fàng zài xiǎo xī lǐ 。",
+              "pinyin": "sōng shǔ zhé le yì zhī zhǐ chuán ， fàng zài xiǎo xī lǐ 。",
               "id": "u08-reading-22-s004"
             },
             {
@@ -4945,17 +4945,17 @@
             },
             {
               "zh": "小熊拿起纸船一看，乐坏了。",
-              "pinyin": "xiǎo xióng ná qǐ zhǐ chuán yī kàn ， lè huài le 。",
+              "pinyin": "xiǎo xióng ná qǐ zhǐ chuán yí kàn ， lè huài le 。",
               "id": "u08-reading-22-s006"
             },
             {
               "zh": "纸船里放着一个小松果，松果上挂着一张纸条，上面写着：“祝你快乐！”",
-              "pinyin": "zhǐ chuán lǐ fàng zhe yí gè xiǎo sōng guǒ ， sōng guǒ shàng guà zhe yī zhāng zhǐ tiáo ， shàng miàn xiě zhe ： “ zhù nǐ kuài lè ！ ”",
+              "pinyin": "zhǐ chuán lǐ fàng zhe yí gè xiǎo sōng guǒ ， sōng guǒ shàng guà zhe yì zhāng zhǐ tiáo ， shàng miàn xiě zhe ： “ zhù nǐ kuài lè ！ ”",
               "id": "u08-reading-22-s007"
             },
             {
               "zh": "小熊也想折一只纸船送给松鼠，可是纸船不能漂到山上去。",
-              "pinyin": "xiǎo xióng yě xiǎng zhé yī zhī zhǐ chuán sòng gěi sōng shǔ ， kě shì zhǐ chuán bù néng piāo dào shān shàng qù 。",
+              "pinyin": "xiǎo xióng yě xiǎng zhé yì zhī zhǐ chuán sòng gěi sōng shǔ ， kě shì zhǐ chuán bù néng piāo dào shān shàng qù 。",
               "id": "u08-reading-22-s008"
             },
             {
@@ -4965,7 +4965,7 @@
             },
             {
               "zh": "他想了想，就扎了一只风筝。",
-              "pinyin": "tā xiǎng le xiǎng ， jiù zhā le yī zhī fēng zhēng 。",
+              "pinyin": "tā xiǎng le xiǎng ， jiù zhā le yì zhī fēng zhēng 。",
               "id": "u08-reading-22-s010"
             },
             {
@@ -4975,7 +4975,7 @@
             },
             {
               "zh": "松鼠一把抓住风筝的线一看，也乐坏了。",
-              "pinyin": "sōng shǔ yī bǎ zhuā zhù fēng zhēng de xiàn yī kàn ， yě lè huài le 。",
+              "pinyin": "sōng shǔ yì bǎ zhuā zhù fēng zhēng de xiàn yí kàn ， yě lè huài le 。",
               "id": "u08-reading-22-s012"
             },
             {
@@ -4990,12 +4990,12 @@
             },
             {
               "zh": "可是有一天，他们俩为了一点儿小事吵了一架。",
-              "pinyin": "kě shì yǒu yī tiān ， tā men liǎ wèi le yì diǎn ér xiǎo shì chǎo le yī jià 。",
+              "pinyin": "kě shì yǒu yì tiān ， tā men liǎ wèi le yì diǎn ér xiǎo shì chǎo le yí jià 。",
               "id": "u08-reading-22-s015"
             },
             {
               "zh": "山顶上再也看不到飘荡的风筝，小溪里再也看不到漂流的纸船了。",
-              "pinyin": "shān dǐng shàng zài yě kàn bú dào piāo dàng de fēng zhēng ， xiǎo xī lǐ zài yě kàn bú dào piāo liú de zhǐ chuán le 。",
+              "pinyin": "shān dǐng shàng zài yě kàn bu dào piāo dàng de fēng zhēng ， xiǎo xī lǐ zài yě kàn bu dào piāo liú de zhǐ chuán le 。",
               "id": "u08-reading-22-s016"
             },
             {
@@ -5005,7 +5005,7 @@
             },
             {
               "zh": "他还是每天扎一只风筝，但是不好意思把风筝放起来，就把风筝挂在高高的树枝上。",
-              "pinyin": "tā hái shì měi tiān zhā yī zhī fēng zhēng ， dàn shì bù hǎo yì sī bǎ fēng zhēng fàng qǐ lái ， jiù bǎ fēng zhēng guà zài gāo gāo de shù zhī shàng 。",
+              "pinyin": "tā hái shì měi tiān zhā yì zhī fēng zhēng ， dàn shì bù hǎo yì sī bǎ fēng zhēng fàng qǐ lái ， jiù bǎ fēng zhēng guà zài gāo gāo de shù zhī shàng 。",
               "id": "u08-reading-22-s018"
             },
             {
@@ -5015,17 +5015,17 @@
             },
             {
               "zh": "他还是每天折一只纸船，他也不好意思把纸船放进小溪，就把纸船放到屋顶上。",
-              "pinyin": "tā hái shì měi tiān zhé yī zhī zhǐ chuán ， tā yě bù hǎo yì sī bǎ zhǐ chuán fàng jìn xiǎo xī ， jiù bǎ zhǐ chuán fàng dào wū dǐng shàng 。",
+              "pinyin": "tā hái shì měi tiān zhé yì zhī zhǐ chuán ， tā yě bù hǎo yì sī bǎ zhǐ chuán fàng jìn xiǎo xī ， jiù bǎ zhǐ chuán fàng dào wū dǐng shàng 。",
               "id": "u08-reading-22-s020"
             },
             {
               "zh": "过了几天，松鼠再也受不了啦。",
-              "pinyin": "guò le jǐ tiān ， sōng shǔ zài yě shòu bù liǎo la 。",
+              "pinyin": "guò le jǐ tiān ， sōng shǔ zài yě shòu bu liǎo la 。",
               "id": "u08-reading-22-s021"
             },
             {
               "zh": "他在一只折好的纸船上写了一句话：“如果你愿意和好，就放一只风筝吧！”",
-              "pinyin": "tā zài yī zhī zhé hǎo de zhǐ chuán shàng xiě le yī jù huà ： “ rú guǒ nǐ yuàn yì hé hǎo ， jiù fàng yī zhī fēng zhēng ba ！ ”",
+              "pinyin": "tā zài yì zhī zhé hǎo de zhǐ chuán shàng xiě le yí jù huà ： “ rú guǒ nǐ yuàn yì hé hǎo ， jiù fàng yì zhī fēng zhēng ba ！ ”",
               "id": "u08-reading-22-s022"
             },
             {
@@ -5035,12 +5035,12 @@
             },
             {
               "zh": "傍晚，松鼠看见一只只美丽的风筝朝他飞来，高兴得哭了。",
-              "pinyin": "bàng wǎn ， sōng shǔ kàn jiàn yī zhī zhǐ měi lì de fēng zhēng cháo tā fēi lái ， gāo xìng dé kū le 。",
+              "pinyin": "bàng wǎn ， sōng shǔ kàn jiàn yì zhī zhǐ měi lì de fēng zhēng cháo tā fēi lái ， gāo xìng dé kū le 。",
               "id": "u08-reading-22-s024"
             },
             {
               "zh": "他连忙爬上屋顶，取下纸船，把一只只纸船放到了小溪里。",
-              "pinyin": "tā lián máng pá shàng wū dǐng ， qǔ xià zhǐ chuán ， bǎ yī zhī zhǐ zhǐ chuán fàng dào le xiǎo xī lǐ 。",
+              "pinyin": "tā lián máng pá shàng wū dǐng ， qǔ xià zhǐ chuán ， bǎ yì zhī zhǐ zhǐ chuán fàng dào le xiǎo xī lǐ 。",
               "id": "u08-reading-22-s025"
             }
           ],
@@ -5064,7 +5064,7 @@
           "text": [
             {
               "zh": "一条小河唱着歌向前流着，他太着急了，迎面撞在一座大山上。",
-              "pinyin": "yī tiáo xiǎo hé chàng zhe gē xiàng qián liú zhe ， tā tài zháo jí le ， yíng miàn zhuàng zài yī zuò dà shān shàng 。",
+              "pinyin": "yì tiáo xiǎo hé chàng zhe gē xiàng qián liú zhe ， tā tài zháo jí le ， yíng miàn zhuàng zài yí zuò dà shān shàng 。",
               "id": "u08-reading-23-s001"
             },
             {
@@ -5074,7 +5074,7 @@
             },
             {
               "zh": "小河流出眼泪，扬起一片水花。",
-              "pinyin": "xiǎo hé liú chū yǎn lèi ， yáng qǐ yī piàn shuǐ huā 。",
+              "pinyin": "xiǎo hé liú chū yǎn lèi ， yáng qǐ yí piàn shuǐ huā 。",
               "id": "u08-reading-23-s003"
             },
             {
@@ -5099,7 +5099,7 @@
             },
             {
               "zh": "你看这山里的泉水，从山上跳下来，一路上摔了多少跟头啊，可是他唱着快乐的歌，勇敢地向前奔跑，从来不叫苦。”",
-              "pinyin": "nǐ kàn zhè shān lǐ de quán shuǐ ， cóng shān shàng tiào xià lái ， yī lù shàng shuāi le duō shǎo gēn tou a ， kě shì tā chàng zhe kuài lè de gē ， yǒng gǎn dì xiàng qián bēn pǎo ， cóng lái bù jiào kǔ 。 ”",
+              "pinyin": "nǐ kàn zhè shān lǐ de quán shuǐ ， cóng shān shàng tiào xià lái ， yí lù shàng shuāi le duō shǎo gēn tou a ， kě shì tā chàng zhe kuài lè de gē ， yǒng gǎn dì xiàng qián bēn pǎo ， cóng lái bú jiào kǔ 。 ”",
               "id": "u08-reading-23-s008"
             },
             {
@@ -5114,7 +5114,7 @@
             },
             {
               "zh": "手拉着手，一块儿向前流。”",
-              "pinyin": "shǒu lā zhuó shǒu ， yī kuài ér xiàng qián liú 。 ”",
+              "pinyin": "shǒu lā zhuó shǒu ， yí kuài ér xiàng qián liú 。 ”",
               "id": "u08-reading-23-s011"
             },
             {
@@ -5144,7 +5144,7 @@
             },
             {
               "zh": "你看，他从那么高的山顶上跳下来，一点儿也不怕，还大声地笑着，叫着，把坚硬的石头冲刷得那么光滑。”",
-              "pinyin": "nǐ kàn ， tā cóng nà me gāo de shān dǐng shàng tiào xià lái ， yì diǎn ér yě bù pà ， hái dà shēng dì xiào zhe ， jiào zhe ， bǎ jiān yìng de shí tou chōng shuā dé nà me guāng huá 。 ”",
+              "pinyin": "nǐ kàn ， tā cóng nà me gāo de shān dǐng shàng tiào xià lái ， yì diǎn ér yě bú pà ， hái dà shēng dì xiào zhe ， jiào zhe ， bǎ jiān yìng de shí tou chōng shuā dé nà me guāng huá 。 ”",
               "id": "u08-reading-23-s017"
             },
             {
@@ -5154,7 +5154,7 @@
             },
             {
               "zh": "手拉着手，一块儿向前流。”",
-              "pinyin": "shǒu lā zhuó shǒu ， yī kuài ér xiàng qián liú 。 ”",
+              "pinyin": "shǒu lā zhuó shǒu ， yí kuài ér xiàng qián liú 。 ”",
               "id": "u08-reading-23-s019"
             },
             {
@@ -5164,7 +5164,7 @@
             },
             {
               "zh": "三个好伙伴，手拉着手，蹦啊，跳啊，溅起一片片水花，一起流向远方。",
-              "pinyin": "sān gè hǎo huǒ bàn ， shǒu lā zhuó shǒu ， bèng a ， tiào a ， jiàn qǐ yī piàn piàn shuǐ huā ， yì qǐ liú xiàng yuǎn fāng 。",
+              "pinyin": "sān gè hǎo huǒ bàn ， shǒu lā zhuó shǒu ， bèng a ， tiào a ， jiàn qǐ yí piàn piàn shuǐ huā ， yì qǐ liú xiàng yuǎn fāng 。",
               "id": "u08-reading-23-s021"
             }
           ],
@@ -5211,7 +5211,7 @@
               "text": [
                 {
                   "zh": "猜猜下面词语的读音，再选择合适的放在句子里读一读。",
-                  "pinyin": "cāi cāi xià miàn cí yǔ de dú yīn ， zài xuǎn zé hé shì de fàng zài jù zi lǐ dú yī dú 。",
+                  "pinyin": "cāi cāi xià miàn cí yǔ de dú yīn ， zài xuǎn zé hé shì de fàng zài jù zi lǐ dú yi dú 。",
                   "id": "u08-garden-section-02-s001"
                 },
                 {
@@ -5279,7 +5279,7 @@
               "text": [
                 {
                   "zh": "◎ 己所不欲，勿施于人。 — 《论语》",
-                  "pinyin": "◎  jǐ suǒ bù yù ， wù shī yú rén 。 — 《 lún yǔ 》",
+                  "pinyin": "◎  jǐ suǒ bú yù ， wù shī yú rén 。 — 《 lún yǔ 》",
                   "id": "u08-garden-section-04-s001"
                 },
                 {
@@ -5318,7 +5318,7 @@
                 },
                 {
                   "zh": "◇ 看图，先了解每幅图 的内容，再把这些图的内容 连起来，讲一讲这个故事。",
-                  "pinyin": "◇  kàn tú ， xiān liǎo jiě měi fú tú  de nèi róng ， zài bǎ zhè xiē tú de nèi róng  lián qǐ lái ， jiǎng yī jiǎng zhè ge gù shì 。",
+                  "pinyin": "◇  kàn tú ， xiān liǎo jiě měi fú tú  de nèi róng ， zài bǎ zhè xiē tú de nèi róng  lián qǐ lái ， jiǎng yi jiǎng zhè ge gù shì 。",
                   "id": "u08-garden-section-05-s003"
                 },
                 {
@@ -5328,7 +5328,7 @@
                 },
                 {
                   "zh": "◇ 想一想，这个故事接下来会怎么样？",
-                  "pinyin": "◇  xiǎng yī xiǎng ， zhè ge gù shì jiē xià lái huì zěn me yàng ？",
+                  "pinyin": "◇  xiǎng yi xiǎng ， zhè ge gù shì jiē xià lái huì zěn me yàng ？",
                   "id": "u08-garden-section-05-s005"
                 },
                 {
@@ -5358,12 +5358,12 @@
               "text": [
                 {
                   "zh": "在茂密的森林里，有一只老虎正在寻找食物。",
-                  "pinyin": "zài mào mì de sēn lín lǐ ， yǒu yī zhī lǎo hǔ zhèng zài xún zhǎo shí wù 。",
+                  "pinyin": "zài mào mì de sēn lín lǐ ， yǒu yì zhī lǎo hǔ zhèng zài xún zhǎo shí wù 。",
                   "id": "u08-garden-story-01-s001"
                 },
                 {
                   "zh": "一只狐狸从老虎身边窜过。",
-                  "pinyin": "yī zhī hú lí cóng lǎo hǔ shēn biān cuàn guò 。",
+                  "pinyin": "yì zhī hú lí cóng lǎo hǔ shēn biān cuàn guò 。",
                   "id": "u08-garden-story-01-s002"
                 },
                 {
@@ -5373,7 +5373,7 @@
                 },
                 {
                   "zh": "狐狸眼珠子一转，扯着嗓子问老虎：“你敢吃我？”",
-                  "pinyin": "hú lí yǎn zhū zi yī zhuǎn ， chě zhe sǎng zi wèn lǎo hǔ ： “ nǐ gǎn chī wǒ ？ ”",
+                  "pinyin": "hú lí yǎn zhū zi yì zhuǎn ， chě zhe sǎng zi wèn lǎo hǔ ： “ nǐ gǎn chī wǒ ？ ”",
                   "id": "u08-garden-story-01-s004"
                 },
                 {
@@ -5383,7 +5383,7 @@
                 },
                 {
                   "zh": "老虎一愣。",
-                  "pinyin": "lǎo hǔ yī lèng 。",
+                  "pinyin": "lǎo hǔ yí lèng 。",
                   "id": "u08-garden-story-01-s006"
                 },
                 {
@@ -5403,7 +5403,7 @@
                 },
                 {
                   "zh": "狐狸摇了摇尾巴，说：“我带你到百兽面前走一趟，让你看看我的威风。”",
-                  "pinyin": "hú lí yáo le yáo wěi ba ， shuō ： “ wǒ dài nǐ dào bǎi shòu miàn qián zǒu yī tàng ， ràng nǐ kàn kàn wǒ de wēi fēng 。 ”",
+                  "pinyin": "hú lí yáo le yáo wěi ba ， shuō ： “ wǒ dài nǐ dào bǎi shòu miàn qián zǒu yí tàng ， ràng nǐ kàn kàn wǒ de wēi fēng 。 ”",
                   "id": "u08-garden-story-01-s010"
                 },
                 {
@@ -5428,7 +5428,7 @@
                 },
                 {
                   "zh": "再往狐狸身后一看，呀，一只大老虎！",
-                  "pinyin": "zài wǎng hú lí shēn hòu yī kàn ， ya ， yī zhī dà lǎo hǔ ！",
+                  "pinyin": "zài wǎng hú lí shēn hòu yí kàn ， ya ， yì zhī dà lǎo hǔ ！",
                   "id": "u08-garden-story-01-s015"
                 },
                 {
@@ -78197,7 +78197,7 @@
             },
             {
               "zh": "不用",
-              "pinyin": "bù yòng",
+              "pinyin": "bú yòng",
               "id": "word-065",
               "refs": [
                 {
@@ -78244,7 +78244,7 @@
                       "start": 19,
                       "length": 2,
                       "zh": "不用",
-                      "pinyin": "bù yòng"
+                      "pinyin": "bú yòng"
                     }
                   ]
                 }
@@ -78717,7 +78717,7 @@
             },
             {
               "zh": "一些",
-              "pinyin": "yī xiē",
+              "pinyin": "yì xiē",
               "id": "word-073",
               "refs": [
                 {
@@ -81288,7 +81288,7 @@
             },
             {
               "zh": "不过",
-              "pinyin": "bù guò",
+              "pinyin": "bú guò",
               "id": "word-126",
               "refs": [
                 {
@@ -82075,7 +82075,7 @@
             },
             {
               "zh": "一样",
-              "pinyin": "yī yàng",
+              "pinyin": "yí yàng",
               "id": "word-140",
               "refs": [
                 {
@@ -83609,7 +83609,7 @@
             },
             {
               "zh": "一块儿",
-              "pinyin": "yī kuài ér",
+              "pinyin": "yí kuài ér",
               "id": "word-167",
               "refs": [
                 {
@@ -83656,7 +83656,7 @@
                       "start": 5,
                       "length": 3,
                       "zh": "一块儿",
-                      "pinyin": "yī kuài ér"
+                      "pinyin": "yí kuài ér"
                     }
                   ]
                 },
@@ -83672,7 +83672,7 @@
                       "start": 5,
                       "length": 3,
                       "zh": "一块儿",
-                      "pinyin": "yī kuài ér"
+                      "pinyin": "yí kuài ér"
                     }
                   ]
                 }
@@ -85132,7 +85132,7 @@
             },
             {
               "zh": "一切",
-              "pinyin": "yī qiè",
+              "pinyin": "yí qiè",
               "id": "word-192",
               "refs": [
                 {
@@ -85643,7 +85643,7 @@
             },
             {
               "zh": "一会儿",
-              "pinyin": "yī huì er",
+              "pinyin": "yí huì er",
               "id": "word-204",
               "refs": [
                 {
@@ -85740,7 +85740,7 @@
             },
             {
               "zh": "一边",
-              "pinyin": "yī biān",
+              "pinyin": "yì biān",
               "id": "word-207",
               "refs": [
                 {
@@ -85777,13 +85777,13 @@
                       "start": 3,
                       "length": 2,
                       "zh": "一边",
-                      "pinyin": "yī biān"
+                      "pinyin": "yì biān"
                     },
                     {
                       "start": 8,
                       "length": 2,
                       "zh": "一边",
-                      "pinyin": "yī biān"
+                      "pinyin": "yì biān"
                     }
                   ]
                 },
