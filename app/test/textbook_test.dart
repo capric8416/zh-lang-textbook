@@ -58,9 +58,9 @@ void main() {
 
     expect(textbook.schemaVersion, 2);
     expect(textbook.index, hasLength(10));
-    expect(textbook.chaptersById, hasLength(45));
-    expect(textbook.chapter('intro-01')?.name, '我是中国人');
-    expect(textbook.chapter('u02-pinyin-04')?.name, 'ddttnnll');
+    expect(textbook.chaptersById, hasLength(47));
+    expect(textbook.chapter('intro-01')?.name, '我上学了');
+    expect(textbook.chapter('u02-pinyin-04')?.name, 'd t n l');
     expect(textbook.highlights.forSegment('u02-pinyin-04-s001'), isNotEmpty);
   });
 
