@@ -6157,7 +6157,10 @@
         {
           "name": "请教",
           "page": 105,
-          "topic": {},
+          "topic": {
+            "zh": "口语交际",
+            "pinyin": "kǒu yǔ jiāo jì"
+          },
           "title": {
             "zh": "请教",
             "pinyin": "qǐng jiào"
@@ -6227,7 +6230,10 @@
         {
           "name": "那次经历真难忘",
           "page": 106,
-          "topic": {},
+          "topic": {
+            "zh": "习作",
+            "pinyin": "xí zuò"
+          },
           "title": {
             "zh": "那次经历真难忘",
             "pinyin": "nà cì jīng lì zhēn nán wàng"
