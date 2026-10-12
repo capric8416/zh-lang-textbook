@@ -446,6 +446,7 @@ class _PracticePageState extends State<PracticePage> {
         context,
         result.celebrations,
         petName: result.profile.name,
+        profile: result.profile,
       );
     }
   }

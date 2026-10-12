@@ -9,10 +9,53 @@ import 'package:zh_textbook/models/quick_practice.dart';
 import 'package:zh_textbook/services/learning_mastery.dart';
 import 'package:zh_textbook/widgets/pet_celebration.dart';
 import 'package:zh_textbook/widgets/pet_growth_card.dart';
+import 'package:zh_textbook/widgets/pet_interaction_stage.dart';
 import 'package:zh_textbook/widgets/pet_quick_reaction.dart';
 import 'package:zh_textbook/widgets/pet_practice_companion.dart';
+import 'package:zh_textbook/widgets/pet_room_scene.dart';
 
 void main() {
+  test('正式互动动画仍覆盖 14 种状态并复用 8 个 WebP', () {
+    expect(PetInteractionCue.values, hasLength(14));
+    expect(
+      PetInteractionCue.values.map(petAnimationAsset).toSet(),
+      hasLength(8),
+    );
+  });
+
+  testWidgets('宠物房间会按激活家具播放台灯书柜和花盆动画', (tester) async {
+    final cases = [
+      (room: 'study-room', furniture: 'desk-lamp', cue: PetInteractionCue.lamp),
+      (
+        room: 'study-room',
+        furniture: 'bookcase',
+        cue: PetInteractionCue.bookcase,
+      ),
+      (room: 'yard', furniture: 'flower-pot', cue: PetInteractionCue.flowerPot),
+    ];
+    for (final testCase in cases) {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: PetRoomScene(
+              profile: PetProfile(
+                selectedRoom: testCase.room,
+                unlockedFurniture: {testCase.furniture},
+                furnitureStates: {
+                  testCase.furniture: FurnitureVisualState.active,
+                },
+              ),
+            ),
+          ),
+        ),
+      );
+      expect(
+        find.byKey(ValueKey('pet-live-animation-${testCase.cue.name}')),
+        findsOneWidget,
+      );
+    }
+  });
+
   testWidgets('成长卡显示全局成长和下一课进度', (tester) async {
     var invited = false;
     final lesson = LessonMastery(
@@ -77,11 +120,19 @@ void main() {
     );
     expect(find.text('80% 达成！'), findsOneWidget);
     expect(find.text('豆豆也来庆祝！'), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('pet-live-animation-lessonCelebration')),
+      findsOneWidget,
+    );
 
     await tester.pump(const Duration(milliseconds: 2200));
     await tester.pump();
     expect(find.byKey(const ValueKey('pet-unit-celebration')), findsOneWidget);
     expect(find.text('单元大阶段通关！'), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('pet-live-animation-unitCelebration')),
+      findsOneWidget,
+    );
 
     await tester.pump(const Duration(milliseconds: 2700));
     await tester.pumpAndSettle();
@@ -118,6 +169,10 @@ void main() {
     await tester.pump(const Duration(milliseconds: 500));
     expect(find.byKey(const ValueKey('pet-quick-reaction')), findsOneWidget);
     expect(find.textContaining('叼来一朵小花'), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('pet-live-animation-flowerGift')),
+      findsOneWidget,
+    );
 
     await tester.pump(const Duration(seconds: 2));
     expect(find.byKey(const ValueKey('pet-quick-reaction')), findsNothing);
@@ -136,11 +191,16 @@ void main() {
             mission: mission,
             mood: PetPracticeMood.thinking,
             completedSteps: 0,
+            action: PetActionKind.think,
           ),
         ),
       ),
     );
     expect(find.textContaining('慢慢想'), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('pet-live-animation-think')),
+      findsOneWidget,
+    );
 
     await tester.pumpWidget(
       MaterialApp(
@@ -150,11 +210,16 @@ void main() {
             mission: mission,
             mood: PetPracticeMood.encourage,
             completedSteps: 1,
+            action: PetActionKind.incorrect,
           ),
         ),
       ),
     );
     expect(find.textContaining('继续试'), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('pet-live-animation-incorrect')),
+      findsOneWidget,
+    );
     expect(
       tester
           .widget<LinearProgressIndicator>(
@@ -222,9 +287,17 @@ void main() {
     expect(find.text('再练三题'), findsOneWidget);
     expect(find.textContaining('豆豆叼来一朵小花'), findsOneWidget);
     expect(find.byKey(const ValueKey('pet-action-complete')), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('pet-live-animation-complete')),
+      findsOneWidget,
+    );
     await tester.tap(find.byKey(const ValueKey('repeat-quick-practice')));
     await tester.pump();
     expect(find.byKey(const ValueKey('pet-action-repeat')), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('pet-live-animation-repeat')),
+      findsOneWidget,
+    );
     await tester.pumpAndSettle();
     expect(result, isTrue);
 

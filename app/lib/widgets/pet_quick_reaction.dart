@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import '../models/pet.dart';
 import '../models/quick_practice.dart';
 import '../services/pet_companion.dart';
-import 'pet_avatar.dart';
+import 'pet_interaction_stage.dart';
 
 void showPetQuickReaction(
   BuildContext context, {
@@ -70,6 +70,11 @@ class _PetQuickReactionOverlayState extends State<_PetQuickReactionOverlay>
       PetQuickReaction.flowerGift => '${widget.profile.name}叼来一朵小花送给你！',
       PetQuickReaction.studyTogether => '${widget.profile.name}趴在书桌旁陪着你！',
     };
+    final cue = switch (widget.reaction) {
+      PetQuickReaction.tailWag => PetInteractionCue.tailWag,
+      PetQuickReaction.flowerGift => PetInteractionCue.flowerGift,
+      PetQuickReaction.studyTogether => PetInteractionCue.studyTogether,
+    };
     return IgnorePointer(
       child: SafeArea(
         child: Align(
@@ -94,13 +99,10 @@ class _PetQuickReactionOverlayState extends State<_PetQuickReactionOverlay>
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    PetAvatar(
+                    PetAnimatedCharacter(
+                      profile: widget.profile,
+                      cue: cue,
                       size: 72,
-                      expression: PetExpression.wink,
-                      appearance: PetAppearance.fromBreed(widget.profile.breed),
-                      decoration: petDecoration(
-                        widget.profile.selectedDecoration,
-                      ),
                     ),
                     const SizedBox(width: 8),
                     ConstrainedBox(

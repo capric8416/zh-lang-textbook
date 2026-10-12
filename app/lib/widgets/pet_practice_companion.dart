@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../models/pet.dart';
 import '../models/pet_mission.dart';
-import 'pet_avatar.dart';
+import 'pet_interaction_stage.dart';
 
 enum PetPracticeMood { idle, thinking, celebrate, encourage }
 
@@ -46,11 +46,13 @@ class PetPracticeCompanion extends StatelessWidget {
       PetActionKind.repeat => '在书桌旁等你',
       null => null,
     };
-    final expression = switch (mood) {
-      PetPracticeMood.celebrate => PetExpression.wink,
-      PetPracticeMood.thinking => PetExpression.happy,
-      PetPracticeMood.encourage => PetExpression.happy,
-      PetPracticeMood.idle => PetExpression.happy,
+    final cue = switch (action) {
+      PetActionKind.invite => PetInteractionCue.invite,
+      PetActionKind.think => PetInteractionCue.think,
+      PetActionKind.correct => PetInteractionCue.correct,
+      PetActionKind.incorrect => PetInteractionCue.incorrect,
+      PetActionKind.complete => PetInteractionCue.complete,
+      PetActionKind.repeat || null => PetInteractionCue.repeat,
     };
     return Card(
       key: const ValueKey('pet-practice-companion'),
@@ -67,11 +69,10 @@ class PetPracticeCompanion extends StatelessWidget {
               child: _PetActionAnimation(
                 action: action,
                 reducedMotion: reducedMotion,
-                child: PetAvatar(
+                child: PetAnimatedCharacter(
+                  profile: profile,
+                  cue: cue,
                   size: 62,
-                  expression: expression,
-                  appearance: PetAppearance.fromBreed(profile.breed),
-                  decoration: petDecoration(profile.selectedDecoration),
                 ),
               ),
             ),
@@ -250,11 +251,12 @@ class _PetMissionCompletionDialogState
         _PetActionAnimation(
           action: _action,
           reducedMotion: MediaQuery.disableAnimationsOf(context),
-          child: PetAvatar(
+          child: PetAnimatedCharacter(
+            profile: widget.profile,
+            cue: _action == PetActionKind.complete
+                ? PetInteractionCue.complete
+                : PetInteractionCue.repeat,
             size: 72,
-            expression: PetExpression.wink,
-            appearance: PetAppearance.fromBreed(widget.profile.breed),
-            decoration: petDecoration(widget.profile.selectedDecoration),
           ),
         ),
         const SizedBox(height: 8),
