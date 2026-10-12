@@ -3,12 +3,14 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 
 import '../models/pet.dart';
+import 'pet_interaction_stage.dart';
 import 'pet_avatar.dart';
 
 Future<void> showPetCelebrations(
   BuildContext context,
   List<PetCelebration> celebrations, {
   String petName = defaultPetName,
+  PetProfile? profile,
 }) async {
   for (final celebration in celebrations) {
     if (!context.mounted) return;
@@ -23,6 +25,7 @@ Future<void> showPetCelebrations(
       pageBuilder: (context, _, _) => _PetCelebrationOverlay(
         celebration: celebration,
         petName: petName,
+        profile: profile ?? PetProfile(name: petName),
         reduceMotion: MediaQuery.disableAnimationsOf(context),
       ),
     );
@@ -33,11 +36,13 @@ class _PetCelebrationOverlay extends StatefulWidget {
   const _PetCelebrationOverlay({
     required this.celebration,
     required this.petName,
+    required this.profile,
     required this.reduceMotion,
   });
 
   final PetCelebration celebration;
   final String petName;
+  final PetProfile profile;
   final bool reduceMotion;
 
   @override
@@ -124,7 +129,11 @@ class _PetCelebrationOverlayState extends State<_PetCelebrationOverlay>
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          PetAvatar(size: 88, expression: expression),
+                          PetAnimatedCharacter(
+                            profile: widget.profile,
+                            cue: PetInteractionCue.lessonCelebration,
+                            size: 88,
+                          ),
                           const SizedBox(width: 10),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -176,7 +185,11 @@ class _PetCelebrationOverlayState extends State<_PetCelebrationOverlay>
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const PetAvatar(size: 150, expression: PetExpression.radiant),
+                  PetAnimatedCharacter(
+                    profile: widget.profile,
+                    cue: PetInteractionCue.unitCelebration,
+                    size: 150,
+                  ),
                   const SizedBox(height: 16),
                   Text(
                     '单元大阶段通关！',

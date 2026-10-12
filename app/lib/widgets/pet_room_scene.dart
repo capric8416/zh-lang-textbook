@@ -3,7 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 
 import '../models/pet.dart';
-import 'pet_avatar.dart';
+import 'pet_interaction_stage.dart';
 
 class PetRoomScene extends StatelessWidget {
   const PetRoomScene({
@@ -32,6 +32,24 @@ class PetRoomScene extends StatelessWidget {
         )
         .toList();
     final palette = _palette(room.id);
+    final interactionCue = switch (room.id) {
+      'study-room'
+          when items.any((item) => item.id == 'bookcase') &&
+              profile.furnitureState('bookcase') ==
+                  FurnitureVisualState.active =>
+        PetInteractionCue.bookcase,
+      'study-room'
+          when items.any((item) => item.id == 'desk-lamp') &&
+              profile.furnitureState('desk-lamp') ==
+                  FurnitureVisualState.active =>
+        PetInteractionCue.lamp,
+      'yard'
+          when items.any((item) => item.id == 'flower-pot') &&
+              profile.furnitureState('flower-pot') ==
+                  FurnitureVisualState.active =>
+        PetInteractionCue.flowerPot,
+      _ => PetInteractionCue.repeat,
+    };
     return Semantics(
       label: '${room.name}，已摆放${items.length}件家具',
       child: AspectRatio(
@@ -73,10 +91,10 @@ class PetRoomScene extends StatelessWidget {
                 ),
               Align(
                 alignment: Alignment(petAlignmentX, 0.3),
-                child: PetAvatar(
+                child: PetAnimatedCharacter(
+                  profile: profile,
+                  cue: interactionCue,
                   size: 126,
-                  appearance: PetAppearance.fromBreed(profile.breed),
-                  decoration: petDecoration(profile.selectedDecoration),
                 ),
               ),
               Positioned(
