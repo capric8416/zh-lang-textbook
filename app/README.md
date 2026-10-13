@@ -2,6 +2,16 @@
 
 面向 Linux、Windows、macOS、Android 和 iOS 的 Flutter 语文复习应用。
 
+## 账号服务
+
+账号 API 地址以 `/api/v1` 结尾，通过编译参数配置；例如：
+
+```bash
+flutter run --dart-define=API_BASE_URL=https://your-worker.example.workers.dev/api/v1
+```
+
+没有配置后端时，“教材”和练习仍可本地离线使用；“我的”中的登录、账号与班级管理需要网络。学生可以自行注册，其他管理员账号由上级创建。
+
 ## 同步教材
 
 教材源文件位于仓库根目录的 `json_reviewed/`。每次打包前，在本目录执行：

@@ -40,6 +40,10 @@ dependencies:
   record: ^7.1.1
   lpinyin: ^2.0.3
   flutter_soloud: ^4.1.7
+  flutter_secure_storage: ^11.2.0
+  mobile_scanner: ^7.4.2
+  qr_flutter: ^4.1.0
+  cryptography: ^2.9.0
 
 dev_dependencies:
   flutter_test:

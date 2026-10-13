@@ -219,6 +219,10 @@ __marimo__/
 # Streamlit
 .streamlit/secrets.toml
 
+# Local media assets and Wrangler state
+images/
+.wrangler/
+
 
 
 tools/

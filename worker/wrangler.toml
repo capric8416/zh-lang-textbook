@@ -1,0 +1,13 @@
+name = "zh-lang-textbook-accounts"
+main = "build/worker/shim.mjs"
+compatibility_date = "2026-10-13"
+workers_dev = true
+
+[build]
+command = "cargo install -q worker-build@^0.1 && worker-build --release"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "zh-lang-textbook-accounts"
+# Run `npx wrangler d1 create zh-lang-textbook-accounts` and replace this UUID.
+database_id = "8e88510a-421b-48d9-b511-099e9f790132"

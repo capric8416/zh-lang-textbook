@@ -11,6 +11,7 @@ permissions:
 
 env:
   FLUTTER_VERSION: "3.44.0"
+  API_BASE_URL: "https://zh-lang-textbook.614088.xyz/api/v1"
   ANDROID_NDK_VERSION: "28.2.13676358"
   ANDROID_CMAKE_VERSION: "3.22.1"
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
@@ -121,7 +122,7 @@ jobs:
           fi
 
       - name: Build Linux release
-        run: flutter build linux --release
+        run: flutter build linux --release --dart-define=API_BASE_URL="$API_BASE_URL"
 
       - name: Verify Linux native bundle
         run: |
@@ -152,7 +153,7 @@ jobs:
           fi
 
       - name: Build Android arm64 APK
-        run: flutter build apk --release --target-platform android-arm64
+        run: flutter build apk --release --target-platform android-arm64 --dart-define=API_BASE_URL="$API_BASE_URL"
 
       - name: Verify and package artifacts
         run: |
@@ -250,7 +251,7 @@ jobs:
         shell: pwsh
         run: |
           flutter pub get
-          flutter build windows --release
+          flutter build windows --release --dart-define=API_BASE_URL=$env:API_BASE_URL
 
       - name: Verify and package artifact
         shell: pwsh
@@ -354,7 +355,7 @@ jobs:
 
       - name: Build and package macOS app
         run: |
-          flutter build macos --release
+          flutter build macos --release --dart-define=API_BASE_URL="$API_BASE_URL"
           mac_app="$(find build/macos/Build/Products/Release -maxdepth 1 -name '*.app' -print -quit)"
           test -n "$mac_app"
           mkdir -p "$mac_app/Contents/Frameworks" release
@@ -412,7 +413,7 @@ jobs:
 
       - name: Build and package unsigned iOS app
         run: |
-          flutter build ios --release --no-codesign -v
+          flutter build ios --release --no-codesign -v --dart-define=API_BASE_URL="$API_BASE_URL"
           nm -gU build/ios/iphoneos/Runner.app/Runner | grep '_zh_ocr_create'
           nm -gU build/ios/iphoneos/Runner.app/Runner | grep '_zh_speech_tts_create'
           test -n "$(find build/ios/iphoneos/Runner.app -path '*/flutter_assets/assets/ocr/PP_OCRv6_small_rec.bin' -print -quit)"
