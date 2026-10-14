@@ -26,7 +26,10 @@ enum PetInteractionCue {
   unitCelebration,
 }
 
-String petAnimationAsset(PetInteractionCue cue) {
+String petAnimationAsset(
+  PetInteractionCue cue, {
+  PetSpecies species = PetSpecies.dog,
+}) {
   final animation = switch (cue) {
     PetInteractionCue.invite => 'invite',
     PetInteractionCue.think => 'think',
@@ -42,7 +45,10 @@ String petAnimationAsset(PetInteractionCue cue) {
     PetInteractionCue.tailWag => 'happy',
     PetInteractionCue.studyTogether => 'study',
   };
-  return 'assets/images/dog/huang_gou_bai_mian/$animation.webp';
+  final animalDirectory = species == PetSpecies.cat
+      ? 'cat/san_hua'
+      : 'dog/huang_gou_bai_mian';
+  return 'assets/images/$animalDirectory/$animation.webp';
 }
 
 /// Animated dog asset with the existing vector avatar retained for cats.
@@ -60,25 +66,10 @@ class PetAnimatedCharacter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (profile.species == PetSpecies.cat ||
-        petBreed(profile.breed).species == PetSpecies.cat) {
-      return PetAvatar(
-        size: size,
-        expression:
-            cue == PetInteractionCue.correct ||
-                cue == PetInteractionCue.tailWag ||
-                cue == PetInteractionCue.lessonCelebration ||
-                cue == PetInteractionCue.unitCelebration
-            ? PetExpression.wink
-            : PetExpression.happy,
-        appearance: PetAppearance.fromBreed(profile.breed),
-        decoration: petDecoration(profile.selectedDecoration),
-      );
-    }
     return SizedBox.square(
       dimension: size,
       child: Image.asset(
-        petAnimationAsset(cue),
+        petAnimationAsset(cue, species: profile.species),
         key: ValueKey('pet-live-animation-${cue.name}'),
         fit: BoxFit.contain,
         gaplessPlayback: true,

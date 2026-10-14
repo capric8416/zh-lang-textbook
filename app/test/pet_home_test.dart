@@ -14,12 +14,12 @@ import 'package:zh_textbook/services/engagement_events.dart';
 import 'package:zh_textbook/services/textbook_repository.dart';
 
 void main() {
-  testWidgets('宠物之家显示互动、品种和装饰入口', (tester) async {
+  testWidgets('爪爪星球显示互动、品种和装饰入口', (tester) async {
     SharedPreferences.setMockInitialValues({});
     await tester.pumpWidget(const MaterialApp(home: PetHomePage()));
     await tester.pumpAndSettle();
 
-    expect(find.text('宠物之家'), findsOneWidget);
+    expect(find.text('爪爪星球'), findsOneWidget);
     expect(find.byKey(const ValueKey('pet-room-living-room')), findsOneWidget);
     expect(find.byKey(const ValueKey('furniture-pet-bed')), findsNothing);
     await tester.scrollUntilVisible(find.text('学习装饰'), 300);
@@ -28,7 +28,12 @@ void main() {
     expect(find.text('摇尾巴'), findsOneWidget);
     expect(find.text('选择伙伴'), findsOneWidget);
     expect(find.text('学习装饰'), findsOneWidget);
-    expect(find.text('小狗'), findsOneWidget);
+    expect(find.text('小狗（黄狗白面）'), findsOneWidget);
+    expect(find.text('小猫（三花）'), findsOneWidget);
+    await tester.ensureVisible(find.text('小猫（三花）'));
+    await tester.tap(find.text('小猫（三花）'));
+    await tester.pumpAndSettle();
+    expect((await PetGrowthStore.open()).profile.species, PetSpecies.cat);
   });
 
   testWidgets('互动只更新本地反馈，不改变成长值', (tester) async {
@@ -152,7 +157,7 @@ void main() {
 
     await tester.tap(find.byTooltip('返回'));
     await tester.pumpAndSettle();
-    expect(find.text('宠物之家'), findsOneWidget);
+    expect(find.text('爪爪星球'), findsOneWidget);
     expect(find.text('三题陪练完成，真棒！'), findsNothing);
 
     await tester.tap(find.byKey(const ValueKey('furniture-desk-lamp')));

@@ -165,7 +165,7 @@ class _PetHomePageState extends State<PetHomePage> {
     final selection = widget.selection;
     final textbook = widget.textbook;
     if (selection == null || textbook == null) {
-      _showUnavailable('请从教材学习页进入宠物之家');
+      _showUnavailable('请从教材学习页进入爪爪星球');
       return;
     }
     if (furniture.id == 'study-desk') {
@@ -379,7 +379,7 @@ class _PetHomePageState extends State<PetHomePage> {
     }
     final profile = store.profile;
     return Scaffold(
-      appBar: AppBar(title: const Text('宠物之家')),
+      appBar: AppBar(title: const Text('爪爪星球')),
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [
@@ -497,6 +497,7 @@ class _PetHomePageState extends State<PetHomePage> {
                         child: const Text('稍后再说'),
                       ),
                   ],
+                  const SizedBox(height: 16),
                   Wrap(
                     spacing: 8,
                     children: [
@@ -551,18 +552,12 @@ class _PetHomePageState extends State<PetHomePage> {
             children: [
               for (final breed in petBreeds)
                 ChoiceChip(
-                  label: Text(
-                    profile.unlockedBreeds.contains(breed.id)
-                        ? breed.name
-                        : '${breed.name}（大阶段${breed.unlockStage}解锁）',
-                  ),
+                  label: Text(breed.name),
                   selected: profile.breed == breed.id,
-                  onSelected: profile.unlockedBreeds.contains(breed.id)
-                      ? (_) async {
-                          await store.selectBreed(breed.id);
-                          setState(() {});
-                        }
-                      : null,
+                  onSelected: (_) async {
+                    await store.selectBreed(breed.id);
+                    setState(() {});
+                  },
                 ),
             ],
           ),

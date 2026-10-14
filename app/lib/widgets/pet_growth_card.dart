@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import '../models/pet.dart';
 import '../models/pet_learning_goal.dart';
 import '../services/learning_mastery.dart';
-import 'pet_avatar.dart';
 
 class PetGrowthCard extends StatelessWidget {
   const PetGrowthCard({
@@ -56,13 +55,12 @@ class PetGrowthCard extends StatelessWidget {
               ),
               clipBehavior: Clip.antiAlias,
               child: Image.asset(
-                'assets/images/dog/huang_gou_bai_mian/avatar.png',
+                profile.species == PetSpecies.cat
+                    ? 'assets/images/cat/san_hua/avatar.png'
+                    : 'assets/images/dog/huang_gou_bai_mian/avatar.png',
                 fit: BoxFit.contain,
-                errorBuilder: (context, error, stackTrace) => PetAvatar(
-                  size: 88,
-                  appearance: PetAppearance.fromBreed(profile.breed),
-                  decoration: petDecoration(profile.selectedDecoration),
-                ),
+                errorBuilder: (context, error, stackTrace) =>
+                    const Icon(Icons.pets, size: 48),
               ),
             ),
             const SizedBox(width: 18),
@@ -81,7 +79,7 @@ class PetGrowthCard extends StatelessWidget {
                       ),
                       IconButton(
                         onPressed: onOpenHome,
-                        tooltip: '打开宠物之家',
+                        tooltip: '打开爪爪星球',
                         icon: const Icon(Icons.home_outlined),
                       ),
                       Text(

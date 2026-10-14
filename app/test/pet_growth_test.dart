@@ -166,7 +166,7 @@ void main() {
 
     final reopened = await PetGrowthStore.open();
     expect(reopened.profile.species, PetSpecies.dog);
-    expect(reopened.profile.breed, 'default');
+    expect(reopened.profile.breed, 'dog');
     expect(reopened.profile.growthPoints, 210);
     expect(reopened.profile.majorStage, 1);
   });
@@ -190,7 +190,7 @@ void main() {
     );
   });
 
-  test('v1 档案迁移出默认解锁并按阶段补齐解锁', () {
+  test('旧档案迁移为小狗或三花小猫且两种宠物都直接可选', () {
     final legacy = PetProfile.fromJson({
       'species': 'dog',
       'breed': 'default',
@@ -198,10 +198,15 @@ void main() {
       'major_stage': 2,
       'claimed_events': <String>[],
     });
-    expect(legacy.unlockedBreeds, {'default'});
+    expect(legacy.species, PetSpecies.dog);
+    expect(legacy.breed, 'dog');
+    expect(legacy.unlockedBreeds, {'dog', 'cat'});
     expect(legacy.name, defaultPetName);
     final unlocked = PetGrowthEngine.breedsForStage(legacy.majorStage);
-    expect(unlocked, containsAll(<String>['default', 'shiba', 'corgi']));
+    expect(unlocked, {'dog', 'cat'});
+    final oldCat = PetProfile.fromJson({'species': 'cat', 'breed': 'tabby'});
+    expect(oldCat.species, PetSpecies.cat);
+    expect(oldCat.breed, 'cat');
     expect(PetGrowthEngine.decorationsForStage(2), contains('red-scarf'));
     expect(legacy.selectedRoom, 'living-room');
     expect(legacy.unlockedFurniture, isEmpty);
@@ -219,7 +224,7 @@ void main() {
     );
   });
 
-  test('宠物之家选择只允许已解锁项目并可持久化', () async {
+  test('爪爪星球可直接选择小猫并持久化物种', () async {
     SharedPreferences.setMockInitialValues({
       'pet_growth_profile': jsonEncode({
         'version': 2,
@@ -232,14 +237,15 @@ void main() {
     });
     final store = await PetGrowthStore.open();
     expect(await store.selectBreed('corgi'), isFalse);
-    expect(await store.selectBreed('shiba'), isTrue);
+    expect(await store.selectBreed('cat'), isTrue);
     expect(await store.selectDecoration('blue-collar'), isTrue);
     expect(await store.selectRoom('unknown-room'), isFalse);
     expect(await store.selectRoom('study-room'), isTrue);
     expect(await store.rename('  小 春  '), isTrue);
     expect(await store.rename('   '), isFalse);
     final reopened = await PetGrowthStore.open();
-    expect(reopened.profile.breed, 'shiba');
+    expect(reopened.profile.breed, 'cat');
+    expect(reopened.profile.species, PetSpecies.cat);
     expect(reopened.profile.selectedDecoration, 'blue-collar');
     expect(reopened.profile.selectedRoom, 'study-room');
     expect(reopened.profile.name, '小 春');

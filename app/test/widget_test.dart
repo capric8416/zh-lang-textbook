@@ -180,7 +180,7 @@ void main() {
     expect(goalStarts.single.context.launchSource, EngagementLaunchSource.goal);
   });
 
-  testWidgets('宠物之家的目标入口记录目标启动', (tester) async {
+  testWidgets('爪爪星球的目标入口记录目标启动', (tester) async {
     SharedPreferences.setMockInitialValues({});
     final source = File(
       '../json_reviewed/zh-lang-grade2b-textbook-struct.json',

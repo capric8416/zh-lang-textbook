@@ -103,10 +103,7 @@ class PetGrowthEngine {
       }
     }
 
-    final unlockedBreeds = {
-      ...profile.unlockedBreeds,
-      ...breedsForStage(majorStage),
-    };
+    const unlockedBreeds = {'dog', 'cat'};
     final unlockedDecorations = {
       ...profile.unlockedDecorations,
       ...decorationsForStage(majorStage),
@@ -126,9 +123,7 @@ class PetGrowthEngine {
     final pendingFurnitureReveals = profile.furnitureStateInitialized
         ? {...profile.pendingFurnitureReveals, ...newlyUnlockedFurniture}
         : <String>{};
-    final normalizedBreed = unlockedBreeds.contains(profile.breed)
-        ? profile.breed
-        : 'default';
+    final normalizedBreed = profile.species == PetSpecies.cat ? 'cat' : 'dog';
     final normalizedDecoration =
         unlockedDecorations.contains(profile.selectedDecoration)
         ? profile.selectedDecoration

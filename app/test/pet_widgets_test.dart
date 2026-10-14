@@ -23,6 +23,69 @@ void main() {
     );
   });
 
+  test('三花猫按完整的互动状态集引用对应动画资源', () {
+    final assets = PetInteractionCue.values
+        .map((cue) => petAnimationAsset(cue, species: PetSpecies.cat))
+        .toSet();
+    expect(assets, {
+      'assets/images/cat/san_hua/idle.webp',
+      'assets/images/cat/san_hua/invite.webp',
+      'assets/images/cat/san_hua/think.webp',
+      'assets/images/cat/san_hua/celebrate.webp',
+      'assets/images/cat/san_hua/encourage.webp',
+      'assets/images/cat/san_hua/gift.webp',
+      'assets/images/cat/san_hua/happy.webp',
+      'assets/images/cat/san_hua/study.webp',
+    });
+  });
+
+  testWidgets('房间横屏和竖屏保持宠物尺寸及地板比例', (tester) async {
+    Future<void> pumpRoom(Size size) => tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: Center(
+            child: SizedBox(
+              width: size.width,
+              height: size.height,
+              child: const PetRoomScene(profile: PetProfile()),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    await pumpRoom(const Size(400, 258));
+    final portraitRoom = tester.getSize(
+      find.byKey(const ValueKey('pet-room-living-room')),
+    );
+    final portraitPet = tester.getSize(
+      find.byKey(const ValueKey('pet-live-animation-repeat')),
+    );
+    final portraitFloor = tester.getSize(
+      find.byKey(const ValueKey('pet-room-floor')),
+    );
+
+    await pumpRoom(const Size(1000, 645));
+    final landscapeRoom = tester.getSize(
+      find.byKey(const ValueKey('pet-room-living-room')),
+    );
+    final landscapePet = tester.getSize(
+      find.byKey(const ValueKey('pet-live-animation-repeat')),
+    );
+    final landscapeFloor = tester.getSize(
+      find.byKey(const ValueKey('pet-room-floor')),
+    );
+
+    expect(
+      landscapePet.width / landscapeRoom.width,
+      closeTo(portraitPet.width / portraitRoom.width, 0.01),
+    );
+    expect(
+      landscapeFloor.height / landscapeRoom.height,
+      closeTo(portraitFloor.height / portraitRoom.height, 0.01),
+    );
+  });
+
   testWidgets('宠物房间会按激活家具播放台灯书柜和花盆动画', (tester) async {
     final cases = [
       (room: 'study-room', furniture: 'desk-lamp', cue: PetInteractionCue.lamp),
@@ -92,7 +155,7 @@ void main() {
     expect(find.byKey(const ValueKey('pet-avatar')), findsOneWidget);
     expect(find.text('成长值 180'), findsOneWidget);
     expect(find.text('大阶段 2'), findsOneWidget);
-    expect(find.text('豆豆 · 小狗'), findsOneWidget);
+    expect(find.text('豆豆 · 小狗（黄狗白面）'), findsOneWidget);
     expect(find.textContaining('小台灯'), findsOneWidget);
     expect(find.textContaining('找春天  3/5（60%）'), findsOneWidget);
     await tester.tap(find.byKey(const ValueKey('pet-practice-invitation')));

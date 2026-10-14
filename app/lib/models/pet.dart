@@ -147,8 +147,8 @@ class PetDecoration {
 
 const petBreeds = <PetBreed>[
   PetBreed(
-    id: 'default',
-    name: '小狗',
+    id: 'dog',
+    name: '小狗（黄狗白面）',
     species: PetSpecies.dog,
     unlockStage: 0,
     coat: 0xffd89955,
@@ -156,39 +156,12 @@ const petBreeds = <PetBreed>[
     earDrop: .85,
   ),
   PetBreed(
-    id: 'shiba',
-    name: '柴犬',
-    species: PetSpecies.dog,
-    unlockStage: 1,
-    coat: 0xffd98245,
-    marking: 0xff6e3f27,
-    earDrop: .1,
-  ),
-  PetBreed(
-    id: 'corgi',
-    name: '柯基',
-    species: PetSpecies.dog,
-    unlockStage: 2,
-    coat: 0xffe9a45d,
-    marking: 0xffb96d38,
-    earDrop: 1.3,
-  ),
-  PetBreed(
-    id: 'golden',
-    name: '金毛',
-    species: PetSpecies.dog,
-    unlockStage: 3,
-    coat: 0xffefc15b,
-    marking: 0xffb47b28,
-    earDrop: .8,
-  ),
-  PetBreed(
-    id: 'tabby',
-    name: '狸花猫',
+    id: 'cat',
+    name: '小猫（三花）',
     species: PetSpecies.cat,
-    unlockStage: 4,
-    coat: 0xffa87552,
-    marking: 0xff593b32,
+    unlockStage: 0,
+    coat: 0xfff4d8b5,
+    marking: 0xff38302e,
     earDrop: -.5,
   ),
 ];
@@ -221,8 +194,10 @@ const petDecorations = <PetDecoration>[
   ),
 ];
 
-PetBreed petBreed(String id) =>
-    petBreeds.firstWhere((b) => b.id == id, orElse: () => petBreeds.first);
+PetBreed petBreed(String id) => switch (id) {
+  'cat' || 'tabby' => petBreeds[1],
+  _ => petBreeds.first,
+};
 PetDecoration petDecoration(String id) => petDecorations.firstWhere(
   (d) => d.id == id,
   orElse: () => petDecorations.first,
@@ -232,11 +207,11 @@ class PetProfile {
   const PetProfile({
     this.name = defaultPetName,
     this.species = PetSpecies.dog,
-    this.breed = 'default',
+    this.breed = 'dog',
     this.growthPoints = 0,
     this.majorStage = 0,
     this.claimedEvents = const {},
-    this.unlockedBreeds = const {'default'},
+    this.unlockedBreeds = const {'dog', 'cat'},
     this.unlockedDecorations = const {'none'},
     this.selectedDecoration = 'none',
     this.selectedRoom = 'living-room',
@@ -248,72 +223,75 @@ class PetProfile {
     this.lastMissionKind,
   });
 
-  factory PetProfile.fromJson(Map<String, dynamic> json) => PetProfile(
-    name: json['name'] is String
-        ? normalizePetName(json['name'] as String) ?? defaultPetName
-        : defaultPetName,
-    species: PetSpecies.values.firstWhere(
-      (value) => value.name == json['species'],
-      orElse: () => PetSpecies.dog,
-    ),
-    breed: json['breed'] is String ? json['breed'] as String : 'default',
-    growthPoints: json['growth_points'] is int
-        ? json['growth_points'] as int
-        : 0,
-    majorStage: json['major_stage'] is int ? json['major_stage'] as int : 0,
-    claimedEvents: json['claimed_events'] is List
-        ? (json['claimed_events'] as List).whereType<String>().toSet()
-        : const {},
-    unlockedBreeds: {
-      ...(json['unlocked_breeds'] is List
-          ? (json['unlocked_breeds'] as List).whereType<String>()
-          : const <String>[]),
-      'default',
-    },
-    unlockedDecorations: {
-      ...(json['unlocked_decorations'] is List
-          ? (json['unlocked_decorations'] as List).whereType<String>()
-          : const <String>[]),
-      'none',
-    },
-    selectedDecoration: json['selected_decoration'] is String
-        ? json['selected_decoration'] as String
-        : 'none',
-    selectedRoom: json['selected_room'] is String
-        ? json['selected_room'] as String
-        : 'living-room',
-    unlockedFurniture: json['unlocked_furniture'] is List
-        ? (json['unlocked_furniture'] as List).whereType<String>().toSet()
-        : const {},
-    furnitureStates: json['furniture_states'] is Map
-        ? {
-            for (final entry in (json['furniture_states'] as Map).entries)
-              if (entry.key is String && entry.value is String)
-                entry.key as String: FurnitureVisualState.values.firstWhere(
-                  (value) => value.name == entry.value,
-                  orElse: () => FurnitureVisualState.ready,
-                ),
-          }
-        : {
-            for (final id
-                in json['unlocked_furniture'] is List
-                    ? (json['unlocked_furniture'] as List).whereType<String>()
-                    : const <String>[])
-              id: FurnitureVisualState.ready,
-          },
-    pendingFurnitureReveals: json['pending_furniture_reveals'] is List
-        ? (json['pending_furniture_reveals'] as List)
-              .whereType<String>()
-              .toSet()
-        : const {},
-    furnitureStateInitialized: json.containsKey('furniture_states'),
-    lastVisitDate: json['last_visit_date'] is String
-        ? json['last_visit_date'] as String
-        : null,
-    lastMissionKind: json['last_mission_kind'] is String
-        ? json['last_mission_kind'] as String
-        : null,
-  );
+  factory PetProfile.fromJson(Map<String, dynamic> json) {
+    final legacyBreed = json['breed'] is String
+        ? json['breed'] as String
+        : 'dog';
+    final species =
+        json['species'] == PetSpecies.cat.name ||
+            legacyBreed == 'tabby' ||
+            legacyBreed == 'cat'
+        ? PetSpecies.cat
+        : PetSpecies.dog;
+    return PetProfile(
+      name: json['name'] is String
+          ? normalizePetName(json['name'] as String) ?? defaultPetName
+          : defaultPetName,
+      species: species,
+      breed: species == PetSpecies.cat ? 'cat' : 'dog',
+      growthPoints: json['growth_points'] is int
+          ? json['growth_points'] as int
+          : 0,
+      majorStage: json['major_stage'] is int ? json['major_stage'] as int : 0,
+      claimedEvents: json['claimed_events'] is List
+          ? (json['claimed_events'] as List).whereType<String>().toSet()
+          : const {},
+      unlockedBreeds: const {'dog', 'cat'},
+      unlockedDecorations: {
+        ...(json['unlocked_decorations'] is List
+            ? (json['unlocked_decorations'] as List).whereType<String>()
+            : const <String>[]),
+        'none',
+      },
+      selectedDecoration: json['selected_decoration'] is String
+          ? json['selected_decoration'] as String
+          : 'none',
+      selectedRoom: json['selected_room'] is String
+          ? json['selected_room'] as String
+          : 'living-room',
+      unlockedFurniture: json['unlocked_furniture'] is List
+          ? (json['unlocked_furniture'] as List).whereType<String>().toSet()
+          : const {},
+      furnitureStates: json['furniture_states'] is Map
+          ? {
+              for (final entry in (json['furniture_states'] as Map).entries)
+                if (entry.key is String && entry.value is String)
+                  entry.key as String: FurnitureVisualState.values.firstWhere(
+                    (value) => value.name == entry.value,
+                    orElse: () => FurnitureVisualState.ready,
+                  ),
+            }
+          : {
+              for (final id
+                  in json['unlocked_furniture'] is List
+                      ? (json['unlocked_furniture'] as List).whereType<String>()
+                      : const <String>[])
+                id: FurnitureVisualState.ready,
+            },
+      pendingFurnitureReveals: json['pending_furniture_reveals'] is List
+          ? (json['pending_furniture_reveals'] as List)
+                .whereType<String>()
+                .toSet()
+          : const {},
+      furnitureStateInitialized: json.containsKey('furniture_states'),
+      lastVisitDate: json['last_visit_date'] is String
+          ? json['last_visit_date'] as String
+          : null,
+      lastMissionKind: json['last_mission_kind'] is String
+          ? json['last_mission_kind'] as String
+          : null,
+    );
+  }
 
   final String name;
   final PetSpecies species;

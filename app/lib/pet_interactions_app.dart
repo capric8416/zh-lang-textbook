@@ -43,7 +43,7 @@ class PetInteractionGalleryPage extends StatefulWidget {
 class _PetInteractionGalleryPageState extends State<PetInteractionGalleryPage> {
   static const _profile = PetProfile(
     name: '小语',
-    breed: 'shiba',
+    breed: 'dog',
     selectedDecoration: 'blue-collar',
   );
   var _index = 0;

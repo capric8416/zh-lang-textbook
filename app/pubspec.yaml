@@ -70,6 +70,7 @@ flutter:
   assets:
     - assets/json_reviewed/
     - assets/images/dog/huang_gou_bai_mian/
+    - assets/images/cat/san_hua/
     - assets/ocr/
     - assets/speech/
     - assets/speech/piper-zh_CN-xiao_ya-medium/

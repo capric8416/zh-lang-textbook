@@ -65,47 +65,59 @@ class PetRoomScene extends StatelessWidget {
             borderRadius: BorderRadius.circular(24),
           ),
           clipBehavior: Clip.antiAlias,
-          child: Stack(
-            children: [
-              Positioned(
-                left: 0,
-                right: 0,
-                bottom: 0,
-                height: 72,
-                child: ColoredBox(color: palette.$3),
-              ),
-              for (final item in items)
-                Align(
-                  alignment: _alignment(item.slot),
-                  child: _FurnitureTile(
-                    key: ValueKey('furniture-${item.id}'),
-                    item: item,
-                    onTap: actionDescription?.call(item) == null
-                        ? null
-                        : () => onFurnitureTap?.call(item),
-                    actionDescription: actionDescription?.call(item),
-                    state: profile.furnitureState(item.id),
-                    reveal: profile.pendingFurnitureReveals.contains(item.id),
-                    onRevealShown: onRevealShown,
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final roomHeight = constraints.maxHeight;
+              final petSize = math.min(
+                roomHeight * 0.52,
+                constraints.maxWidth * 0.335,
+              );
+              return Stack(
+                children: [
+                  Positioned(
+                    key: const ValueKey('pet-room-floor'),
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    height: roomHeight * 0.295,
+                    child: ColoredBox(color: palette.$3),
                   ),
-                ),
-              Align(
-                alignment: Alignment(petAlignmentX, 0.3),
-                child: PetAnimatedCharacter(
-                  profile: profile,
-                  cue: interactionCue,
-                  size: 126,
-                ),
-              ),
-              Positioned(
-                left: 14,
-                top: 12,
-                child: Chip(
-                  avatar: const Icon(Icons.home_outlined, size: 18),
-                  label: Text(room.name),
-                ),
-              ),
-            ],
+                  for (final item in items)
+                    Align(
+                      alignment: _alignment(item.slot),
+                      child: _FurnitureTile(
+                        key: ValueKey('furniture-${item.id}'),
+                        item: item,
+                        onTap: actionDescription?.call(item) == null
+                            ? null
+                            : () => onFurnitureTap?.call(item),
+                        actionDescription: actionDescription?.call(item),
+                        state: profile.furnitureState(item.id),
+                        reveal: profile.pendingFurnitureReveals.contains(
+                          item.id,
+                        ),
+                        onRevealShown: onRevealShown,
+                      ),
+                    ),
+                  Align(
+                    alignment: Alignment(petAlignmentX, 0.3),
+                    child: PetAnimatedCharacter(
+                      profile: profile,
+                      cue: interactionCue,
+                      size: petSize,
+                    ),
+                  ),
+                  Positioned(
+                    left: 14,
+                    top: 12,
+                    child: Chip(
+                      avatar: const Icon(Icons.home_outlined, size: 18),
+                      label: Text(room.name),
+                    ),
+                  ),
+                ],
+              );
+            },
           ),
         ),
       ),
