@@ -12,8 +12,10 @@ import '../models/speech_assessment.dart';
 import '../models/textbook.dart';
 import '../services/ocr_engine.dart';
 import '../services/engagement_events.dart';
+import '../services/account_api.dart';
 import '../services/pet_growth.dart';
 import '../services/practice_progress.dart';
+import '../services/practice_record_sync.dart';
 import '../services/quick_practice.dart';
 import '../services/speech_engine.dart';
 import '../services/textbook_repository.dart';
@@ -46,6 +48,7 @@ class PracticePage extends StatefulWidget {
 }
 
 class _PracticePageState extends State<PracticePage> {
+  final _accountApi = AccountApi();
   static const _allMistakes = '__all_mistakes__';
 
   final _random = Random();
@@ -322,7 +325,12 @@ class _PracticePageState extends State<PracticePage> {
         if (mounted) setState(() => _grading = false);
         return;
       }
-      await store.record(question.attemptId(_direction), correct: correct);
+      await _recordPracticeResult(
+        store,
+        question,
+        correct,
+        studentAnswer: recognized.join('\n'),
+      );
       if (!mounted) return;
       setState(() {
         _graded = true;
@@ -401,7 +409,12 @@ class _PracticePageState extends State<PracticePage> {
         ),
       );
       if (correct == null) return;
-      await store.record(question.attemptId(_direction), correct: correct);
+      await _recordPracticeResult(
+        store,
+        question,
+        correct,
+        studentAnswer: assessment.recognizedText,
+      );
       if (mounted) {
         setState(() => _graded = true);
         _onQuickGraded(correct);
@@ -412,6 +425,33 @@ class _PracticePageState extends State<PracticePage> {
       if (mounted) _showSpeechError('朗读检查失败', error);
     } finally {
       if (mounted) setState(() => _grading = false);
+    }
+  }
+
+  Future<void> _recordPracticeResult(
+    PracticeProgressStore store,
+    PracticeQuestion question,
+    bool correct, {
+    required String studentAnswer,
+  }) async {
+    await store.record(question.attemptId(_direction), correct: correct);
+    try {
+      await PracticeRecordSync.record(
+        api: _accountApi,
+        textbookKey: widget.selection.fileName,
+        questionId: question.id,
+        chapterId: question.chapterId,
+        questionKind: question.kind,
+        category: question.category,
+        source: question.source,
+        direction: _direction.name,
+        prompt: question.prompt,
+        studentAnswer: studentAnswer,
+        expectedAnswer: question.answer,
+        isCorrect: correct,
+      );
+    } catch (error, stackTrace) {
+      debugPrintStack(label: '做题结果上传队列失败：$error', stackTrace: stackTrace);
     }
   }
 

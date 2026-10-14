@@ -34,7 +34,8 @@ src/
 │   ├── sessions.rs
 │   ├── classes.rs
 │   ├── class_memberships.rs
-│   └── class_join_codes.rs
+│   ├── class_join_codes.rs
+│   └── practice_records.rs
 └── v1/                    # 按 /api/v1 路径和业务域组织的 handlers
     ├── mod.rs
     ├── health.rs
@@ -42,9 +43,10 @@ src/
     ├── auth.rs
     ├── me.rs
     ├── accounts.rs
-    └── classes.rs
+    ├── classes.rs
+    └── practice.rs
 ```
 
 所有 SQL 都位于 `db/`，`v1/` 只负责请求校验、权限规则和调用 repository。
 
-API 前缀 `/api/v1`：`GET /health`、`POST /bootstrap`、`/auth/{register,login,logout}`、个人资料/改密、账号树、直接下级创建与禁用/重置密码、班级创建、入班码及学生加入/退班。学生注册固定为 student；超级管理员能创建超级管理员和集团管理员，集团管理员创建学校管理员，学校管理员创建班级管理员；每级管理员只能管理直接下级。
+API 前缀 `/api/v1`：`GET /health`、`POST /bootstrap`、`/auth/{register,login,logout}`、个人资料/改密、账号树、直接下级创建与禁用/重置密码、班级创建、入班码及学生加入/退班。学生答题结果写入 `practice_records`；班级管理员通过 `GET /classes/{classId}/records?offset=0&limit=500` 按班级读取原始历史记录，单页最多 500 条。查询校验班级归属，但不按当前成员关系过滤，因此退班/转班不会隐藏历史记录。题目聚合、排序和错误率统计由 App 完成。学生注册固定为 student；超级管理员能创建超级管理员和集团管理员，集团管理员创建学校管理员，学校管理员创建班级管理员；每级管理员只能管理直接下级。

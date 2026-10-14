@@ -3,7 +3,9 @@ import 'package:flutter/services.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
 import '../services/account_api.dart';
+import '../services/practice_record_sync.dart';
 import '../widgets/class_join_code_dialog.dart';
+import '../widgets/class_learning_results_dialog.dart';
 
 const _roleNames = {
   'super_admin': '超级管理员',
@@ -49,6 +51,11 @@ class _AccountCenterState extends State<AccountCenter> {
         return;
       }
       final result = await _api.request('me');
+      final account = result['account'];
+      if (account is Map && account['id'] is String) {
+        await _api.rememberAccountId(account['id'] as String);
+      }
+      PracticeRecordSync.schedule(api: _api);
       if (mounted) {
         setState(() {
           _me = result;
@@ -844,6 +851,11 @@ class _ClassManagementState extends State<_ClassManagement> {
                 spacing: 4,
                 children: [
                   IconButton(
+                    tooltip: '查看学习记录',
+                    icon: const Icon(Icons.assessment_outlined),
+                    onPressed: () => _showResults(c as Map<String, dynamic>),
+                  ),
+                  IconButton(
                     tooltip: '管理黑名单',
                     icon: const Icon(Icons.block),
                     onPressed: () => _showBlacklist(c as Map<String, dynamic>),
@@ -907,6 +919,17 @@ class _ClassManagementState extends State<_ClassManagement> {
     await showDialog<void>(
       context: context,
       builder: (_) => _ClassBlacklistDialog(
+        api: widget.api,
+        classId: c['id'] as String,
+        className: c['name'] as String? ?? '班级',
+      ),
+    );
+  }
+
+  Future<void> _showResults(Map<String, dynamic> c) async {
+    await showDialog<void>(
+      context: context,
+      builder: (_) => ClassLearningResultsDialog(
         api: widget.api,
         classId: c['id'] as String,
         className: c['name'] as String? ?? '班级',

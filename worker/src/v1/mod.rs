@@ -4,6 +4,7 @@ mod bootstrap;
 mod classes;
 mod health;
 mod me;
+mod practice;
 
 use worker::{Env, Method, Request, Response, Result};
 
@@ -24,6 +25,15 @@ pub async fn route(
         (Method::Get, "/api/v1/me") => me::get(request, env).await,
         (Method::Post, "/api/v1/me/password") => me::change_password(request, env).await,
         (Method::Delete, "/api/v1/me/class") => me::leave_class(request, env).await,
+        (Method::Post, "/api/v1/practice/records") => practice::record(request, env).await,
+        (Method::Get, path)
+            if path.starts_with("/api/v1/classes/")
+                && path.ends_with("/records")
+                && !path.contains("/students/") =>
+        {
+            let class_id = &path[16..path.len() - "/records".len()];
+            practice::class_records(request, env, class_id).await
+        }
         (Method::Get, "/api/v1/accounts/tree") => accounts::tree(request, env).await,
         (Method::Post, "/api/v1/accounts") => accounts::create(request, env).await,
         (Method::Patch, path) if path.starts_with("/api/v1/accounts/") => {

@@ -7,8 +7,9 @@ import 'package:cryptography/cryptography.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class AccountApiException implements Exception {
-  const AccountApiException(this.message);
+  const AccountApiException(this.message, {this.statusCode});
   final String message;
+  final int? statusCode;
   @override
   String toString() => message;
 }
@@ -20,18 +21,25 @@ class AccountApi {
 
   static const apiBaseUrl = String.fromEnvironment('API_BASE_URL');
   static const _tokenKey = 'account_session_token';
+  static const _accountIdKey = 'account_session_account_id';
   static const passwordIterations = 600000;
   final HttpClient _client;
   final FlutterSecureStorage _storage;
 
   bool get configured => apiBaseUrl.trim().isNotEmpty;
   Future<String?> get token => _storage.read(key: _tokenKey);
+  Future<String?> get accountId => _storage.read(key: _accountIdKey);
+
+  Future<void> rememberAccountId(String id) =>
+      _storage.write(key: _accountIdKey, value: id);
 
   Future<Map<String, dynamic>> request(
     String path, {
     String method = 'GET',
     Map<String, Object?>? body,
+    Map<String, String>? queryParameters,
     bool authenticated = true,
+    String? tokenOverride,
   }) async {
     if (!configured) {
       throw const AccountApiException(
@@ -44,11 +52,12 @@ class AccountApi {
     }
     final url = base.replace(
       path: '${base.path.replaceFirst(RegExp(r'/$'), '')}/$path',
+      queryParameters: queryParameters,
     );
     final request = await _client.openUrl(method, url);
     request.headers.contentType = ContentType.json;
     if (authenticated) {
-      final value = await token;
+      final value = tokenOverride ?? await token;
       if (value != null) {
         request.headers.set(HttpHeaders.authorizationHeader, 'Bearer $value');
       }
@@ -65,9 +74,13 @@ class AccountApi {
       }
     }
     if (response.statusCode < 200 || response.statusCode >= 300) {
-      if (response.statusCode == 401) await _storage.delete(key: _tokenKey);
+      if (response.statusCode == 401) {
+        await _storage.delete(key: _tokenKey);
+        await _storage.delete(key: _accountIdKey);
+      }
       throw AccountApiException(
         decoded['error'] as String? ?? '请求失败（${response.statusCode}）',
+        statusCode: response.statusCode,
       );
     }
     return decoded;
@@ -93,6 +106,10 @@ class AccountApi {
     );
     final session = result['token'];
     if (session is String) await _storage.write(key: _tokenKey, value: session);
+    final account = result['account'];
+    if (account is Map && account['id'] is String) {
+      await rememberAccountId(account['id'] as String);
+    }
     return result;
   }
 
@@ -136,8 +153,12 @@ class AccountApi {
       await request('auth/logout', method: 'POST');
     } finally {
       await _storage.delete(key: _tokenKey);
+      await _storage.delete(key: _accountIdKey);
     }
   }
 
-  Future<void> clearToken() => _storage.delete(key: _tokenKey);
+  Future<void> clearToken() async {
+    await _storage.delete(key: _tokenKey);
+    await _storage.delete(key: _accountIdKey);
+  }
 }
