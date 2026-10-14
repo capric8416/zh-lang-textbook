@@ -258,13 +258,13 @@ class _SignInPanelState extends State<_SignInPanel> {
                     autovalidateMode: AutovalidateMode.onUserInteraction,
                     inputFormatters: [
                       FilteringTextInputFormatter.allow(
-                        RegExp(r'[A-Za-z0-9_@-]'),
+                        RegExp(r'[A-Za-z0-9_@.-]'),
                       ),
                       LengthLimitingTextInputFormatter(32),
                     ],
                     decoration: const InputDecoration(
                       labelText: '用户名',
-                      helperText: '4–32 位，仅限英文字母、数字及 _ - @',
+                      helperText: '4–32 位，仅限英文字母、数字及 . _ - @',
                     ),
                     validator: (value) {
                       final username = value?.trim() ?? '';
@@ -272,8 +272,8 @@ class _SignInPanelState extends State<_SignInPanel> {
                           username.runes.length > 32) {
                         return '用户名长度需为 4–32 位';
                       }
-                      if (!RegExp(r'^[A-Za-z0-9_@-]+$').hasMatch(username)) {
-                        return '仅允许英文字母、数字及 _ - @';
+                      if (!RegExp(r'^[A-Za-z0-9_@.-]+$').hasMatch(username)) {
+                        return '仅允许英文字母、数字及 . _ - @';
                       }
                       return null;
                     },

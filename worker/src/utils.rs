@@ -19,7 +19,7 @@ pub(crate) async fn read_json<T: DeserializeOwned>(request: &mut Request) -> Res
 pub(crate) fn valid_username(value: &str) -> bool {
     (4..=32).contains(&value.chars().count())
         && value.chars().all(|character| {
-            character.is_ascii_alphanumeric() || matches!(character, '_' | '-' | '@')
+            character.is_ascii_alphanumeric() || matches!(character, '_' | '-' | '@' | '.')
         })
 }
 
@@ -117,7 +117,7 @@ mod tests {
         assert!(!valid_username("student name"));
         assert!(!valid_username("student/name"));
         assert!(!valid_username("学生01"));
-        assert!(!valid_username("student.name"));
+        assert!(valid_username("student.name"));
     }
 
     #[test]
