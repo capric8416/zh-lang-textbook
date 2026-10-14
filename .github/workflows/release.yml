@@ -44,7 +44,7 @@ jobs:
           DEBIAN_FRONTEND=noninteractive apt-get -o Acquire::Retries=10 install -y \
             build-essential ca-certificates clang curl git ninja-build \
             jq perl pkg-config unzip xz-utils zip libasound2-dev libgtk-3-dev \
-            liblzma-dev libomp-dev
+            liblzma-dev libomp-dev libsecret-1-dev
 
       - name: Checkout
         uses: actions/checkout@v4
