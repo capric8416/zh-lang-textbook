@@ -82,6 +82,14 @@ pub(crate) async fn set_disabled(db: &D1Database, id: &str, disabled: bool) -> R
     Ok(())
 }
 
+pub(crate) async fn set_display_name(db: &D1Database, id: &str, name: &str) -> Result<()> {
+    db.prepare("UPDATE accounts SET display_name=?,updated_at=CURRENT_TIMESTAMP WHERE id=?")
+        .bind(&[name.into(), id.into()])?
+        .run()
+        .await?;
+    Ok(())
+}
+
 pub(crate) async fn set_password(
     db: &D1Database,
     id: &str,

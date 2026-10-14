@@ -101,11 +101,24 @@ class _AccountCenterState extends State<AccountCenter> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      account['displayName'] as String? ??
-                          account['username'] as String? ??
-                          '',
-                      style: Theme.of(context).textTheme.titleLarge,
+                    Row(
+                      children: [
+                        Flexible(
+                          child: Text(
+                            account['displayName'] as String? ??
+                                account['username'] as String? ??
+                                '',
+                            style: Theme.of(context).textTheme.titleLarge,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        IconButton(
+                          tooltip: '修改显示名称',
+                          visualDensity: VisualDensity.compact,
+                          onPressed: () => _editDisplayName(account),
+                          icon: const Icon(Icons.edit_outlined, size: 18),
+                        ),
+                      ],
                     ),
                     Text(
                       '${_roleNames[role] ?? role} · ${account['username'] ?? ''}',
@@ -146,6 +159,26 @@ class _AccountCenterState extends State<AccountCenter> {
       setState(() {
         _me = null;
       });
+    }
+  }
+
+  Future<void> _editDisplayName(Map<String, dynamic> account) async {
+    final name = await _textDialog(
+      context,
+      '修改显示名称',
+      '显示名称（最多 40 个字符）',
+      initialValue: account['displayName'] as String? ?? '',
+    );
+    if (name == null || !mounted) return;
+    try {
+      await _api.request('me', method: 'PATCH', body: {'displayName': name});
+      await _load();
+    } catch (error) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(error.toString())));
+      }
     }
   }
 }
@@ -851,6 +884,11 @@ class _ClassManagementState extends State<_ClassManagement> {
                 spacing: 4,
                 children: [
                   IconButton(
+                    tooltip: '修改班级名称',
+                    icon: const Icon(Icons.edit_outlined),
+                    onPressed: () => _renameClass(c as Map<String, dynamic>),
+                  ),
+                  IconButton(
                     tooltip: '查看学习记录',
                     icon: const Icon(Icons.assessment_outlined),
                     onPressed: () => _showResults(c as Map<String, dynamic>),
@@ -877,6 +915,31 @@ class _ClassManagementState extends State<_ClassManagement> {
     if (name == null) return;
     try {
       await widget.api.request('classes', method: 'POST', body: {'name': name});
+      await _load();
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(e.toString())));
+      }
+    }
+  }
+
+  Future<void> _renameClass(Map<String, dynamic> c) async {
+    final classId = c['id'] as String;
+    final name = await _textDialog(
+      context,
+      '修改班级名称',
+      '班级名称',
+      initialValue: c['name'] as String? ?? '',
+    );
+    if (name == null) return;
+    try {
+      await widget.api.request(
+        'classes/$classId',
+        method: 'PATCH',
+        body: {'name': name},
+      );
       await _load();
     } catch (e) {
       if (mounted) {
@@ -1170,9 +1233,10 @@ class _QrScannerPageState extends State<_QrScannerPage> {
 Future<String?> _textDialog(
   BuildContext context,
   String title,
-  String label,
-) async {
-  final controller = TextEditingController();
+  String label, {
+  String initialValue = '',
+}) async {
+  final controller = TextEditingController(text: initialValue);
   final value = await showDialog<String>(
     context: context,
     builder: (_) => AlertDialog(

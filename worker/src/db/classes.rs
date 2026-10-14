@@ -43,3 +43,11 @@ pub(crate) async fn exists_for_admin(db: &D1Database, id: &str, owner_id: &str) 
         .await?
         .is_some())
 }
+
+pub(crate) async fn set_name(db: &D1Database, id: &str, owner_id: &str, name: &str) -> Result<()> {
+    db.prepare("UPDATE classes SET name=? WHERE id=? AND created_by=? AND disabled=0")
+        .bind(&[name.into(), id.into(), owner_id.into()])?
+        .run()
+        .await?;
+    Ok(())
+}

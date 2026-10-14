@@ -23,6 +23,7 @@ pub async fn route(
         (Method::Post, "/api/v1/auth/login") => auth::login(request, env).await,
         (Method::Post, "/api/v1/auth/logout") => auth::logout(request, env).await,
         (Method::Get, "/api/v1/me") => me::get(request, env).await,
+        (Method::Patch, "/api/v1/me") => me::update_profile(request, env).await,
         (Method::Post, "/api/v1/me/password") => me::change_password(request, env).await,
         (Method::Delete, "/api/v1/me/class") => me::leave_class(request, env).await,
         (Method::Post, "/api/v1/practice/records") => practice::record(request, env).await,
@@ -41,6 +42,14 @@ pub async fn route(
         }
         (Method::Post, "/api/v1/classes") => classes::create(request, env).await,
         (Method::Get, "/api/v1/classes") => classes::list(request, env).await,
+        (Method::Patch, path) if path.starts_with("/api/v1/classes/") => {
+            let class_id = &path[16..];
+            if class_id.is_empty() || class_id.contains('/') {
+                Response::error("not found", 404)
+            } else {
+                classes::rename(request, env, class_id).await
+            }
+        }
         (Method::Post, "/api/v1/classes/join-code") => {
             classes::create_join_code(request, env).await
         }

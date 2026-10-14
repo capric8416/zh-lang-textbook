@@ -9,6 +9,11 @@ struct ClassInput {
 }
 
 #[derive(Deserialize)]
+struct ClassNameUpdate {
+    name: String,
+}
+
+#[derive(Deserialize)]
 #[serde(rename_all = "camelCase")]
 struct JoinInput {
     code: String,
@@ -58,6 +63,29 @@ pub(super) async fn list(request: &Request, env: &Env) -> Result<Response> {
         return error("forbidden", 403);
     };
     Response::from_json(&serde_json::json!({"classes":rows}))
+}
+
+pub(super) async fn rename(request: &mut Request, env: &Env, class_id: &str) -> Result<Response> {
+    let Some(user) = current_account(request, env).await? else {
+        return error("unauthorized", 401);
+    };
+    if user.role != "class_admin" {
+        return error("forbidden", 403);
+    }
+    let input: ClassNameUpdate = match read_json(request).await {
+        Ok(value) => value,
+        Err(_) => return error("invalid request", 400),
+    };
+    let name = input.name.trim();
+    if name.chars().count() < 2 || name.chars().count() > 60 {
+        return error("class name must be 2-60 characters", 400);
+    }
+    let db = env.d1("DB")?;
+    if !crate::db::classes::exists_for_admin(&db, class_id, &user.id).await? {
+        return error("class not found", 404);
+    }
+    crate::db::classes::set_name(&db, class_id, &user.id, name).await?;
+    Response::from_json(&serde_json::json!({"id":class_id,"name":name}))
 }
 
 pub(super) async fn create_join_code(request: &mut Request, env: &Env) -> Result<Response> {
