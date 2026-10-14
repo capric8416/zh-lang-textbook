@@ -46,10 +46,24 @@ class PetGrowthCard extends StatelessWidget {
         padding: const EdgeInsets.all(18),
         child: Row(
           children: [
-            PetAvatar(
-              size: 88,
-              appearance: PetAppearance.fromBreed(profile.breed),
-              decoration: petDecoration(profile.selectedDecoration),
+            Container(
+              key: const ValueKey('pet-avatar'),
+              width: 88,
+              height: 88,
+              decoration: const BoxDecoration(
+                shape: BoxShape.circle,
+                color: Color(0xffffd8cc),
+              ),
+              clipBehavior: Clip.antiAlias,
+              child: Image.asset(
+                'assets/images/dog/huang_gou_bai_mian/avatar.png',
+                fit: BoxFit.contain,
+                errorBuilder: (context, error, stackTrace) => PetAvatar(
+                  size: 88,
+                  appearance: PetAppearance.fromBreed(profile.breed),
+                  decoration: petDecoration(profile.selectedDecoration),
+                ),
+              ),
             ),
             const SizedBox(width: 18),
             Expanded(
