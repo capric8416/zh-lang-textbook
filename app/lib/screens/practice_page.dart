@@ -746,7 +746,7 @@ class _PracticePageState extends State<PracticePage> {
                   quick
                       ? '宠物三题陪练'
                       : _mistakesOnly
-                      ? '错题专项'
+                      ? '再练一练'
                       : '语文基础练习',
                 ),
                 const SizedBox(width: 8),
@@ -794,7 +794,7 @@ class _PracticePageState extends State<PracticePage> {
         _quickSession != null
             ? quickPracticeActionLabel(_quickSession!.action)
             : _mistakesOnly && _selectedChapterId == _allMistakes
-            ? '整本教材错题专项'
+            ? '整本教材 · 再练一练'
             : _chapter.name,
         style: Theme.of(
           context,

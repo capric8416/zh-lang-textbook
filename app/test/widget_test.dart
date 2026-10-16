@@ -39,12 +39,62 @@ void main() {
   });
 
   testWidgets('首页显示教材选择', (WidgetTester tester) async {
+    SharedPreferences.setMockInitialValues({});
     await tester.pumpWidget(const ZhTextbookApp());
+    await tester.pumpAndSettle();
 
     expect(find.text('语文基础巩固与练习'), findsOneWidget);
-    expect(find.text('2年级'), findsOneWidget);
-    expect(find.text('下学期'), findsOneWidget);
     expect(find.text('进入教材'), findsOneWidget);
+    expect(
+      tester
+          .widget<DropdownButtonFormField<int>>(
+            find.byType(DropdownButtonFormField<int>),
+          )
+          .initialValue,
+      isNull,
+    );
+    expect(
+      tester
+          .widget<SegmentedButton<Semester>>(
+            find.byType(SegmentedButton<Semester>),
+          )
+          .selected,
+      isEmpty,
+    );
+    expect(
+      tester.widget<FilledButton>(find.byType(FilledButton)).onPressed,
+      isNull,
+    );
+  });
+
+  testWidgets('首页恢复上次进入教材时的年级和学期', (WidgetTester tester) async {
+    SharedPreferences.setMockInitialValues({
+      'home.last_textbook_grade': 3,
+      'home.last_textbook_semester': 'a',
+    });
+    await tester.pumpWidget(const ZhTextbookApp());
+    await tester.pumpAndSettle();
+
+    expect(
+      tester
+          .widget<DropdownButtonFormField<int>>(
+            find.byType(DropdownButtonFormField<int>),
+          )
+          .initialValue,
+      3,
+    );
+    expect(
+      tester
+          .widget<SegmentedButton<Semester>>(
+            find.byType(SegmentedButton<Semester>),
+          )
+          .selected,
+      {Semester.first},
+    );
+    expect(
+      tester.widget<FilledButton>(find.byType(FilledButton)).onPressed,
+      isNotNull,
+    );
   });
 
   testWidgets('练习页可以加载题库并显示题目', (WidgetTester tester) async {
@@ -79,7 +129,7 @@ void main() {
     expect(find.textContaining(RegExp(r'批改|开始朗读')), findsOneWidget);
   });
 
-  testWidgets('模式页显示错题专项入口和当前错题数', (WidgetTester tester) async {
+  testWidgets('模式页显示再练一练入口和当前错题数', (WidgetTester tester) async {
     SharedPreferences.setMockInitialValues({});
     final source = File(
       '../json_reviewed/zh-lang-grade2b-textbook-struct.json',
@@ -107,8 +157,8 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('错题专项'), findsOneWidget);
-    expect(find.textContaining('1 道当前错题'), findsOneWidget);
+    expect(find.text('再练一练'), findsOneWidget);
+    expect(find.textContaining('1 道题目再练一练'), findsOneWidget);
     expect(find.byKey(const ValueKey('pet-growth-card')), findsOneWidget);
     expect(find.textContaining('成长值'), findsOneWidget);
     expect(
@@ -131,7 +181,7 @@ void main() {
       events.where(
         (event) => event.type == EngagementEventType.invitationPresented,
       ),
-      hasLength(1),
+      hasLength(2),
     );
     expect(
       events.where(
@@ -264,7 +314,7 @@ void main() {
     await tester.tap(find.text('当前错题 1'));
     await tester.pumpAndSettle();
 
-    expect(find.text('整本教材错题专项'), findsOneWidget);
+    expect(find.text('整本教材 · 再练一练'), findsOneWidget);
     expect(find.text('返回综合练习'), findsOneWidget);
   });
 }

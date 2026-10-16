@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/textbook.dart';
 import '../services/textbook_repository.dart';
@@ -15,21 +16,58 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  int _grade = 2;
-  Semester _semester = Semester.second;
+  static const _lastGradeKey = 'home.last_textbook_grade';
+  static const _lastSemesterKey = 'home.last_textbook_semester';
+
+  int? _grade;
+  Semester? _semester;
+  bool _selectionReady = false;
+  bool _selectionTouched = false;
   bool _loading = false;
   String? _error;
   int _tabIndex = 0;
 
+  @override
+  void initState() {
+    super.initState();
+    _restoreSelection();
+  }
+
+  Future<void> _restoreSelection() async {
+    final preferences = await SharedPreferences.getInstance();
+    final savedGrade = preferences.getInt(_lastGradeKey);
+    final savedSemester = switch (preferences.getString(_lastSemesterKey)) {
+      'a' => Semester.first,
+      'b' => Semester.second,
+      _ => null,
+    };
+    if (!mounted) return;
+    setState(() {
+      if (!_selectionTouched && savedGrade != null && savedSemester != null) {
+        _grade = savedGrade >= 1 && savedGrade <= 6 ? savedGrade : null;
+        _semester = _grade == null ? null : savedSemester;
+      }
+      _selectionReady = true;
+    });
+  }
+
   Future<void> _continue() async {
-    if (_loading) return;
+    final grade = _grade;
+    final semester = _semester;
+    if (_loading || !_selectionReady || grade == null || semester == null) {
+      return;
+    }
     setState(() {
       _loading = true;
       _error = null;
     });
-    final selection = TextbookSelection(grade: _grade, semester: _semester);
+    final selection = TextbookSelection(grade: grade, semester: semester);
     try {
       final Textbook textbook = await widget.repository.load(selection);
+      if (!mounted) return;
+      final preferences = await SharedPreferences.getInstance();
+      await preferences.setInt(_lastGradeKey, grade);
+      await preferences.setString(_lastSemesterKey, semester.code);
       if (!mounted) return;
       await Navigator.of(context).push(
         MaterialPageRoute<void>(
@@ -114,11 +152,14 @@ class _HomePageState extends State<HomePage> {
                               ],
                               onChanged: _loading
                                   ? null
-                                  : (value) =>
-                                        setState(() => _grade = value ?? 2),
+                                  : (value) => setState(() {
+                                      _selectionTouched = true;
+                                      _grade = value;
+                                    }),
                             ),
                             const SizedBox(height: 18),
                             SegmentedButton<Semester>(
+                              emptySelectionAllowed: true,
                               segments: const [
                                 ButtonSegment(
                                   value: Semester.first,
@@ -131,11 +172,13 @@ class _HomePageState extends State<HomePage> {
                                   icon: Icon(Icons.park_outlined),
                                 ),
                               ],
-                              selected: {_semester},
+                              selected: {?_semester},
                               onSelectionChanged: _loading
                                   ? null
-                                  : (value) =>
-                                        setState(() => _semester = value.first),
+                                  : (value) => setState(() {
+                                      _selectionTouched = true;
+                                      _semester = value.firstOrNull;
+                                    }),
                             ),
                             if (_error != null) ...[
                               const SizedBox(height: 18),
@@ -147,7 +190,13 @@ class _HomePageState extends State<HomePage> {
                             ],
                             const SizedBox(height: 28),
                             FilledButton.icon(
-                              onPressed: _loading ? null : _continue,
+                              onPressed:
+                                  _loading ||
+                                      !_selectionReady ||
+                                      _grade == null ||
+                                      _semester == null
+                                  ? null
+                                  : _continue,
                               icon: _loading
                                   ? const SizedBox.square(
                                       dimension: 18,

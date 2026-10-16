@@ -86,12 +86,7 @@ class _ModePageState extends State<ModePage> {
         catalog: catalog,
         progress: store.progress,
       );
-      final schedule = PetInvitationScheduler.evaluate(
-        guide: guide,
-        events: engagementStore.events,
-        textbookKey: widget.selection.fileName,
-        now: DateTime.now(),
-      );
+      final schedule = PetInvitationScheduler.evaluate(guide: guide);
       if (guide.learningGoal != null) {
         await engagementStore.append(
           eventId: _goalPresentation.eventIdFor(
@@ -372,12 +367,12 @@ class _ModePageState extends State<ModePage> {
                       ),
                       _ModeCard(
                         icon: Icons.assignment_late_outlined,
-                        title: '错题专项',
+                        title: '再练一练',
                         description: _wrongCount == null
                             ? '正在读取错题…'
                             : _wrongCount == 0
                             ? '目前没有错题，先去综合练习看看。'
-                            : '集中练习整本教材的 $_wrongCount 道当前错题。',
+                            : '陪你把还不熟悉的 $_wrongCount 道题目再练一练。',
                         onTap: _wrongCount == null || _wrongCount == 0
                             ? null
                             : () => _openPractice(mistakesOnly: true),

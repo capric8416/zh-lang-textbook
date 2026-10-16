@@ -1,5 +1,4 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:zh_textbook/models/engagement_event.dart';
 import 'package:zh_textbook/models/pet.dart';
 import 'package:zh_textbook/models/pet_learning_goal.dart';
 import 'package:zh_textbook/models/practice.dart';
@@ -179,7 +178,7 @@ void main() {
     expect(guide.goalSelection!.reason, contains('不足 3 题'));
   });
 
-  test('主动邀请每天最多展示一次，接受后进入冷却期', () {
+  test('每次进入都展示练习邀请，不受已展示或接受记录限制', () {
     final guide = PetCompanionGuide(
       goal: '继续学习',
       invitation: PetPracticeInvitation(
@@ -197,53 +196,9 @@ void main() {
         message: '来练三题吧',
       ),
     );
-    const key = 'grade2b';
-    final now = DateTime(2026, 9, 18, 10);
-    final available = PetInvitationScheduler.evaluate(
-      guide: guide,
-      events: const [],
-      textbookKey: key,
-      now: now,
-    );
+    final available = PetInvitationScheduler.evaluate(guide: guide);
     expect(available.canPresent, isTrue);
-
-    final presented = _event(
-      id: 'present',
-      type: EngagementEventType.invitationPresented,
-      date: '2026-09-18',
-      context: const EngagementEventContext(
-        textbookKey: key,
-        launchSource: EngagementLaunchSource.invitation,
-      ),
-    );
-    expect(
-      PetInvitationScheduler.evaluate(
-        guide: guide,
-        events: [presented],
-        textbookKey: key,
-        now: now,
-      ).reason,
-      'presented-today',
-    );
-
-    final accepted = _event(
-      id: 'accepted',
-      type: EngagementEventType.quickPracticeStarted,
-      date: '2026-09-17',
-      context: const EngagementEventContext(
-        textbookKey: key,
-        launchSource: EngagementLaunchSource.invitation,
-      ),
-    );
-    expect(
-      PetInvitationScheduler.evaluate(
-        guide: guide,
-        events: [accepted],
-        textbookKey: key,
-        now: now,
-      ).reason,
-      'accepted-cooldown',
-    );
+    expect(available.invitation, same(guide.invitation));
   });
 }
 
@@ -271,21 +226,4 @@ LessonMastery _lesson(
       .take(mastered)
       .map((question) => question.id)
       .toSet(),
-);
-
-EngagementEvent _event({
-  required String id,
-  required EngagementEventType type,
-  required String date,
-  required EngagementEventContext context,
-}) => EngagementEvent(
-  eventId: id,
-  schemaVersion: 1,
-  type: type,
-  occurredAtUtc: DateTime.utc(2026, 9, 18),
-  localDate: date,
-  anonymousInstallId: 'install',
-  sessionId: 'session',
-  sequence: id.hashCode,
-  context: context,
 );

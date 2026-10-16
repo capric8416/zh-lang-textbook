@@ -97,12 +97,7 @@ class _PetHomePageState extends State<PetHomePage> {
           );
     final schedule = guide == null || selection == null
         ? null
-        : PetInvitationScheduler.evaluate(
-            guide: guide,
-            events: engagementStore.events,
-            textbookKey: selection.fileName,
-            now: DateTime.now(),
-          );
+        : PetInvitationScheduler.evaluate(guide: guide);
     if (guide?.learningGoal != null) {
       await engagementStore.append(
         eventId: _goalPresentation.eventIdFor(

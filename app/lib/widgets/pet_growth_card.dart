@@ -43,159 +43,177 @@ class PetGrowthCard extends StatelessWidget {
       color: colors.tertiaryContainer.withValues(alpha: 0.55),
       child: Padding(
         padding: const EdgeInsets.all(18),
-        child: Row(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Container(
-              key: const ValueKey('pet-avatar'),
-              width: 88,
-              height: 88,
-              decoration: const BoxDecoration(
-                shape: BoxShape.circle,
-                color: Color(0xffffd8cc),
-              ),
-              clipBehavior: Clip.antiAlias,
-              child: Image.asset(
-                profile.species == PetSpecies.cat
-                    ? 'assets/images/cat/san_hua/avatar.png'
-                    : 'assets/images/dog/huang_gou_bai_mian/avatar.png',
-                fit: BoxFit.contain,
-                errorBuilder: (context, error, stackTrace) =>
-                    const Icon(Icons.pets, size: 48),
-              ),
-            ),
-            const SizedBox(width: 18),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
+            Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Expanded(
-                        child: Text(
-                          '${profile.name} · ${petBreed(profile.breed).name}',
-                          style: Theme.of(context).textTheme.titleMedium
-                              ?.copyWith(fontWeight: FontWeight.w800),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              '${profile.name} · ${petBreed(profile.breed).name}',
+                              style: Theme.of(context).textTheme.titleMedium
+                                  ?.copyWith(fontWeight: FontWeight.w800),
+                            ),
+                          ),
+                          Container(
+                            key: const ValueKey('pet-avatar'),
+                            width: 72,
+                            height: 72,
+                            decoration: const BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Color(0xffffd8cc),
+                            ),
+                            clipBehavior: Clip.antiAlias,
+                            child: Image.asset(
+                              profile.species == PetSpecies.cat
+                                  ? 'assets/images/cat/san_hua/avatar.png'
+                                  : 'assets/images/dog/huang_gou_bai_mian/avatar.png',
+                              fit: BoxFit.contain,
+                              errorBuilder: (context, error, stackTrace) =>
+                                  const Icon(Icons.pets, size: 42),
+                            ),
+                          ),
+                          IconButton(
+                            onPressed: onOpenHome,
+                            tooltip: '打开爪爪星球',
+                            icon: const Icon(Icons.home_outlined),
+                          ),
+                          Text(
+                            '大阶段 ${profile.majorStage}',
+                            style: Theme.of(context).textTheme.labelLarge,
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        '成长值 ${profile.growthPoints}',
+                        style: TextStyle(
+                          color: colors.onTertiaryContainer,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
-                      IconButton(
-                        onPressed: onOpenHome,
-                        tooltip: '打开爪爪星球',
-                        icon: const Icon(Icons.home_outlined),
-                      ),
-                      Text(
-                        '大阶段 ${profile.majorStage}',
-                        style: Theme.of(context).textTheme.labelLarge,
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    '成长值 ${profile.growthPoints}',
-                    style: TextStyle(
-                      color: colors.onTertiaryContainer,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  if (greeting != null) ...[
-                    const SizedBox(height: 6),
-                    Text(greeting!, key: const ValueKey('pet-daily-greeting')),
-                  ],
-                  const SizedBox(height: 10),
-                  Text(
-                    lesson == null
-                        ? '本册学习阶段已全部完成！'
-                        : '${lesson.chapterName}  ${lesson.masteredCount}/${lesson.totalCount}（${lesson.percentage}%）',
-                  ),
-                  const SizedBox(height: 7),
-                  LinearProgressIndicator(
-                    value: progress.clamp(0, 1),
-                    minHeight: 8,
-                    borderRadius: BorderRadius.circular(99),
-                  ),
-                  if (goal != null) ...[
-                    const SizedBox(height: 10),
-                    Row(
-                      children: [
-                        const Icon(Icons.lock_open_outlined, size: 18),
-                        const SizedBox(width: 6),
-                        Expanded(child: Text(goal!)),
+                      if (greeting != null) ...[
+                        const SizedBox(height: 6),
+                        Text(
+                          greeting!,
+                          key: const ValueKey('pet-daily-greeting'),
+                        ),
                       ],
-                    ),
-                  ],
-                  if (learningGoal != null) ...[
-                    const SizedBox(height: 12),
-                    Card(
-                      key: const ValueKey('pet-learning-goal'),
-                      margin: EdgeInsets.zero,
-                      color: colors.surface.withValues(alpha: 0.7),
-                      child: InkWell(
-                        onTap: onOpenGoal,
-                        borderRadius: BorderRadius.circular(12),
-                        child: Padding(
-                          padding: const EdgeInsets.all(12),
-                          child: Row(
-                            children: [
-                              Icon(
-                                learningGoal!.isComplete
-                                    ? Icons.check_circle_outline
-                                    : Icons.flag_outlined,
-                                size: 20,
+                      const SizedBox(height: 10),
+                      Text(
+                        lesson == null
+                            ? '本册学习阶段已全部完成！'
+                            : '${lesson.chapterName}  ${lesson.masteredCount}/${lesson.totalCount}（${lesson.percentage}%）',
+                      ),
+                      const SizedBox(height: 7),
+                      LinearProgressIndicator(
+                        value: progress.clamp(0, 1),
+                        minHeight: 8,
+                        borderRadius: BorderRadius.circular(99),
+                      ),
+                      if (goal != null) ...[
+                        const SizedBox(height: 10),
+                        Row(
+                          children: [
+                            const Icon(Icons.lock_open_outlined, size: 18),
+                            const SizedBox(width: 6),
+                            Expanded(child: Text(goal!)),
+                          ],
+                        ),
+                      ],
+                      if (learningGoal != null) ...[
+                        const SizedBox(height: 12),
+                        Card(
+                          key: const ValueKey('pet-learning-goal'),
+                          margin: EdgeInsets.zero,
+                          color: colors.surface.withValues(alpha: 0.7),
+                          child: InkWell(
+                            onTap: onOpenGoal,
+                            borderRadius: BorderRadius.circular(12),
+                            child: Padding(
+                              padding: const EdgeInsets.all(12),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    learningGoal!.isComplete
+                                        ? Icons.check_circle_outline
+                                        : Icons.flag_outlined,
+                                    size: 20,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          learningGoal!.isComplete
+                                              ? '目标完成：${learningGoal!.unitName}'
+                                              : '下一步：${goalActionLabel ?? learningGoal!.actionLabel}',
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.w700,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 3),
+                                        Text(
+                                          learningGoal!.isComplete
+                                              ? learningGoal!.outcome
+                                              : '${learningGoal!.unitName}  ${learningGoal!.progressLabel}，还差 ${learningGoal!.remaining} 个小目标',
+                                        ),
+                                        const SizedBox(height: 6),
+                                        LinearProgressIndicator(
+                                          value: learningGoal!.progress,
+                                          minHeight: 5,
+                                          borderRadius: BorderRadius.circular(
+                                            99,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  if (onOpenGoal != null)
+                                    const Icon(
+                                      Icons.arrow_forward_ios,
+                                      size: 15,
+                                    ),
+                                ],
                               ),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      learningGoal!.isComplete
-                                          ? '目标完成：${learningGoal!.unitName}'
-                                          : '下一步：${goalActionLabel ?? learningGoal!.actionLabel}',
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.w700,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 3),
-                                    Text(
-                                      learningGoal!.isComplete
-                                          ? learningGoal!.outcome
-                                          : '${learningGoal!.unitName}  ${learningGoal!.progressLabel}，还差 ${learningGoal!.remaining} 个小目标',
-                                    ),
-                                    const SizedBox(height: 6),
-                                    LinearProgressIndicator(
-                                      value: learningGoal!.progress,
-                                      minHeight: 5,
-                                      borderRadius: BorderRadius.circular(99),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              if (onOpenGoal != null)
-                                const Icon(Icons.arrow_forward_ios, size: 15),
-                            ],
+                            ),
                           ),
                         ),
-                      ),
-                    ),
-                  ],
-                  if (invitation != null) ...[
-                    const SizedBox(height: 12),
-                    FilledButton.tonalIcon(
-                      key: const ValueKey('pet-practice-invitation'),
-                      onPressed: onAcceptInvitation,
-                      icon: const Icon(Icons.pets_outlined),
-                      label: Text(invitation!),
-                    ),
-                    if (onSkipInvitation != null)
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: TextButton(
-                          onPressed: onSkipInvitation,
-                          child: const Text('稍后再说'),
+                      ],
+                      if (invitation != null) ...[
+                        const SizedBox(height: 12),
+                        Row(
+                          children: [
+                            Flexible(
+                              child: FilledButton.tonalIcon(
+                                key: const ValueKey('pet-practice-invitation'),
+                                onPressed: onAcceptInvitation,
+                                icon: const Icon(Icons.pets_outlined),
+                                label: Text(invitation!),
+                              ),
+                            ),
+                            if (onSkipInvitation != null) ...[
+                              const SizedBox(width: 8),
+                              TextButton(
+                                onPressed: onSkipInvitation,
+                                child: const Text('稍后再说'),
+                              ),
+                            ],
+                          ],
                         ),
-                      ),
-                  ],
-                ],
-              ),
+                      ],
+                    ],
+                  ),
+                ),
+              ],
             ),
           ],
         ),
