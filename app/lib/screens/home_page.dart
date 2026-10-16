@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/textbook.dart';
+import '../services/account_api.dart';
+import '../services/practice_record_sync.dart';
 import '../services/textbook_repository.dart';
 import 'account_center.dart';
 import 'mode_page.dart';
@@ -22,15 +24,56 @@ class _HomePageState extends State<HomePage> {
   int? _grade;
   Semester? _semester;
   bool _selectionReady = false;
+  bool _authReady = false;
+  bool _authenticated = false;
   bool _selectionTouched = false;
   bool _loading = false;
   String? _error;
   int _tabIndex = 0;
+  final AccountApi _accountApi = AccountApi();
 
   @override
   void initState() {
     super.initState();
     _restoreSelection();
+    _restoreAuthentication();
+  }
+
+  Future<void> _restoreAuthentication() async {
+    var authenticated = false;
+    try {
+      final token = await _accountApi.token;
+      final accountId = await _accountApi.accountId;
+      authenticated =
+          token != null &&
+          token.isNotEmpty &&
+          accountId != null &&
+          accountId.isNotEmpty;
+    } catch (_) {
+      // If secure storage is temporarily unavailable, fail closed to login.
+    }
+    if (authenticated) PracticeRecordSync.schedule(api: _accountApi);
+    if (!mounted) return;
+    setState(() {
+      _authenticated = authenticated;
+      _authReady = true;
+    });
+  }
+
+  void _authenticatedNow() {
+    if (!mounted) return;
+    setState(() {
+      _authenticated = true;
+      _tabIndex = 0;
+    });
+  }
+
+  void _signedOut() {
+    if (!mounted) return;
+    setState(() {
+      _authenticated = false;
+      _tabIndex = 0;
+    });
   }
 
   Future<void> _restoreSelection() async {
@@ -85,10 +128,25 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    if (!_authReady) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+    if (!_authenticated) {
+      return Scaffold(
+        body: SafeArea(
+          child: AccountCenter(
+            api: _accountApi,
+            onAuthenticated: _authenticatedNow,
+          ),
+        ),
+      );
+    }
     final colorScheme = Theme.of(context).colorScheme;
     return Scaffold(
       body: _tabIndex == 1
-          ? const SafeArea(child: AccountCenter())
+          ? SafeArea(
+              child: AccountCenter(api: _accountApi, onSignedOut: _signedOut),
+            )
           : SafeArea(
               child: Center(
                 child: SingleChildScrollView(

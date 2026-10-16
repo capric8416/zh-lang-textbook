@@ -434,7 +434,6 @@ class _PracticePageState extends State<PracticePage> {
     bool correct, {
     required String studentAnswer,
   }) async {
-    await store.record(question.attemptId(_direction), correct: correct);
     try {
       await PracticeRecordSync.record(
         api: _accountApi,
@@ -453,6 +452,7 @@ class _PracticePageState extends State<PracticePage> {
     } catch (error, stackTrace) {
       debugPrintStack(label: '做题结果上传队列失败：$error', stackTrace: stackTrace);
     }
+    await store.record(question.attemptId(_direction), correct: correct);
   }
 
   Future<void> _showSpeechError(String title, Object error) => showDialog<void>(

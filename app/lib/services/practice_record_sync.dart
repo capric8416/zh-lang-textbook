@@ -5,11 +5,13 @@ import 'dart:math';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'account_api.dart';
+import 'local_study_identity.dart';
+import 'practice_attempt_store.dart';
 
 class PracticeRecordSync {
   static const _storageKey = 'pending_practice_records_v1';
-  static const _maxPending = 2000;
   static bool _flushing = false;
+  static Future<void> _pendingTail = Future<void>.value();
 
   static Future<void> record({
     required AccountApi api,
@@ -26,13 +28,10 @@ class PracticeRecordSync {
     required bool isCorrect,
     DateTime? occurredAt,
   }) async {
-    if (await api.token == null) return;
+    final sessionToken = await api.token;
     final accountId = await api.accountId;
-    if (accountId == null) return;
-    final preferences = await SharedPreferences.getInstance();
-    final pending = _readPending(preferences);
     final id = _newId();
-    pending.add({
+    final record = <String, Object?>{
       'id': id,
       'studentId': accountId,
       'textbookKey': textbookKey,
@@ -47,11 +46,13 @@ class PracticeRecordSync {
       'expectedAnswer': expectedAnswer,
       'isCorrect': isCorrect,
       'occurredAt': (occurredAt ?? DateTime.now()).toUtc().toIso8601String(),
-    });
-    if (pending.length > _maxPending) {
-      pending.removeRange(0, pending.length - _maxPending);
+    };
+    if (sessionToken == null || sessionToken.isEmpty || accountId == null) {
+      throw StateError('请先登录后再作答');
     }
-    await _savePending(preferences, pending);
+    final namespace = LocalStudyIdentity.accountNamespace(accountId);
+    await PracticeAttemptStore.append(namespace, record);
+    await _enqueue(record);
     schedule(api: api);
   }
 
@@ -75,8 +76,8 @@ class PracticeRecordSync {
       if (accountId == null) return;
       final sessionToken = await api.token;
       if (sessionToken == null) return;
-      final preferences = await SharedPreferences.getInstance();
       while (true) {
+        final preferences = await SharedPreferences.getInstance();
         final pending = _readPending(preferences);
         if (pending.isEmpty) return;
         final recordIndex = pending.indexWhere(
@@ -93,14 +94,13 @@ class PracticeRecordSync {
             tokenOverride: sessionToken,
           );
         } on AccountApiException catch (error) {
-          // These records cannot be accepted for this account/current class.
-          // Preserve local practice progress, but do not reassign stale records
-          // to a different class after the student joins one later.
-          if (error.statusCode == 400 ||
-              error.statusCode == 403 ||
-              error.statusCode == 409) {
-            pending.removeAt(recordIndex);
-            await _savePending(preferences, pending);
+          if (error.statusCode == 409) {
+            // Keep pending attempts until the student joins a class; the next
+            // account refresh will retry and associate them with that class.
+            return;
+          }
+          if (error.statusCode == 400 || error.statusCode == 403) {
+            await _removePending(record['id']);
             continue;
           }
           return;
@@ -108,8 +108,7 @@ class PracticeRecordSync {
           // Keep pending records on network/server errors for a later retry.
           return;
         }
-        pending.removeAt(recordIndex);
-        await _savePending(preferences, pending);
+        await _removePending(record['id']);
       }
     } finally {
       _flushing = false;
@@ -137,6 +136,37 @@ class PracticeRecordSync {
     SharedPreferences preferences,
     List<Map<String, Object?>> pending,
   ) => preferences.setString(_storageKey, jsonEncode(pending));
+
+  static Future<void> _enqueue(Map<String, Object?> record) =>
+      _mutatePending((pending) async {
+        if (!pending.any((item) => item['id'] == record['id'])) {
+          pending.add(record);
+        }
+      });
+
+  static Future<void> _removePending(Object? id) =>
+      _mutatePending((pending) async {
+        pending.removeWhere((record) => record['id'] == id);
+      });
+
+  static Future<void> _mutatePending(
+    Future<void> Function(List<Map<String, Object?>> pending) update,
+  ) {
+    final result = Completer<void>();
+    final operation = _pendingTail.then((_) async {
+      try {
+        final preferences = await SharedPreferences.getInstance();
+        final pending = _readPending(preferences);
+        await update(pending);
+        await _savePending(preferences, pending);
+        result.complete();
+      } catch (error, stackTrace) {
+        result.completeError(error, stackTrace);
+      }
+    });
+    _pendingTail = operation.catchError((_) {});
+    return result.future;
+  }
 
   static String _newId() {
     final random = Random.secure();

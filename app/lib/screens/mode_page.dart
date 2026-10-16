@@ -345,8 +345,10 @@ class _ModePageState extends State<ModePage> {
                 const SizedBox(height: 28),
                 LayoutBuilder(
                   builder: (context, constraints) {
+                    final compact = constraints.maxWidth < 760;
                     final cards = [
                       _ModeCard(
+                        height: compact ? 300 : 270,
                         icon: Icons.menu_book_outlined,
                         title: '复习',
                         description: '按教材目录阅读正文，查看拼音和知识点标记。',
@@ -360,12 +362,14 @@ class _ModePageState extends State<ModePage> {
                         ),
                       ),
                       _ModeCard(
+                        height: compact ? 300 : 270,
                         icon: Icons.edit_note_outlined,
                         title: '练习',
                         description: '看拼音写汉字、听写或朗读，按课文综合练习。',
                         onTap: () => _openPractice(mistakesOnly: false),
                       ),
                       _ModeCard(
+                        height: compact ? 300 : 270,
                         icon: Icons.assignment_late_outlined,
                         title: '再练一练',
                         description: _wrongCount == null
@@ -378,8 +382,9 @@ class _ModePageState extends State<ModePage> {
                             : () => _openPractice(mistakesOnly: true),
                       ),
                     ];
-                    if (constraints.maxWidth < 760) {
+                    if (compact) {
                       return Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           cards[0],
                           const SizedBox(height: 16),
@@ -412,12 +417,14 @@ class _ModePageState extends State<ModePage> {
 
 class _ModeCard extends StatelessWidget {
   const _ModeCard({
+    required this.height,
     required this.icon,
     required this.title,
     required this.description,
     this.onTap,
   });
 
+  final double height;
   final IconData icon;
   final String title;
   final String description;
@@ -426,42 +433,44 @@ class _ModeCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
-    return Card(
-      elevation: 0,
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.all(26),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              CircleAvatar(
-                radius: 28,
-                backgroundColor: colors.primaryContainer,
-                child: Icon(icon, size: 30, color: colors.onPrimaryContainer),
-              ),
-              const SizedBox(height: 24),
-              Row(
-                children: [
-                  Text(
-                    title,
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 10),
-              Text(
-                description,
-                style: TextStyle(color: colors.onSurfaceVariant, height: 1.6),
-              ),
-              if (onTap != null) ...[
+    return SizedBox(
+      height: height,
+      child: Card(
+        elevation: 0,
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.all(26),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                CircleAvatar(
+                  radius: 28,
+                  backgroundColor: colors.primaryContainer,
+                  child: Icon(icon, size: 30, color: colors.onPrimaryContainer),
+                ),
                 const SizedBox(height: 24),
-                Icon(Icons.arrow_forward, color: colors.primary),
+                Text(
+                  title,
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  description,
+                  style: TextStyle(color: colors.onSurfaceVariant, height: 1.6),
+                ),
+                const Spacer(),
+                Icon(
+                  Icons.arrow_forward,
+                  color: onTap == null
+                      ? Theme.of(context).disabledColor
+                      : colors.primary,
+                ),
               ],
-            ],
+            ),
           ),
         ),
       ),

@@ -6,6 +6,7 @@ import '../models/pet.dart';
 import '../models/practice.dart';
 import '../models/textbook.dart';
 import 'learning_mastery.dart';
+import 'local_study_identity.dart';
 import 'practice_progress.dart';
 
 class PetGrowthSyncResult {
@@ -167,10 +168,11 @@ class PetGrowthEngine {
 }
 
 class PetGrowthStore {
-  PetGrowthStore._(this._preferences, this._profile);
+  PetGrowthStore._(this._preferences, this._key, this._profile);
 
-  static const _key = 'pet_growth_profile';
+  static const _keyPrefix = 'pet_growth_profile_';
   final SharedPreferences _preferences;
+  final String _key;
   PetProfile _profile;
 
   PetProfile get profile => _profile;
@@ -251,14 +253,17 @@ class PetGrowthStore {
         '${local.day.toString().padLeft(2, '0')}';
   }
 
-  static Future<PetGrowthStore> open() async {
+  static Future<PetGrowthStore> open({String? namespace}) async {
     final preferences = await SharedPreferences.getInstance();
-    final raw = preferences.getString(_key);
+    final owner = namespace ?? await LocalStudyIdentity.currentNamespace();
+    final key = '$_keyPrefix$owner';
+    final raw = preferences.getString(key);
     try {
       final decoded = raw == null ? null : jsonDecode(raw);
       if (decoded is Map<String, dynamic>) {
         return PetGrowthStore._(
           preferences,
+          key,
           PetProfile.fromJson(
             decoded['profile'] is Map
                 ? (decoded['profile'] as Map).cast<String, dynamic>()
@@ -269,7 +274,7 @@ class PetGrowthStore {
     } on FormatException {
       // A malformed optional pet profile should not block learning.
     }
-    return PetGrowthStore._(preferences, const PetProfile());
+    return PetGrowthStore._(preferences, key, const PetProfile());
   }
 
   Future<PetGrowthSyncResult> synchronize({

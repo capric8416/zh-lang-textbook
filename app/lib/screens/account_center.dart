@@ -16,8 +16,15 @@ const _roleNames = {
 };
 
 class AccountCenter extends StatefulWidget {
-  const AccountCenter({super.key, this.api});
+  const AccountCenter({
+    super.key,
+    this.api,
+    this.onAuthenticated,
+    this.onSignedOut,
+  });
   final AccountApi? api;
+  final VoidCallback? onAuthenticated;
+  final VoidCallback? onSignedOut;
 
   @override
   State<AccountCenter> createState() => _AccountCenterState();
@@ -51,6 +58,7 @@ class _AccountCenterState extends State<AccountCenter> {
         return;
       }
       final result = await _api.request('me');
+      final wasSignedOut = _me == null;
       final account = result['account'];
       if (account is Map && account['id'] is String) {
         await _api.rememberAccountId(account['id'] as String);
@@ -62,14 +70,20 @@ class _AccountCenterState extends State<AccountCenter> {
           _loading = false;
         });
       }
+      if (wasSignedOut) widget.onAuthenticated?.call();
     } catch (error) {
-      await _api.clearToken();
+      if (error is AccountApiException && error.statusCode == 401) {
+        await _api.clearToken();
+      }
       if (mounted) {
         setState(() {
           _me = null;
           _error = error.toString();
           _loading = false;
         });
+        if (error is AccountApiException && error.statusCode == 401) {
+          widget.onSignedOut?.call();
+        }
       }
     }
   }
@@ -154,11 +168,16 @@ class _AccountCenterState extends State<AccountCenter> {
   }
 
   Future<void> _signOut() async {
-    await _api.logout();
+    try {
+      await _api.logout();
+    } catch (_) {
+      // logout() clears the local token even if the remote endpoint is offline.
+    }
     if (mounted) {
       setState(() {
         _me = null;
       });
+      widget.onSignedOut?.call();
     }
   }
 
@@ -239,7 +258,7 @@ class _SignInPanelState extends State<_SignInPanel> {
                     const Padding(
                       padding: EdgeInsets.only(top: 12),
                       child: Text(
-                        '账号服务还未配置。当前教材与练习仍可离线使用。',
+                        '需要连接账号服务并登录后才能进入学习。',
                         textAlign: TextAlign.center,
                       ),
                     ),

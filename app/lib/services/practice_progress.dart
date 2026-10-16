@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/practice.dart';
+import 'local_study_identity.dart';
 
 class QuestionProgress {
   const QuestionProgress({
@@ -101,9 +102,13 @@ class PracticeProgressStore {
 
   PracticeProgress get progress => _progress;
 
-  static Future<PracticeProgressStore> open(String textbookKey) async {
+  static Future<PracticeProgressStore> open(
+    String textbookKey, {
+    String? namespace,
+  }) async {
     final preferences = await SharedPreferences.getInstance();
-    final key = 'practice_progress_$textbookKey';
+    final owner = namespace ?? await LocalStudyIdentity.currentNamespace();
+    final key = 'practice_progress_${owner}_$textbookKey';
     final raw = preferences.getString(key);
     try {
       final decoded = raw == null ? null : jsonDecode(raw);
@@ -171,33 +176,20 @@ class PracticeProgressStore {
   }
 
   Future<void> record(String questionId, {required bool correct}) async {
-    final now = DateTime.now();
-    final previous = _progress.forQuestion(questionId);
-    final updatedCorrect = previous.correctCount + (correct ? 1 : 0);
-    final updatedWrong = previous.wrongCount + (correct ? 0 : 1);
-    final lastCorrect = correct ? now : previous.lastCorrectAt;
-    final lastWrong = correct ? previous.lastWrongAt : now;
-    final days = _dayDifference(lastCorrect, lastWrong);
-    final times = updatedCorrect - updatedWrong;
-    DateTime? blockedUntil;
-    DateTime? skipUntil;
-    var skipRemaining = 0;
-    if (days > 0 || times < 0) {
-      blockedUntil = now.add(Duration(days: days.abs() + times.abs()));
-    } else {
-      final windowDays = days.abs();
-      skipUntil = now.add(Duration(days: windowDays));
-      skipRemaining = times.abs();
-    }
+    await recordAt(questionId, correct: correct, occurredAt: DateTime.now());
+  }
+
+  Future<void> recordAt(
+    String questionId, {
+    required bool correct,
+    required DateTime occurredAt,
+  }) async {
+    final now = occurredAt.toLocal();
     final records = {..._progress.questions};
-    records[questionId] = QuestionProgress(
-      correctCount: updatedCorrect,
-      wrongCount: updatedWrong,
-      lastCorrectAt: lastCorrect,
-      lastWrongAt: lastWrong,
-      blockedUntil: blockedUntil,
-      skipUntil: skipUntil,
-      skipRemaining: skipRemaining,
+    records[questionId] = _afterAttempt(
+      _progress.forQuestion(questionId),
+      correct: correct,
+      occurredAt: now,
     );
     _progress = PracticeProgress(records);
     await _save();
@@ -212,6 +204,36 @@ class PracticeProgressStore {
           entry.key: entry.value.toJson(),
       },
     }),
+  );
+}
+
+QuestionProgress _afterAttempt(
+  QuestionProgress previous, {
+  required bool correct,
+  required DateTime occurredAt,
+}) {
+  final updatedCorrect = previous.correctCount + (correct ? 1 : 0);
+  final updatedWrong = previous.wrongCount + (correct ? 0 : 1);
+  final lastCorrect = correct ? occurredAt : previous.lastCorrectAt;
+  final lastWrong = correct ? previous.lastWrongAt : occurredAt;
+  final days = _dayDifference(lastCorrect, lastWrong);
+  final times = updatedCorrect - updatedWrong;
+  if (days > 0 || times < 0) {
+    return QuestionProgress(
+      correctCount: updatedCorrect,
+      wrongCount: updatedWrong,
+      lastCorrectAt: lastCorrect,
+      lastWrongAt: lastWrong,
+      blockedUntil: occurredAt.add(Duration(days: days.abs() + times.abs())),
+    );
+  }
+  return QuestionProgress(
+    correctCount: updatedCorrect,
+    wrongCount: updatedWrong,
+    lastCorrectAt: lastCorrect,
+    lastWrongAt: lastWrong,
+    skipUntil: occurredAt.add(Duration(days: days.abs())),
+    skipRemaining: times.abs(),
   );
 }
 
