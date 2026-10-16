@@ -6,8 +6,19 @@ pub(crate) async fn find_for_student(db: &D1Database, student_id: &str) -> Resul
         .bind(&[student_id.into()])?.first::<Class>(None).await
 }
 
+pub(crate) async fn find_class_for_student_at(
+    db: &D1Database,
+    student_id: &str,
+    occurred_at: &str,
+) -> Result<Option<String>> {
+    db.prepare("SELECT h.class_id FROM class_membership_history h WHERE h.student_id=? AND julianday(h.joined_at)<=julianday(?) AND (h.left_at IS NULL OR julianday(h.left_at)>julianday(?)) ORDER BY h.joined_at DESC LIMIT 1")
+        .bind(&[student_id.into(), occurred_at.into(), occurred_at.into()])?
+        .first::<String>(Some("class_id"))
+        .await
+}
+
 pub(crate) async fn assign(db: &D1Database, student_id: &str, class_id: &str) -> Result<()> {
-    db.prepare("INSERT INTO class_memberships(student_id,class_id) VALUES(?,?) ON CONFLICT(student_id) DO UPDATE SET class_id=excluded.class_id,joined_at=CURRENT_TIMESTAMP")
+    db.prepare("INSERT INTO class_memberships(student_id,class_id,joined_at) VALUES(?,?,strftime('%Y-%m-%dT%H:%M:%fZ','now')) ON CONFLICT(student_id) DO UPDATE SET class_id=excluded.class_id,joined_at=excluded.joined_at WHERE class_memberships.class_id<>excluded.class_id")
         .bind(&[student_id.into(), class_id.into()])?.run().await?;
     Ok(())
 }

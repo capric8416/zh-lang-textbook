@@ -36,9 +36,12 @@ pub(super) async fn record(request: &mut Request, env: &Env) -> Result<Response>
         return error("做题记录字段无效", 400);
     }
     let db = env.d1("DB")?;
-    let class_id = crate::db::class_memberships::find_for_student(&db, &student.id)
-        .await?
-        .map(|class| class.id);
+    let class_id = crate::db::class_memberships::find_class_for_student_at(
+        &db,
+        &student.id,
+        &input.occurred_at,
+    )
+    .await?;
     let record = crate::db::practice_records::PracticeRecord {
         id: input.id,
         student_id: student.id.clone(),
@@ -94,6 +97,9 @@ pub(super) async fn class_records(
 }
 
 fn valid_input(input: &PracticeRecordInput) -> bool {
+    let occurred_at_ms = js_sys::Date::parse(&input.occurred_at);
+    let timestamp_is_valid =
+        occurred_at_ms.is_finite() && occurred_at_ms <= js_sys::Date::now() + 5.0 * 60.0 * 1000.0;
     let id_is_hex = input.id.len() == 32 && input.id.bytes().all(|byte| byte.is_ascii_hexdigit());
     let valid_text =
         |value: &str, max: usize| !value.trim().is_empty() && value.chars().count() <= max;
@@ -108,6 +114,7 @@ fn valid_input(input: &PracticeRecordInput) -> bool {
         && valid_text(&input.student_answer, 2000)
         && valid_text(&input.expected_answer, 2000)
         && valid_text(&input.occurred_at, 40)
+        && timestamp_is_valid
         && matches!(
             input.direction.as_str(),
             "writeHanzi" | "writePinyin" | "listenWriteHanzi" | "readAloud"
