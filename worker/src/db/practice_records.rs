@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+use wasm_bindgen::JsValue;
 use worker::{D1Database, Result};
 
 #[derive(Deserialize, Serialize)]
@@ -6,7 +7,7 @@ use worker::{D1Database, Result};
 pub(crate) struct PracticeRecord {
     pub(crate) id: String,
     pub(crate) student_id: String,
-    pub(crate) class_id: String,
+    pub(crate) class_id: Option<String>,
     pub(crate) textbook_key: String,
     pub(crate) question_id: String,
     pub(crate) chapter_id: String,
@@ -49,11 +50,12 @@ pub(crate) async fn insert(
     db: &D1Database,
     record: &PracticeRecord,
     student_id: &str,
-    class_id: &str,
+    class_id: Option<&str>,
 ) -> Result<()> {
+    let class_value = class_id.map(JsValue::from_str).unwrap_or(JsValue::NULL);
     db.prepare("INSERT INTO practice_records(id,student_id,class_id,textbook_key,question_id,chapter_id,question_kind,category,source,direction,prompt,student_answer,expected_answer,is_correct,occurred_at) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) ON CONFLICT(id) DO NOTHING")
         .bind(&[
-            record.id.clone().into(), student_id.into(), class_id.into(),
+            record.id.clone().into(), student_id.into(), class_value,
             record.textbook_key.clone().into(), record.question_id.clone().into(),
             record.chapter_id.clone().into(), record.question_kind.clone().into(),
             record.category.clone().into(), record.source.clone().into(),

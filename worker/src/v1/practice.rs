@@ -36,14 +36,13 @@ pub(super) async fn record(request: &mut Request, env: &Env) -> Result<Response>
         return error("做题记录字段无效", 400);
     }
     let db = env.d1("DB")?;
-    let Some(class) = crate::db::class_memberships::find_for_student(&db, &student.id).await?
-    else {
-        return error("当前未加入有效班级，做题记录未上传", 409);
-    };
+    let class_id = crate::db::class_memberships::find_for_student(&db, &student.id)
+        .await?
+        .map(|class| class.id);
     let record = crate::db::practice_records::PracticeRecord {
         id: input.id,
         student_id: student.id.clone(),
-        class_id: class.id.clone(),
+        class_id: class_id.clone(),
         textbook_key: input.textbook_key,
         question_id: input.question_id,
         chapter_id: input.chapter_id,
@@ -58,8 +57,8 @@ pub(super) async fn record(request: &mut Request, env: &Env) -> Result<Response>
         occurred_at: input.occurred_at,
         created_at: String::new(),
     };
-    crate::db::practice_records::insert(&db, &record, &student.id, &class.id).await?;
-    Response::from_json(&serde_json::json!({"ok":true,"classId":class.id}))
+    crate::db::practice_records::insert(&db, &record, &student.id, class_id.as_deref()).await?;
+    Response::from_json(&serde_json::json!({"ok":true,"classId":class_id}))
 }
 
 #[derive(Deserialize)]

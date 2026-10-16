@@ -94,11 +94,6 @@ class PracticeRecordSync {
             tokenOverride: sessionToken,
           );
         } on AccountApiException catch (error) {
-          if (error.statusCode == 409) {
-            // Keep pending attempts until the student joins a class; the next
-            // account refresh will retry and associate them with that class.
-            return;
-          }
           if (error.statusCode == 400 || error.statusCode == 403) {
             await _removePending(record['id']);
             continue;
