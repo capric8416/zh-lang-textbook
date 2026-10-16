@@ -149,6 +149,11 @@ class _AccountCenterState extends State<AccountCenter> {
           ),
           const SizedBox(height: 20),
           if (student)
+            _PracticeRecordSyncCard(
+              api: _api,
+              accountId: account['id'] as String,
+            ),
+          if (student)
             _StudentClassCard(
               api: _api,
               classInfo: _me!['class'] as Map<String, dynamic>?,
@@ -199,6 +204,118 @@ class _AccountCenterState extends State<AccountCenter> {
         ).showSnackBar(SnackBar(content: Text(error.toString())));
       }
     }
+  }
+}
+
+class _PracticeRecordSyncCard extends StatefulWidget {
+  const _PracticeRecordSyncCard({required this.api, required this.accountId});
+
+  final AccountApi api;
+  final String accountId;
+
+  @override
+  State<_PracticeRecordSyncCard> createState() =>
+      _PracticeRecordSyncCardState();
+}
+
+class _PracticeRecordSyncCardState extends State<_PracticeRecordSyncCard> {
+  PracticeRecordSyncStatus _status = const PracticeRecordSyncStatus(
+    pendingCount: 0,
+    isSyncing: false,
+    lastSuccessAt: null,
+    lastError: null,
+  );
+  bool _retrying = false;
+
+  @override
+  void initState() {
+    super.initState();
+    PracticeRecordSync.changes.addListener(_refresh);
+    _refresh();
+  }
+
+  @override
+  void didUpdateWidget(covariant _PracticeRecordSyncCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.accountId != widget.accountId) _refresh();
+  }
+
+  @override
+  void dispose() {
+    PracticeRecordSync.changes.removeListener(_refresh);
+    super.dispose();
+  }
+
+  Future<void> _refresh() async {
+    final status = await PracticeRecordSync.statusFor(widget.accountId);
+    if (mounted) setState(() => _status = status);
+  }
+
+  Future<void> _retry() async {
+    setState(() => _retrying = true);
+    try {
+      await PracticeRecordSync.flush(api: widget.api);
+    } catch (error) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('同步失败，记录已保留：$error')));
+      }
+    } finally {
+      await _refresh();
+      if (mounted) setState(() => _retrying = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final lastSuccess = _status.lastSuccessAt;
+    final lastSuccessText = lastSuccess == null
+        ? '尚无成功同步记录'
+        : '最近同步：${lastSuccess.toLocal().toString().substring(0, 16)}';
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Icon(Icons.sync_outlined),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text('作答记录同步', style: theme.textTheme.titleMedium),
+                ),
+                if (_status.isSyncing || _retrying)
+                  const SizedBox.square(
+                    dimension: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                else
+                  TextButton.icon(
+                    onPressed: _status.pendingCount > 0 ? _retry : null,
+                    icon: const Icon(Icons.refresh),
+                    label: const Text('重试'),
+                  ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(
+              _status.isSyncing
+                  ? '正在上传，剩余 ${_status.pendingCount} 条'
+                  : '待同步 ${_status.pendingCount} 条 · $lastSuccessText',
+            ),
+            if (_status.lastError case final error?) ...[
+              const SizedBox(height: 8),
+              Text(error, style: TextStyle(color: theme.colorScheme.error)),
+            ],
+            const SizedBox(height: 6),
+            Text('未同步记录会保留在本机，不会因队列数量自动删除。', style: theme.textTheme.bodySmall),
+          ],
+        ),
+      ),
+    );
   }
 }
 

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 
+import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'account_api.dart';
@@ -10,8 +11,30 @@ import 'practice_attempt_store.dart';
 
 class PracticeRecordSync {
   static const _storageKey = 'pending_practice_records_v1';
+  static const _lastSuccessPrefix = 'practice_record_sync_last_success_v1_';
+  static const _lastErrorPrefix = 'practice_record_sync_last_error_v1_';
   static bool _flushing = false;
+  static String? _flushingAccountId;
   static Future<void> _pendingTail = Future<void>.value();
+  static final ValueNotifier<int> changes = ValueNotifier(0);
+
+  static void _notifyChanged() => changes.value++;
+
+  static Future<PracticeRecordSyncStatus> statusFor(String accountId) async {
+    final preferences = await SharedPreferences.getInstance();
+    final pendingCount = _readPending(
+      preferences,
+    ).where((record) => record['studentId'] == accountId).length;
+    final lastSuccess = DateTime.tryParse(
+      preferences.getString('$_lastSuccessPrefix$accountId') ?? '',
+    );
+    return PracticeRecordSyncStatus(
+      pendingCount: pendingCount,
+      isSyncing: _flushing && _flushingAccountId == accountId,
+      lastSuccessAt: lastSuccess,
+      lastError: preferences.getString('$_lastErrorPrefix$accountId'),
+    );
+  }
 
   static Future<void> record({
     required AccountApi api,
@@ -69,13 +92,24 @@ class PracticeRecordSync {
   }
 
   static Future<void> flush({required AccountApi api}) async {
-    if (_flushing || !api.configured) return;
+    if (_flushing) return;
     _flushing = true;
+    String? activeAccountId;
     try {
       final accountId = await api.accountId;
       if (accountId == null) return;
+      activeAccountId = accountId;
+      _flushingAccountId = accountId;
+      _notifyChanged();
+      if (!api.configured) {
+        await _saveFailure(accountId, '账号服务地址未配置，记录已保留。');
+        return;
+      }
       final sessionToken = await api.token;
-      if (sessionToken == null) return;
+      if (sessionToken == null || sessionToken.isEmpty) {
+        await _saveFailure(accountId, '当前未登录，记录已保留；重新登录后可继续同步。');
+        return;
+      }
       while (true) {
         final preferences = await SharedPreferences.getInstance();
         final pending = _readPending(preferences);
@@ -94,20 +128,44 @@ class PracticeRecordSync {
             tokenOverride: sessionToken,
           );
         } on AccountApiException catch (error) {
-          if (error.statusCode == 400 || error.statusCode == 403) {
-            await _removePending(record['id']);
-            continue;
-          }
+          await _saveFailure(accountId, _explainFailure(error));
           return;
-        } catch (_) {
+        } catch (error) {
           // Keep pending records on network/server errors for a later retry.
+          await _saveFailure(accountId, _explainFailure(error));
           return;
         }
         await _removePending(record['id']);
+        await preferences.setString(
+          '$_lastSuccessPrefix$accountId',
+          DateTime.now().toUtc().toIso8601String(),
+        );
+        await preferences.remove('$_lastErrorPrefix$accountId');
+        _notifyChanged();
       }
     } finally {
       _flushing = false;
+      _flushingAccountId = null;
+      if (activeAccountId != null) _notifyChanged();
     }
+  }
+
+  static Future<void> _saveFailure(String accountId, String message) async {
+    final preferences = await SharedPreferences.getInstance();
+    await preferences.setString('$_lastErrorPrefix$accountId', message);
+    _notifyChanged();
+  }
+
+  static String _explainFailure(Object error) {
+    if (error is AccountApiException) {
+      final code = error.statusCode;
+      if (code == 400 || code == 403) {
+        return '记录未被服务器接受（$code）：${error.message}。记录已保留，可修复后重试。';
+      }
+      if (code == 401) return '登录状态已失效，请重新登录后重试。';
+      return '服务器暂时无法接收记录${code == null ? '' : '（$code）'}：${error.message}';
+    }
+    return '网络或本地存储暂时不可用：$error';
   }
 
   static List<Map<String, Object?>> _readPending(
@@ -130,7 +188,10 @@ class PracticeRecordSync {
   static Future<void> _savePending(
     SharedPreferences preferences,
     List<Map<String, Object?>> pending,
-  ) => preferences.setString(_storageKey, jsonEncode(pending));
+  ) async {
+    await preferences.setString(_storageKey, jsonEncode(pending));
+    _notifyChanged();
+  }
 
   static Future<void> _enqueue(Map<String, Object?> record) =>
       _mutatePending((pending) async {
@@ -170,4 +231,19 @@ class PracticeRecordSync {
       (_) => random.nextInt(256).toRadixString(16).padLeft(2, '0'),
     ).join();
   }
+}
+
+@immutable
+class PracticeRecordSyncStatus {
+  const PracticeRecordSyncStatus({
+    required this.pendingCount,
+    required this.isSyncing,
+    required this.lastSuccessAt,
+    required this.lastError,
+  });
+
+  final int pendingCount;
+  final bool isSyncing;
+  final DateTime? lastSuccessAt;
+  final String? lastError;
 }
