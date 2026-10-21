@@ -82,6 +82,23 @@ pub(crate) async fn list_for_class_page(
         .results::<ClassPracticeRecord>()
 }
 
+pub(crate) async fn list_for_student_page(
+    db: &D1Database,
+    student_id: &str,
+    limit: u32,
+    before_time: Option<&str>,
+    after_id: Option<&str>,
+) -> Result<Vec<PracticeRecord>> {
+    let statement = if let (Some(time), Some(id)) = (before_time, after_id) {
+        db.prepare("SELECT * FROM practice_records WHERE student_id=? AND (occurred_at<? OR (occurred_at=? AND id>?)) ORDER BY occurred_at DESC,id ASC LIMIT ?")
+            .bind(&[student_id.into(), time.into(), time.into(), id.into(), (limit as f64).into()])?
+    } else {
+        db.prepare("SELECT * FROM practice_records WHERE student_id=? ORDER BY occurred_at DESC,id ASC LIMIT ?")
+            .bind(&[student_id.into(), (limit as f64).into()])?
+    };
+    statement.all().await?.results::<PracticeRecord>()
+}
+
 #[cfg(test)]
 mod tests {
     use super::PracticeRecord;

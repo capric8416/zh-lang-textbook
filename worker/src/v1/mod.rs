@@ -27,6 +27,7 @@ pub async fn route(
         (Method::Post, "/api/v1/me/password") => me::change_password(request, env).await,
         (Method::Delete, "/api/v1/me/class") => me::leave_class(request, env).await,
         (Method::Post, "/api/v1/practice/records") => practice::record(request, env).await,
+        (Method::Get, "/api/v1/practice/records") => practice::student_records(request, env).await,
         (Method::Get, path)
             if path.starts_with("/api/v1/classes/")
                 && path.ends_with("/records")

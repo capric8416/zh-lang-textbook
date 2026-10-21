@@ -13,6 +13,9 @@ class PracticeRecordSync {
   static const _storageKey = 'pending_practice_records_v1';
   static const _lastSuccessPrefix = 'practice_record_sync_last_success_v1_';
   static const _lastErrorPrefix = 'practice_record_sync_last_error_v1_';
+  static const _remoteCountPrefix = 'practice_record_sync_remote_count_v1_';
+  static const _recentUploadedPrefix =
+      'practice_record_sync_recent_uploaded_v1_';
   static bool _flushing = false;
   static String? _flushingAccountId;
   static Future<void> _pendingTail = Future<void>.value();
@@ -20,8 +23,33 @@ class PracticeRecordSync {
 
   static void _notifyChanged() => changes.value++;
 
+  static Future<List<Map<String, Object?>>> pendingFor(String accountId) async {
+    await _pendingTail;
+    final preferences = await SharedPreferences.getInstance();
+    return _readPending(
+      preferences,
+    ).where((record) => record['studentId'] == accountId).toList();
+  }
+
   static Future<PracticeRecordSyncStatus> statusFor(String accountId) async {
     final preferences = await SharedPreferences.getInstance();
+    var remoteCount = preferences.getInt('$_remoteCountPrefix$accountId');
+    if (remoteCount == null) {
+      try {
+        final cached = await PracticeAttemptStore.read(
+          '${LocalStudyIdentity.accountNamespace(accountId)}_remote',
+        );
+        remoteCount = cached
+            .where((record) => record['studentId'] == accountId)
+            .map((record) => record['id'])
+            .whereType<String>()
+            .toSet()
+            .length;
+        await preferences.setInt('$_remoteCountPrefix$accountId', remoteCount);
+      } catch (_) {
+        remoteCount = 0;
+      }
+    }
     final pendingCount = _readPending(
       preferences,
     ).where((record) => record['studentId'] == accountId).length;
@@ -30,10 +58,30 @@ class PracticeRecordSync {
     );
     return PracticeRecordSyncStatus(
       pendingCount: pendingCount,
+      uploadedCount:
+          remoteCount +
+          (preferences.getStringList('$_recentUploadedPrefix$accountId') ?? [])
+              .length,
       isSyncing: _flushing && _flushingAccountId == accountId,
       lastSuccessAt: lastSuccess,
       lastError: preferences.getString('$_lastErrorPrefix$accountId'),
     );
+  }
+
+  static Future<void> rememberRemoteRecords(
+    String accountId,
+    Set<Object?> recordIds,
+  ) async {
+    final preferences = await SharedPreferences.getInstance();
+    final ids = recordIds.whereType<String>().toSet();
+    final recent =
+        preferences.getStringList('$_recentUploadedPrefix$accountId') ?? [];
+    await preferences.setInt('$_remoteCountPrefix$accountId', ids.length);
+    await preferences.setStringList(
+      '$_recentUploadedPrefix$accountId',
+      recent.where((id) => !ids.contains(id)).toList(),
+    );
+    _notifyChanged();
   }
 
   static Future<void> record({
@@ -134,6 +182,24 @@ class PracticeRecordSync {
           // Keep pending records on network/server errors for a later retry.
           await _saveFailure(accountId, _explainFailure(error));
           return;
+        }
+        // Persist the server acknowledgement before removing the queue entry.
+        // If this write fails, retrying the same record ID is idempotent.
+        await PracticeAttemptStore.append(
+          '${LocalStudyIdentity.accountNamespace(accountId)}_uploaded',
+          {
+            'id': record['id'],
+            'uploadedAt': DateTime.now().toUtc().toIso8601String(),
+          },
+        );
+        final recent =
+            preferences.getStringList('$_recentUploadedPrefix$accountId') ?? [];
+        final recordId = record['id'];
+        if (recordId is String && !recent.contains(recordId)) {
+          await preferences.setStringList('$_recentUploadedPrefix$accountId', [
+            ...recent,
+            recordId,
+          ]);
         }
         await _removePending(record['id']);
         await preferences.setString(
@@ -237,12 +303,14 @@ class PracticeRecordSync {
 class PracticeRecordSyncStatus {
   const PracticeRecordSyncStatus({
     required this.pendingCount,
+    required this.uploadedCount,
     required this.isSyncing,
     required this.lastSuccessAt,
     required this.lastError,
   });
 
   final int pendingCount;
+  final int uploadedCount;
   final bool isSyncing;
   final DateTime? lastSuccessAt;
   final String? lastError;

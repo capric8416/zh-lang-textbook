@@ -10,16 +10,19 @@ class PracticeAttemptStore {
 
   static final Map<String, Future<void>> _writeTails = {};
 
-  static Future<void> append(
+  static Future<void> append(String namespace, Map<String, Object?> record) =>
+      appendAll(namespace, [record]);
+
+  static Future<void> appendAll(
     String namespace,
-    Map<String, Object?> record,
+    List<Map<String, Object?>> records,
   ) async {
     final previous = _writeTails[namespace] ?? Future<void>.value();
     final next = previous.then((_) async {
       final file = await _file(namespace);
       await file.parent.create(recursive: true);
       await file.writeAsString(
-        '${jsonEncode(record)}\n',
+        records.map((record) => '${jsonEncode(record)}\n').join(),
         mode: FileMode.append,
         flush: true,
       );

@@ -6,6 +6,7 @@ import '../services/account_api.dart';
 import '../services/practice_record_sync.dart';
 import '../widgets/class_join_code_dialog.dart';
 import '../widgets/class_learning_results_dialog.dart';
+import 'student_learning_records_page.dart';
 
 const _roleNames = {
   'super_admin': '超级管理员',
@@ -149,6 +150,23 @@ class _AccountCenterState extends State<AccountCenter> {
           ),
           const SizedBox(height: 20),
           if (student)
+            Card(
+              child: ListTile(
+                leading: const Icon(Icons.history),
+                title: const Text('我的学习记录'),
+                subtitle: const Text('查看每次作答、批改结果和同步状态'),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder: (_) => StudentLearningRecordsPage(
+                      accountId: account['id'] as String,
+                      api: _api,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          if (student)
             _PracticeRecordSyncCard(
               api: _api,
               accountId: account['id'] as String,
@@ -221,6 +239,7 @@ class _PracticeRecordSyncCard extends StatefulWidget {
 class _PracticeRecordSyncCardState extends State<_PracticeRecordSyncCard> {
   PracticeRecordSyncStatus _status = const PracticeRecordSyncStatus(
     pendingCount: 0,
+    uploadedCount: 0,
     isSyncing: false,
     lastSuccessAt: null,
     lastError: null,
@@ -272,8 +291,8 @@ class _PracticeRecordSyncCardState extends State<_PracticeRecordSyncCard> {
     final theme = Theme.of(context);
     final lastSuccess = _status.lastSuccessAt;
     final lastSuccessText = lastSuccess == null
-        ? '尚无成功同步记录'
-        : '最近同步：${lastSuccess.toLocal().toString().substring(0, 16)}';
+        ? null
+        : '最近上传成功：${lastSuccess.toLocal().toString().substring(0, 16)}';
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -303,15 +322,17 @@ class _PracticeRecordSyncCardState extends State<_PracticeRecordSyncCard> {
             const SizedBox(height: 8),
             Text(
               _status.isSyncing
-                  ? '正在上传，剩余 ${_status.pendingCount} 条'
-                  : '待同步 ${_status.pendingCount} 条 · $lastSuccessText',
+                  ? '已同步 ${_status.uploadedCount} 条 · 正在上传，剩余 ${_status.pendingCount} 条'
+                  : '已同步 ${_status.uploadedCount} 条 · 待同步 ${_status.pendingCount} 条',
             ),
+            if (lastSuccessText != null) ...[
+              const SizedBox(height: 4),
+              Text(lastSuccessText, style: theme.textTheme.bodySmall),
+            ],
             if (_status.lastError case final error?) ...[
               const SizedBox(height: 8),
               Text(error, style: TextStyle(color: theme.colorScheme.error)),
             ],
-            const SizedBox(height: 6),
-            Text('未同步记录会保留在本机，不会因队列数量自动删除。', style: theme.textTheme.bodySmall),
           ],
         ),
       ),

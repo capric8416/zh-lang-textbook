@@ -70,6 +70,59 @@ struct RecordPage {
     limit: Option<u32>,
 }
 
+#[derive(Deserialize, Default)]
+#[serde(rename_all = "camelCase")]
+struct StudentRecordPage {
+    limit: Option<u32>,
+    before_time: Option<String>,
+    after_id: Option<String>,
+}
+
+pub(super) async fn student_records(request: &Request, env: &Env) -> Result<Response> {
+    let Some(student) = current_account(request, env).await? else {
+        return error("unauthorized", 401);
+    };
+    if student.role != "student" {
+        return error("forbidden", 403);
+    }
+    let page = match request.query::<StudentRecordPage>() {
+        Ok(page) => page,
+        Err(_) => return error("invalid pagination", 400),
+    };
+    if page.before_time.is_some() != page.after_id.is_some()
+        || page
+            .before_time
+            .as_ref()
+            .is_some_and(|v| v.is_empty() || v.len() > 40)
+        || page
+            .after_id
+            .as_ref()
+            .is_some_and(|v| v.len() != 32 || !v.bytes().all(|b| b.is_ascii_hexdigit()))
+    {
+        return error("invalid cursor", 400);
+    }
+    let limit = page.limit.unwrap_or(100).clamp(1, 500);
+    let db = env.d1("DB")?;
+    let mut records = crate::db::practice_records::list_for_student_page(
+        &db,
+        &student.id,
+        limit + 1,
+        page.before_time.as_deref(),
+        page.after_id.as_deref(),
+    )
+    .await?;
+    let has_more = records.len() > limit as usize;
+    records.truncate(limit as usize);
+    let next_cursor = if has_more {
+        records
+            .last()
+            .map(|r| serde_json::json!({"beforeTime":r.occurred_at,"afterId":r.id}))
+    } else {
+        None
+    };
+    Response::from_json(&serde_json::json!({"records":records,"nextCursor":next_cursor}))
+}
+
 pub(super) async fn class_records(
     request: &Request,
     env: &Env,
