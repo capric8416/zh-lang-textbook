@@ -34,7 +34,11 @@ class PetLearningGoal {
   int get remaining => (target - current).clamp(0, target);
   double get progress => target == 0 ? 0 : (current / target).clamp(0, 1);
 
-  String get progressLabel => '$current/$target';
+  String get progressLabel => '阶段目标 $current/$target';
+
+  String get targetDescription => kind == PetLearningGoalKind.quickPractice
+      ? '完成 $target 次练习'
+      : '本课初步掌握达到 60%（$target 道题）';
 }
 
 class PetLearningGoalProjector {

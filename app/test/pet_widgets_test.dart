@@ -155,9 +155,10 @@ void main() {
     expect(find.byKey(const ValueKey('pet-avatar')), findsOneWidget);
     expect(find.text('成长值 180'), findsOneWidget);
     expect(find.text('大阶段 2'), findsOneWidget);
-    expect(find.text('豆豆 · 小狗（黄狗白面）'), findsOneWidget);
+    expect(find.text('豆豆'), findsOneWidget);
     expect(find.textContaining('小台灯'), findsOneWidget);
-    expect(find.textContaining('找春天  3/5（60%）'), findsOneWidget);
+    expect(find.text('找春天'), findsOneWidget);
+    expect(find.text('本课初步掌握 3/5（60%）'), findsOneWidget);
     await tester.tap(find.byKey(const ValueKey('pet-practice-invitation')));
     expect(invited, isTrue);
   });

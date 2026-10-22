@@ -107,13 +107,18 @@ class PetGrowthCard extends StatelessWidget {
                       ],
                       const SizedBox(height: 10),
                       Text(
-                        lesson == null
-                            ? '本册学习阶段已全部完成！'
-                            : '${lesson.chapterName}  ${lesson.masteredCount}/${lesson.totalCount}（${lesson.percentage}%）',
+                        lesson == null ? '本册学习阶段已全部完成！' : lesson.chapterName,
                       ),
+                      if (lesson != null) ...[
+                        const SizedBox(height: 3),
+                        Text(
+                          '本课初步掌握 ${lesson.masteredCount}/${lesson.totalCount}（${lesson.percentage}%）',
+                        ),
+                      ],
                       const SizedBox(height: 7),
                       LinearProgressIndicator(
                         value: progress.clamp(0, 1),
+                        semanticsLabel: '本课初步掌握',
                         minHeight: 8,
                         borderRadius: BorderRadius.circular(99),
                       ),
@@ -169,11 +174,21 @@ class PetGrowthCard extends StatelessWidget {
                                         Text(
                                           learningGoal!.isComplete
                                               ? learningGoal!.outcome
-                                              : '${learningGoal!.unitName}  ${learningGoal!.progressLabel}，还差 ${learningGoal!.remaining} 个小目标',
+                                              : learningGoal!.unitName,
+                                        ),
+                                        const SizedBox(height: 3),
+                                        Text(learningGoal!.progressLabel),
+                                        Text(
+                                          learningGoal!.targetDescription,
+                                          style: Theme.of(
+                                            context,
+                                          ).textTheme.bodySmall,
                                         ),
                                         const SizedBox(height: 6),
                                         LinearProgressIndicator(
                                           value: learningGoal!.progress,
+                                          semanticsLabel:
+                                              learningGoal!.progressLabel,
                                           minHeight: 5,
                                           borderRadius: BorderRadius.circular(
                                             99,

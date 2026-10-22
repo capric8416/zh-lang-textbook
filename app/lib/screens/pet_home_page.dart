@@ -463,14 +463,16 @@ class _PetHomePageState extends State<PetHomePage> {
                                 : _guide!.learningGoal!.actionLabel,
                           ),
                           subtitle: Text(
-                            _guide!.learningGoal!.isComplete
-                                ? _guide!.learningGoal!.outcome
-                                : '${_guide!.learningGoal!.progressLabel}，还差 ${_guide!.learningGoal!.remaining} 个小目标',
+                            '${_guide!.learningGoal!.progressLabel}\n'
+                            '${_guide!.learningGoal!.targetDescription}'
+                            '${_guide!.learningGoal!.isComplete ? '\n${_guide!.learningGoal!.outcome}' : ''}',
                           ),
                           trailing: SizedBox(
                             width: 72,
                             child: LinearProgressIndicator(
                               value: _guide!.learningGoal!.progress,
+                              semanticsLabel:
+                                  _guide!.learningGoal!.progressLabel,
                               minHeight: 7,
                               borderRadius: BorderRadius.circular(99),
                             ),
