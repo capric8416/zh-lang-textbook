@@ -7,7 +7,7 @@ import 'package:record/record.dart';
 
 import '../models/speech_assessment.dart';
 import 'numeric_pinyin.dart';
-import 'speech_native.dart';
+import 'native_inference.dart';
 
 class SpeechEngine {
   SpeechEngine._();
@@ -26,8 +26,13 @@ class SpeechEngine {
   String? _recordingPath;
   SoundHandle? _playingHandle;
   AudioSource? _playingSource;
+  String? _ttsDirectory;
+  String? _asrDirectory;
+  String? _vadDirectory;
+  int _playbackGeneration = 0;
 
   Future<void> speak({required String pinyin, required String cacheKey}) async {
+    final generation = ++_playbackGeneration;
     final numeric = toNumericPinyin(pinyin);
     if (numeric.isEmpty) throw StateError('教材没有可用于听写的拼音');
     final syllableCount = numeric.split(RegExp(r'\s+')).length;
@@ -37,23 +42,28 @@ class SpeechEngine {
     final output = File(
       '${cache.path}/piper-xiao-ya-v4-${_stableHash('$cacheKey|$numeric')}.wav',
     );
-    if (!await output.exists()) {
-      // Native inference is synchronous. Yield first so Flutter can paint the
-      // loading state before Piper starts running.
-      await Future<void>.delayed(Duration.zero);
-      SpeechNative.instance.synthesizeWav(
-        numericPinyin: numeric,
-        outputPath: output.path,
+    if (!await output.exists() || await output.length() <= 44) {
+      await NativeInference.instance.synthesize(
+        model: '$_ttsDirectory/model.onnx',
+        config: '$_ttsDirectory/model.onnx.json',
+        pinyin: numeric,
+        output: output.path,
         lengthScale: lengthScale,
         repeat: syllableCount <= 4 ? 2 : 1,
       );
     }
+    if (generation != _playbackGeneration) return;
     await _initializeAudio();
+    if (generation != _playbackGeneration) return;
     final previous = _playingHandle;
     final previousSource = _playingSource;
     if (previous != null) await _player.stop(previous);
     if (previousSource != null) _player.disposeSource(previousSource);
     final source = await _player.loadFile(output.path, autoDispose: false);
+    if (generation != _playbackGeneration) {
+      _player.disposeSource(source);
+      return;
+    }
     final handle = _player.play(source);
     if (handle.isError) {
       _player.disposeSource(source);
@@ -97,8 +107,11 @@ class SpeechEngine {
     if (path == null) throw StateError('没有可检查的录音');
     try {
       await _initializeAsr();
-      await Future<void>.delayed(Duration.zero);
-      final text = SpeechNative.instance.recognizeWav(path).trim();
+      final text = (await NativeInference.instance.recognizeWav(
+        _asrDirectory!,
+        _vadDirectory!,
+        path,
+      )).trim();
       if (text.isEmpty) throw StateError('没有识别到朗读内容');
       return SpeechAssessment.compare(
         expectedText: expectedText,
@@ -121,7 +134,18 @@ class SpeechEngine {
     bufferSize: 4096,
   );
 
-  Future<void> _initializeTts() => _ttsInitializing ??= _loadTts();
+  Future<void> _initializeTts() =>
+      _ttsInitializing ??= _loadTts().catchError((Object error) {
+        _ttsInitializing = null;
+        throw error;
+      });
+
+  Future<void> stopSpeaking() async {
+    _playbackGeneration++;
+    final handle = _playingHandle;
+    _playingHandle = null;
+    if (handle != null) await _player.stop(handle);
+  }
 
   Future<Directory> _audioCacheDirectory() async {
     final temporary = await getTemporaryDirectory();
@@ -135,22 +159,29 @@ class SpeechEngine {
       _ttsAsset,
       'piper-zh_CN-xiao_ya-medium',
     );
-    SpeechNative.instance.initializeTts(
-      model: '${directory.path}/model.onnx',
-      config: '${directory.path}/model.onnx.json',
+    _ttsDirectory = directory.path;
+    await NativeInference.instance.initializeTts(
+      '${directory.path}/model.onnx',
+      '${directory.path}/model.onnx.json',
     );
   }
 
-  Future<void> _initializeAsr() => _asrInitializing ??= _loadAsr();
+  Future<void> _initializeAsr() =>
+      _asrInitializing ??= _loadAsr().catchError((Object error) {
+        _asrInitializing = null;
+        throw error;
+      });
 
   Future<void> _loadAsr() async {
     final models = await Future.wait([
       _extractTree(_asrAsset, 'funasr-paraformer-zh'),
       _extractTree(_vadAsset, 'funasr-fsmn-vad'),
     ]);
-    SpeechNative.instance.initializeAsr(
-      modelDirectory: models[0].path,
-      vadDirectory: models[1].path,
+    _asrDirectory = models[0].path;
+    _vadDirectory = models[1].path;
+    await NativeInference.instance.initializeAsr(
+      models[0].path,
+      models[1].path,
     );
   }
 

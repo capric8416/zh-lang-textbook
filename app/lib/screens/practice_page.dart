@@ -102,6 +102,7 @@ class _PracticePageState extends State<PracticePage> {
 
   @override
   void dispose() {
+    unawaited(SpeechEngine.instance.stopSpeaking());
     if (_recording) SpeechEngine.instance.cancelRecording();
     _thinkingTimer?.cancel();
     _reactionTimer?.cancel();
@@ -297,6 +298,7 @@ class _PracticePageState extends State<PracticePage> {
     setState(() => _grading = true);
     try {
       final images = await writingPad.renderForOcr();
+      if (!mounted) return;
       final recognized = await OcrEngine.instance.recognizeAll(images);
       final expected = _direction != PracticeDirection.writePinyin
           ? _hanziSlots(question.answer)
@@ -382,6 +384,10 @@ class _PracticePageState extends State<PracticePage> {
     if (!_recording) {
       try {
         await SpeechEngine.instance.startRecording();
+        if (!mounted) {
+          await SpeechEngine.instance.cancelRecording();
+          return;
+        }
         if (mounted) setState(() => _recording = true);
       } catch (error, stackTrace) {
         debugPrintStack(label: '朗读录音失败：$error', stackTrace: stackTrace);
