@@ -65,6 +65,8 @@ class PetGrowthEngine {
     for (final unit in mastery.units) {
       for (final lesson in unit.lessons) {
         for (final questionId in lesson.masteredQuestionIds) {
+          // Growth points are a one-time reward for reaching initial mastery;
+          // later review mistakes change mastery status, not already-earned points.
           final key = 'question:$textbookKey:$questionId';
           if (claimed.add(key)) {
             points += questionPoints;

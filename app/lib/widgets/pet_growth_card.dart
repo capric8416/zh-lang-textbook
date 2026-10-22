@@ -117,6 +117,11 @@ class PetGrowthCard extends StatelessWidget {
                         minHeight: 8,
                         borderRadius: BorderRadius.circular(99),
                       ),
+                      const SizedBox(height: 5),
+                      Text(
+                        '答对一次算初步掌握；同一练习方向间隔 24 小时再答对，才算稳定掌握。答错后需重新巩固。',
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
                       if (goal != null) ...[
                         const SizedBox(height: 10),
                         Row(

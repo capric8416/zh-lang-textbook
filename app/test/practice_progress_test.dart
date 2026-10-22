@@ -6,8 +6,11 @@ import 'package:zh_textbook/services/practice_progress.dart';
 void main() {
   setUp(() => SharedPreferences.setMockInitialValues({}));
 
+  Future<PracticeProgressStore> openStore(String textbookKey) =>
+      PracticeProgressStore.open(textbookKey, namespace: 'test-account');
+
   test('每道题记录对错次数和最近时间', () async {
-    final store = await PracticeProgressStore.open('grade2b');
+    final store = await openStore('grade2b');
 
     await store.record('question-1:writeHanzi', correct: true);
     expect(store.isBlocked('question-1:writeHanzi', DateTime.now()), isTrue);
@@ -21,7 +24,7 @@ void main() {
   });
 
   test('四种练习方向独立记录', () async {
-    final store = await PracticeProgressStore.open('grade2b');
+    final store = await openStore('grade2b');
     const question = PracticeQuestion(
       id: 'question-1',
       kind: '字',
@@ -64,29 +67,94 @@ void main() {
   });
 
   test('不同教材的练习进度不混用', () async {
-    final first = await PracticeProgressStore.open('grade2a');
+    final first = await openStore('grade2a');
     await first.record('question-1:writeHanzi', correct: true);
 
-    final second = await PracticeProgressStore.open('grade2b');
+    final second = await openStore('grade2b');
     expect(second.progress.completedCount, 0);
   });
 
-  test('错题在正确次数严格超过错误次数三倍后移出专项', () async {
-    final store = await PracticeProgressStore.open('grade2b');
+  test('曾经答错的题需跨至少24小时再次答对才移出专项', () async {
+    final store = await openStore('grade2b');
     const attemptId = 'question-1:writeHanzi';
+    final firstAttempt = DateTime.utc(2026, 10, 20, 8);
 
-    await store.record(attemptId, correct: false);
+    await store.recordAt(attemptId, correct: false, occurredAt: firstAttempt);
     expect(store.progress.forQuestion(attemptId).isWrong, isTrue);
 
-    for (var count = 0; count < 3; count++) {
-      await store.record(attemptId, correct: true);
-    }
+    await store.recordAt(
+      attemptId,
+      correct: true,
+      occurredAt: firstAttempt.add(const Duration(minutes: 1)),
+    );
     expect(store.progress.forQuestion(attemptId).isWrong, isTrue);
     expect(store.progress.wrongCount, 1);
 
-    await store.record(attemptId, correct: true);
+    await store.recordAt(
+      attemptId,
+      correct: true,
+      occurredAt: firstAttempt.add(const Duration(hours: 25)),
+    );
     expect(store.progress.forQuestion(attemptId).isWrong, isFalse);
     expect(store.progress.wrongCount, 0);
+  });
+
+  test('练习方向按连续正确和24小时巩固计算掌握阶段', () async {
+    final store = await openStore('grade2b');
+    const attemptId = 'question-1:writeHanzi';
+    final firstAttempt = DateTime.utc(2026, 10, 20, 8);
+
+    await store.recordAt(attemptId, correct: true, occurredAt: firstAttempt);
+    expect(
+      store.progress.forQuestion(attemptId).masteryStage,
+      QuestionMasteryStage.initial,
+    );
+
+    await store.recordAt(
+      attemptId,
+      correct: true,
+      occurredAt: firstAttempt.add(const Duration(hours: 23, minutes: 59)),
+    );
+    expect(
+      store.progress.forQuestion(attemptId).masteryStage,
+      QuestionMasteryStage.initial,
+    );
+
+    await store.recordAt(
+      attemptId,
+      correct: true,
+      occurredAt: firstAttempt.add(const Duration(hours: 24)),
+    );
+    expect(
+      store.progress.forQuestion(attemptId).masteryStage,
+      QuestionMasteryStage.stable,
+    );
+    final reopened = await openStore('grade2b');
+    expect(
+      reopened.progress.forQuestion(attemptId).masteryStage,
+      QuestionMasteryStage.stable,
+    );
+
+    await store.recordAt(
+      attemptId,
+      correct: false,
+      occurredAt: firstAttempt.add(const Duration(hours: 25)),
+    );
+    expect(
+      store.progress.forQuestion(attemptId).masteryStage,
+      QuestionMasteryStage.needsReinforcement,
+    );
+    expect(store.progress.forQuestion(attemptId).isWrong, isTrue);
+
+    await store.recordAt(
+      attemptId,
+      correct: true,
+      occurredAt: firstAttempt.add(const Duration(hours: 26)),
+    );
+    expect(
+      store.progress.forQuestion(attemptId).masteryStage,
+      QuestionMasteryStage.initial,
+    );
   });
 
   test('错题数只统计当前题库支持的题目和练习方向', () {

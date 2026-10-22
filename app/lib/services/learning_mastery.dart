@@ -86,13 +86,13 @@ TextbookMastery calculateTextbookMastery({
       for (final question in uniqueQuestions) {
         final isMastered = PracticeDirection.values
             .where(question.supportsDirection)
-            .any(
-              (direction) =>
-                  progress
-                      .forQuestion(question.attemptId(direction))
-                      .correctCount >
-                  0,
-            );
+            .any((direction) {
+              final stage = progress
+                  .forQuestion(question.attemptId(direction))
+                  .masteryStage;
+              return stage == QuestionMasteryStage.initial ||
+                  stage == QuestionMasteryStage.stable;
+            });
         if (isMastered) mastered.add(question.id);
       }
       lessons.add(

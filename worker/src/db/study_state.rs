@@ -10,6 +10,7 @@ pub(crate) struct PracticeProgressRow {
     pub(crate) wrong_count: i64,
     pub(crate) last_correct_at: Option<String>,
     pub(crate) last_wrong_at: Option<String>,
+    pub(crate) correct_streak_started_at: Option<String>,
 }
 
 #[derive(Deserialize)]
@@ -22,7 +23,7 @@ pub(crate) async fn progress(
     db: &D1Database,
     student_id: &str,
 ) -> Result<Vec<PracticeProgressRow>> {
-    db.prepare("SELECT textbook_key,question_key,correct_count,wrong_count,last_correct_at,last_wrong_at FROM practice_progress WHERE student_id=? ORDER BY textbook_key,question_key")
+    db.prepare("SELECT textbook_key,question_key,correct_count,wrong_count,last_correct_at,last_wrong_at,correct_streak_started_at FROM practice_progress WHERE student_id=? ORDER BY textbook_key,question_key")
         .bind(&[student_id.into()])?
         .all()
         .await?

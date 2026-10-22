@@ -11,6 +11,7 @@ class QuestionProgress {
     this.wrongCount = 0,
     this.lastCorrectAt,
     this.lastWrongAt,
+    this.correctStreakStartedAt,
     this.blockedUntil,
     this.skipUntil,
     this.skipRemaining = 0,
@@ -24,6 +25,7 @@ class QuestionProgress {
         wrongCount: json['wrong_count'] is int ? json['wrong_count'] as int : 0,
         lastCorrectAt: _date(json['last_correct_at']),
         lastWrongAt: _date(json['last_wrong_at']),
+        correctStreakStartedAt: _date(json['correct_streak_started_at']),
         blockedUntil: _date(json['blocked_until']),
         skipUntil: _date(json['skip_until']),
         skipRemaining: json['skip_remaining'] is int
@@ -35,15 +37,39 @@ class QuestionProgress {
   final int wrongCount;
   final DateTime? lastCorrectAt;
   final DateTime? lastWrongAt;
+
+  /// The first correct attempt after the latest wrong attempt (or first-ever
+  /// correct attempt), used to determine spaced, stable mastery.
+  final DateTime? correctStreakStartedAt;
   final DateTime? blockedUntil;
   final DateTime? skipUntil;
   final int skipRemaining;
 
   int get totalCount => correctCount + wrongCount;
 
-  /// A mistaken attempt remains in focused practice until it has been
-  /// answered correctly more than three times for every wrong answer.
-  bool get isWrong => wrongCount > 0 && correctCount <= wrongCount * 3;
+  QuestionMasteryStage get masteryStage {
+    if (totalCount == 0) return QuestionMasteryStage.notPracticed;
+    final latestWrong = lastWrongAt;
+    final latestCorrect = lastCorrectAt;
+    if (latestWrong != null &&
+        (latestCorrect == null || !latestWrong.isBefore(latestCorrect))) {
+      return QuestionMasteryStage.needsReinforcement;
+    }
+    if (correctCount == 0 || latestCorrect == null) {
+      return QuestionMasteryStage.needsReinforcement;
+    }
+    final streakStart = correctStreakStartedAt;
+    if (streakStart != null &&
+        latestCorrect.difference(streakStart) >= const Duration(hours: 24)) {
+      return QuestionMasteryStage.stable;
+    }
+    return QuestionMasteryStage.initial;
+  }
+
+  /// Previously missed questions stay in focused practice until they reach
+  /// stable mastery; a same-day correct answer is only initial mastery.
+  bool get isWrong =>
+      wrongCount > 0 && masteryStage != QuestionMasteryStage.stable;
 
   Map<String, dynamic> toJson() => {
     'correct_count': correctCount,
@@ -51,6 +77,8 @@ class QuestionProgress {
     if (lastCorrectAt != null)
       'last_correct_at': lastCorrectAt!.toIso8601String(),
     if (lastWrongAt != null) 'last_wrong_at': lastWrongAt!.toIso8601String(),
+    if (correctStreakStartedAt != null)
+      'correct_streak_started_at': correctStreakStartedAt!.toIso8601String(),
     if (blockedUntil != null) 'blocked_until': blockedUntil!.toIso8601String(),
     if (skipUntil != null) 'skip_until': skipUntil!.toIso8601String(),
     if (skipRemaining > 0) 'skip_remaining': skipRemaining,
@@ -61,11 +89,14 @@ class QuestionProgress {
     wrongCount: wrongCount,
     lastCorrectAt: lastCorrectAt,
     lastWrongAt: lastWrongAt,
+    correctStreakStartedAt: correctStreakStartedAt,
     blockedUntil: blockedUntil,
     skipUntil: skipUntil,
     skipRemaining: skipRemaining ?? this.skipRemaining,
   );
 }
+
+enum QuestionMasteryStage { notPracticed, needsReinforcement, initial, stable }
 
 class PracticeProgress {
   const PracticeProgress(this.questions);
@@ -127,6 +158,7 @@ class PracticeProgressStore {
         wrongCount: row['wrongCount'] is int ? row['wrongCount'] as int : 0,
         lastCorrectAt: _date(row['lastCorrectAt']),
         lastWrongAt: _date(row['lastWrongAt']),
+        correctStreakStartedAt: _date(row['correctStreakStartedAt']),
       );
     }
     for (final entry in byTextbook.entries) {
@@ -251,22 +283,36 @@ class PracticeProgressStore {
 QuestionProgress _mergeQuestionProgress(
   QuestionProgress local,
   QuestionProgress remote,
-) => _progressFromCounts(
-  correctCount: local.correctCount > remote.correctCount
-      ? local.correctCount
-      : remote.correctCount,
-  wrongCount: local.wrongCount > remote.wrongCount
-      ? local.wrongCount
-      : remote.wrongCount,
-  lastCorrectAt: _latest(local.lastCorrectAt, remote.lastCorrectAt),
-  lastWrongAt: _latest(local.lastWrongAt, remote.lastWrongAt),
-);
+) {
+  final lastCorrectAt = _latest(local.lastCorrectAt, remote.lastCorrectAt);
+  final lastWrongAt = _latest(local.lastWrongAt, remote.lastWrongAt);
+  final streakCandidates =
+      [
+          local.correctStreakStartedAt,
+          remote.correctStreakStartedAt,
+        ].whereType<DateTime>().where((date) {
+          return lastWrongAt == null || date.isAfter(lastWrongAt);
+        }).toList()
+        ..sort();
+  return _progressFromCounts(
+    correctCount: local.correctCount > remote.correctCount
+        ? local.correctCount
+        : remote.correctCount,
+    wrongCount: local.wrongCount > remote.wrongCount
+        ? local.wrongCount
+        : remote.wrongCount,
+    lastCorrectAt: lastCorrectAt,
+    lastWrongAt: lastWrongAt,
+    correctStreakStartedAt: streakCandidates.firstOrNull,
+  );
+}
 
 QuestionProgress _progressFromCounts({
   required int correctCount,
   required int wrongCount,
   required DateTime? lastCorrectAt,
   required DateTime? lastWrongAt,
+  DateTime? correctStreakStartedAt,
 }) {
   final occurredAt = _latest(lastCorrectAt, lastWrongAt) ?? DateTime.now();
   final days = _dayDifference(lastCorrectAt, lastWrongAt);
@@ -277,6 +323,7 @@ QuestionProgress _progressFromCounts({
       wrongCount: wrongCount,
       lastCorrectAt: lastCorrectAt,
       lastWrongAt: lastWrongAt,
+      correctStreakStartedAt: correctStreakStartedAt,
       blockedUntil: occurredAt.add(Duration(days: days.abs() + times.abs())),
     );
   }
@@ -285,6 +332,7 @@ QuestionProgress _progressFromCounts({
     wrongCount: wrongCount,
     lastCorrectAt: lastCorrectAt,
     lastWrongAt: lastWrongAt,
+    correctStreakStartedAt: correctStreakStartedAt,
     skipUntil: occurredAt.add(Duration(days: days.abs())),
     skipRemaining: times.abs(),
   );
@@ -305,6 +353,13 @@ QuestionProgress _afterAttempt(
   final updatedWrong = previous.wrongCount + (correct ? 0 : 1);
   final lastCorrect = correct ? occurredAt : previous.lastCorrectAt;
   final lastWrong = correct ? previous.lastWrongAt : occurredAt;
+  final correctStreakStartedAt = _correctStreakStart(
+    previous,
+    correct: correct,
+    occurredAt: occurredAt,
+    lastCorrectAt: lastCorrect,
+    lastWrongAt: lastWrong,
+  );
   final days = _dayDifference(lastCorrect, lastWrong);
   final times = updatedCorrect - updatedWrong;
   if (days > 0 || times < 0) {
@@ -313,6 +368,7 @@ QuestionProgress _afterAttempt(
       wrongCount: updatedWrong,
       lastCorrectAt: lastCorrect,
       lastWrongAt: lastWrong,
+      correctStreakStartedAt: correctStreakStartedAt,
       blockedUntil: occurredAt.add(Duration(days: days.abs() + times.abs())),
     );
   }
@@ -321,9 +377,35 @@ QuestionProgress _afterAttempt(
     wrongCount: updatedWrong,
     lastCorrectAt: lastCorrect,
     lastWrongAt: lastWrong,
+    correctStreakStartedAt: correctStreakStartedAt,
     skipUntil: occurredAt.add(Duration(days: days.abs())),
     skipRemaining: times.abs(),
   );
+}
+
+DateTime? _correctStreakStart(
+  QuestionProgress previous, {
+  required bool correct,
+  required DateTime occurredAt,
+  required DateTime? lastCorrectAt,
+  required DateTime? lastWrongAt,
+}) {
+  if (lastCorrectAt == null ||
+      (lastWrongAt != null && !lastWrongAt.isBefore(lastCorrectAt))) {
+    return null;
+  }
+  if (!correct) {
+    // An older, out-of-order wrong record must not invalidate a newer success.
+    return previous.correctStreakStartedAt;
+  }
+  if (previous.lastCorrectAt == null ||
+      (previous.lastWrongAt != null &&
+          !previous.lastWrongAt!.isBefore(previous.lastCorrectAt!))) {
+    return occurredAt;
+  }
+  // Older local/remote formats only stored the latest success. It is safe to
+  // use that success as the start when a new correct answer arrives.
+  return previous.correctStreakStartedAt ?? previous.lastCorrectAt;
 }
 
 int _dayDifference(DateTime? correct, DateTime? wrong) {

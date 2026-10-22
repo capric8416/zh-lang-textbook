@@ -32,7 +32,10 @@ void main() {
     secondChapterId = firstUnit.chapters[1].id;
   });
 
-  test('掌握度按唯一题目计算且不会因后续错误倒退', () {
+  Future<PetGrowthStore> openPetStore() =>
+      PetGrowthStore.open(namespace: 'test-account');
+
+  test('任一练习方向达到初步掌握即计入课文掌握题数', () {
     final questions = [
       for (var index = 0; index < 10; index++)
         _question('first-$index', firstChapterId),
@@ -41,9 +44,10 @@ void main() {
     final progress = PracticeProgress({
       for (var index = 0; index < 6; index++)
         questions[index].attemptId(PracticeDirection.writeHanzi):
-            const QuestionProgress(correctCount: 1, wrongCount: 2),
-      questions[0].attemptId(PracticeDirection.writePinyin):
-          const QuestionProgress(correctCount: 4),
+            _initialProgress(correctCount: 1, wrongCount: 2),
+      questions[0].attemptId(PracticeDirection.writePinyin): _initialProgress(
+        correctCount: 4,
+      ),
     });
 
     final mastery = calculateTextbookMastery(
@@ -79,7 +83,7 @@ void main() {
     final progress = PracticeProgress({
       for (var index = 0; index < 3; index++)
         questions[index].attemptId(PracticeDirection.writeHanzi):
-            const QuestionProgress(correctCount: 1),
+            _initialProgress(),
     });
     final mastery = calculateTextbookMastery(
       textbook: textbook,
@@ -102,8 +106,7 @@ void main() {
     ];
     final progress = PracticeProgress({
       for (final question in questions)
-        question.attemptId(PracticeDirection.writeHanzi):
-            const QuestionProgress(correctCount: 1),
+        question.attemptId(PracticeDirection.writeHanzi): _initialProgress(),
     });
     final first = PetGrowthEngine.synchronize(
       profile: const PetProfile(),
@@ -149,9 +152,9 @@ void main() {
     final questions = [_question('first-0', firstChapterId)];
     final progress = PracticeProgress({
       questions.first.attemptId(PracticeDirection.writeHanzi):
-          const QuestionProgress(correctCount: 1),
+          _initialProgress(),
     });
-    final store = await PetGrowthStore.open();
+    final store = await openPetStore();
     final result = await store.synchronize(
       textbookKey: 'grade2b',
       textbook: textbook,
@@ -164,7 +167,7 @@ void main() {
     expect(result.profile.growthPoints, 210);
     expect(result.profile.majorStage, 1);
 
-    final reopened = await PetGrowthStore.open();
+    final reopened = await openPetStore();
     expect(reopened.profile.species, PetSpecies.dog);
     expect(reopened.profile.breed, 'dog');
     expect(reopened.profile.growthPoints, 210);
@@ -226,7 +229,7 @@ void main() {
 
   test('爪爪星球可直接选择小猫并持久化物种', () async {
     SharedPreferences.setMockInitialValues({
-      'pet_growth_profile': jsonEncode({
+      'pet_growth_profile_test-account': jsonEncode({
         'version': 2,
         'profile': const PetProfile(
           majorStage: 1,
@@ -235,7 +238,7 @@ void main() {
         ).toJson(),
       }),
     });
-    final store = await PetGrowthStore.open();
+    final store = await openPetStore();
     expect(await store.selectBreed('corgi'), isFalse);
     expect(await store.selectBreed('cat'), isTrue);
     expect(await store.selectDecoration('blue-collar'), isTrue);
@@ -243,7 +246,7 @@ void main() {
     expect(await store.selectRoom('study-room'), isTrue);
     expect(await store.rename('  小 春  '), isTrue);
     expect(await store.rename('   '), isFalse);
-    final reopened = await PetGrowthStore.open();
+    final reopened = await openPetStore();
     expect(reopened.profile.breed, 'cat');
     expect(reopened.profile.species, PetSpecies.cat);
     expect(reopened.profile.selectedDecoration, 'blue-collar');
@@ -349,12 +352,12 @@ void main() {
     );
 
     SharedPreferences.setMockInitialValues({
-      'pet_growth_profile': jsonEncode({
+      'pet_growth_profile_test-account': jsonEncode({
         'version': 5,
         'profile': first.profile.toJson(),
       }),
     });
-    final store = await PetGrowthStore.open();
+    final store = await openPetStore();
     expect(await store.activateFurniture('study-desk', 'fillBookcase'), isTrue);
     expect(
       store.profile.furnitureState('study-desk'),
@@ -369,7 +372,7 @@ void main() {
   });
 
   test('回访只将相邻日识别为次日且忽略时钟回拨', () async {
-    final store = await PetGrowthStore.open();
+    final store = await openPetStore();
     expect(
       await store.recordVisit(DateTime(2026, 9, 17, 8)),
       PetVisitTransition.neutral,
@@ -416,3 +419,14 @@ PracticeQuestion _question(String id, String chapterId) => PracticeQuestion(
   source: '测试',
   chapterId: chapterId,
 );
+
+QuestionProgress _initialProgress({int correctCount = 1, int wrongCount = 0}) {
+  final correctAt = DateTime.utc(2026, 10, 21);
+  return QuestionProgress(
+    correctCount: correctCount,
+    wrongCount: wrongCount,
+    lastCorrectAt: correctAt,
+    lastWrongAt: wrongCount > 0 ? DateTime.utc(2026, 10, 20) : null,
+    correctStreakStartedAt: correctAt,
+  );
+}

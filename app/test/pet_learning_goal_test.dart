@@ -38,8 +38,11 @@ void main() {
       ),
     ]);
     final progress = PracticeProgress({
-      questions.first.attemptId(PracticeDirection.writeHanzi):
-          const QuestionProgress(correctCount: 1),
+      questions.first.attemptId(PracticeDirection.writeHanzi): QuestionProgress(
+        correctCount: 1,
+        lastCorrectAt: DateTime.utc(2026, 10, 21),
+        correctStreakStartedAt: DateTime.utc(2026, 10, 21),
+      ),
     });
     final goal = PetLearningGoalProjector.primary(
       mastery: mastery,
