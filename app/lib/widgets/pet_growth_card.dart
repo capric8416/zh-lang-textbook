@@ -56,7 +56,7 @@ class PetGrowthCard extends StatelessWidget {
                         children: [
                           Expanded(
                             child: Text(
-                              '${profile.name} · ${petBreed(profile.breed).name}',
+                              profile.name,
                               style: Theme.of(context).textTheme.titleMedium
                                   ?.copyWith(fontWeight: FontWeight.w800),
                             ),

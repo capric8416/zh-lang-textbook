@@ -76,10 +76,15 @@ class PracticeRecordSync {
     final ids = recordIds.whereType<String>().toSet();
     final recent =
         preferences.getStringList('$_recentUploadedPrefix$accountId') ?? [];
+    final remaining = recent.where((id) => !ids.contains(id)).toList();
+    if (preferences.getInt('$_remoteCountPrefix$accountId') == ids.length &&
+        remaining.length == recent.length) {
+      return;
+    }
     await preferences.setInt('$_remoteCountPrefix$accountId', ids.length);
     await preferences.setStringList(
       '$_recentUploadedPrefix$accountId',
-      recent.where((id) => !ids.contains(id)).toList(),
+      remaining,
     );
     _notifyChanged();
   }

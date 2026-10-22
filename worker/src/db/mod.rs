@@ -5,3 +5,5 @@ pub(crate) mod class_memberships;
 pub(crate) mod classes;
 pub(crate) mod practice_records;
 pub(crate) mod sessions;
+pub(crate) mod study_state;
+pub(crate) mod textbook_preferences;

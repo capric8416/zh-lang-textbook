@@ -24,6 +24,14 @@ pub async fn route(
         (Method::Post, "/api/v1/auth/logout") => auth::logout(request, env).await,
         (Method::Get, "/api/v1/me") => me::get(request, env).await,
         (Method::Patch, "/api/v1/me") => me::update_profile(request, env).await,
+        (Method::Get, "/api/v1/me/study-state") => me::study_state(request, env).await,
+        (Method::Get, "/api/v1/me/textbook-preference") => {
+            me::textbook_preference(request, env).await
+        }
+        (Method::Put, "/api/v1/me/textbook-preference") => {
+            me::save_textbook_preference(request, env).await
+        }
+        (Method::Put, "/api/v1/me/pet-profile") => me::save_pet_profile(request, env).await,
         (Method::Post, "/api/v1/me/password") => me::change_password(request, env).await,
         (Method::Delete, "/api/v1/me/class") => me::leave_class(request, env).await,
         (Method::Post, "/api/v1/practice/records") => practice::record(request, env).await,

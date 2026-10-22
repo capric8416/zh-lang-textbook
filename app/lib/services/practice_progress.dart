@@ -102,6 +102,47 @@ class PracticeProgressStore {
 
   PracticeProgress get progress => _progress;
 
+  static Future<void> restoreRemote(
+    String accountId,
+    List<Map<String, dynamic>> rows,
+  ) async {
+    final namespace = LocalStudyIdentity.accountNamespace(accountId);
+    final byTextbook = <String, Map<String, QuestionProgress>>{};
+    for (final row in rows) {
+      final textbookKey = row['textbookKey'];
+      final questionKey = row['questionKey'];
+      if (textbookKey is! String ||
+          textbookKey.isEmpty ||
+          questionKey is! String ||
+          questionKey.isEmpty) {
+        continue;
+      }
+      byTextbook.putIfAbsent(
+        textbookKey,
+        () => {},
+      )[questionKey] = _progressFromCounts(
+        correctCount: row['correctCount'] is int
+            ? row['correctCount'] as int
+            : 0,
+        wrongCount: row['wrongCount'] is int ? row['wrongCount'] as int : 0,
+        lastCorrectAt: _date(row['lastCorrectAt']),
+        lastWrongAt: _date(row['lastWrongAt']),
+      );
+    }
+    for (final entry in byTextbook.entries) {
+      final store = await open(entry.key, namespace: namespace);
+      final merged = {...store.progress.questions};
+      for (final remote in entry.value.entries) {
+        merged[remote.key] = _mergeQuestionProgress(
+          merged[remote.key] ?? const QuestionProgress(),
+          remote.value,
+        );
+      }
+      store._progress = PracticeProgress(merged);
+      await store._save();
+    }
+  }
+
   static Future<PracticeProgressStore> open(
     String textbookKey, {
     String? namespace,
@@ -205,6 +246,54 @@ class PracticeProgressStore {
       },
     }),
   );
+}
+
+QuestionProgress _mergeQuestionProgress(
+  QuestionProgress local,
+  QuestionProgress remote,
+) => _progressFromCounts(
+  correctCount: local.correctCount > remote.correctCount
+      ? local.correctCount
+      : remote.correctCount,
+  wrongCount: local.wrongCount > remote.wrongCount
+      ? local.wrongCount
+      : remote.wrongCount,
+  lastCorrectAt: _latest(local.lastCorrectAt, remote.lastCorrectAt),
+  lastWrongAt: _latest(local.lastWrongAt, remote.lastWrongAt),
+);
+
+QuestionProgress _progressFromCounts({
+  required int correctCount,
+  required int wrongCount,
+  required DateTime? lastCorrectAt,
+  required DateTime? lastWrongAt,
+}) {
+  final occurredAt = _latest(lastCorrectAt, lastWrongAt) ?? DateTime.now();
+  final days = _dayDifference(lastCorrectAt, lastWrongAt);
+  final times = correctCount - wrongCount;
+  if (days > 0 || times < 0) {
+    return QuestionProgress(
+      correctCount: correctCount,
+      wrongCount: wrongCount,
+      lastCorrectAt: lastCorrectAt,
+      lastWrongAt: lastWrongAt,
+      blockedUntil: occurredAt.add(Duration(days: days.abs() + times.abs())),
+    );
+  }
+  return QuestionProgress(
+    correctCount: correctCount,
+    wrongCount: wrongCount,
+    lastCorrectAt: lastCorrectAt,
+    lastWrongAt: lastWrongAt,
+    skipUntil: occurredAt.add(Duration(days: days.abs())),
+    skipRemaining: times.abs(),
+  );
+}
+
+DateTime? _latest(DateTime? first, DateTime? second) {
+  if (first == null) return second;
+  if (second == null) return first;
+  return first.isAfter(second) ? first : second;
 }
 
 QuestionProgress _afterAttempt(

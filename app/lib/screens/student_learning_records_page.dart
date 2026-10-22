@@ -50,6 +50,9 @@ class _StudentLearningRecordsPageState
   }
 
   void _scheduleRefresh() {
+    // Loading remote records itself updates sync status. Do not schedule a
+    // second remote load in response to that notification.
+    if (_refreshing || !mounted) return;
     _refreshTimer?.cancel();
     _refreshTimer = Timer(const Duration(milliseconds: 300), _load);
   }

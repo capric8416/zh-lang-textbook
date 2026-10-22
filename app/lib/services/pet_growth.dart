@@ -8,6 +8,7 @@ import '../models/textbook.dart';
 import 'learning_mastery.dart';
 import 'local_study_identity.dart';
 import 'practice_progress.dart';
+import 'study_state_changes.dart';
 
 class PetGrowthSyncResult {
   const PetGrowthSyncResult({
@@ -168,14 +169,27 @@ class PetGrowthEngine {
 }
 
 class PetGrowthStore {
-  PetGrowthStore._(this._preferences, this._key, this._profile);
+  PetGrowthStore._(
+    this._preferences,
+    this._key,
+    this._profile,
+    this._syncRevision,
+    this._dirty,
+    this._localRevision,
+  );
 
   static const _keyPrefix = 'pet_growth_profile_';
   final SharedPreferences _preferences;
   final String _key;
   PetProfile _profile;
+  int _syncRevision;
+  bool _dirty;
+  int _localRevision;
 
   PetProfile get profile => _profile;
+  int get syncRevision => _syncRevision;
+  bool get dirty => _dirty;
+  int get localRevision => _localRevision;
 
   Future<bool> selectBreed(String id) async {
     if (!_profile.unlockedBreeds.contains(id)) return false;
@@ -241,10 +255,49 @@ class PetGrowthStore {
     return _save();
   }
 
-  Future<bool> _save() async => _preferences.setString(
+  Future<bool> _save() async {
+    _dirty = true;
+    _localRevision++;
+    final saved = await _saveContainer();
+    if (saved) StudyStateChanges.petProfileChanged();
+    return saved;
+  }
+
+  Future<bool> _saveContainer() => _preferences.setString(
     _key,
-    jsonEncode({'version': 5, 'profile': _profile.toJson()}),
+    jsonEncode({
+      'version': 6,
+      'profile': _profile.toJson(),
+      'sync_revision': _syncRevision,
+      'dirty': _dirty,
+      'local_revision': _localRevision,
+    }),
   );
+
+  Future<bool> acceptRemote(
+    PetProfile profile,
+    int revision, {
+    required int expectedLocalRevision,
+  }) async {
+    final currentRaw = _preferences.getString(_key);
+    if (currentRaw != null) {
+      try {
+        final current = jsonDecode(currentRaw);
+        if (current is Map &&
+            current['local_revision'] is int &&
+            current['local_revision'] != expectedLocalRevision) {
+          return false;
+        }
+      } catch (_) {
+        return false;
+      }
+    }
+    _profile = profile;
+    _syncRevision = revision;
+    _dirty = false;
+    await _saveContainer();
+    return true;
+  }
 
   static String _localDate(DateTime value) {
     final local = value.toLocal();
@@ -269,12 +322,19 @@ class PetGrowthStore {
                 ? (decoded['profile'] as Map).cast<String, dynamic>()
                 : decoded,
           ),
+          decoded['sync_revision'] is int ? decoded['sync_revision'] as int : 0,
+          decoded['dirty'] is bool
+              ? decoded['dirty'] as bool
+              : !decoded.containsKey('sync_revision'),
+          decoded['local_revision'] is int
+              ? decoded['local_revision'] as int
+              : 0,
         );
       }
     } on FormatException {
       // A malformed optional pet profile should not block learning.
     }
-    return PetGrowthStore._(preferences, key, const PetProfile());
+    return PetGrowthStore._(preferences, key, const PetProfile(), 0, false, 0);
   }
 
   Future<PetGrowthSyncResult> synchronize({

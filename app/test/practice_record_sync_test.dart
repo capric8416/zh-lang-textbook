@@ -5,6 +5,37 @@ import 'package:zh_textbook/services/practice_record_sync.dart';
 void main() {
   setUp(() => SharedPreferences.setMockInitialValues({}));
 
+  test('unchanged remote records do not trigger another refresh', () async {
+    var notifications = 0;
+    void listener() => notifications++;
+    PracticeRecordSync.changes.addListener(listener);
+    addTearDown(() => PracticeRecordSync.changes.removeListener(listener));
+
+    await PracticeRecordSync.rememberRemoteRecords('student-a', {'one', 'two'});
+    expect(notifications, 1);
+    await PracticeRecordSync.rememberRemoteRecords('student-a', {'two', 'one'});
+    expect(notifications, 1);
+    await PracticeRecordSync.rememberRemoteRecords('student-a', {
+      'one',
+      'two',
+      'three',
+    });
+    expect(notifications, 2);
+
+    final preferences = await SharedPreferences.getInstance();
+    await preferences.setStringList(
+      'practice_record_sync_recent_uploaded_v1_student-a',
+      ['three'],
+    );
+    await PracticeRecordSync.rememberRemoteRecords('student-a', {
+      'one',
+      'two',
+      'three',
+    });
+    expect(notifications, 3);
+    expect((await PracticeRecordSync.statusFor('student-a')).uploadedCount, 3);
+  });
+
   test(
     'sync status is scoped to the account and reports saved details',
     () async {

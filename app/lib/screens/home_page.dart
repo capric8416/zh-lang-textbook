@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:async';
 
 import '../models/textbook.dart';
 import '../services/account_api.dart';
 import '../services/practice_record_sync.dart';
+import '../services/study_state_sync.dart';
 import '../services/textbook_repository.dart';
+import '../services/textbook_preference.dart';
 import 'account_center.dart';
 import 'mode_page.dart';
 
@@ -18,9 +20,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  static const _lastGradeKey = 'home.last_textbook_grade';
-  static const _lastSemesterKey = 'home.last_textbook_semester';
-
   int? _grade;
   Semester? _semester;
   bool _selectionReady = false;
@@ -35,7 +34,6 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    _restoreSelection();
     _restoreAuthentication();
   }
 
@@ -52,7 +50,16 @@ class _HomePageState extends State<HomePage> {
     } catch (_) {
       // If secure storage is temporarily unavailable, fail closed to login.
     }
-    if (authenticated) PracticeRecordSync.schedule(api: _accountApi);
+    if (authenticated) {
+      await _restoreSelection();
+      try {
+        await StudyStateSync.synchronize(api: _accountApi);
+      } catch (_) {
+        // Keep local state available while the service is offline.
+      }
+      StudyStateSync.bind(_accountApi);
+      PracticeRecordSync.schedule(api: _accountApi);
+    }
     if (!mounted) return;
     setState(() {
       _authenticated = authenticated;
@@ -60,35 +67,54 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  void _authenticatedNow() {
+  Future<void> _authenticatedNow() async {
+    if (!mounted) return;
+    setState(() {
+      _authReady = false;
+      _tabIndex = 0;
+    });
+    await _restoreSelection();
+    try {
+      await StudyStateSync.synchronize(api: _accountApi);
+    } catch (_) {
+      // Login remains usable offline after authentication succeeds.
+    }
+    StudyStateSync.bind(_accountApi);
+    PracticeRecordSync.schedule(api: _accountApi);
     if (!mounted) return;
     setState(() {
       _authenticated = true;
-      _tabIndex = 0;
+      _authReady = true;
     });
   }
 
   void _signedOut() {
+    StudyStateSync.unbind();
     if (!mounted) return;
     setState(() {
       _authenticated = false;
+      _grade = null;
+      _semester = null;
+      _selectionTouched = false;
+      _selectionReady = false;
       _tabIndex = 0;
     });
   }
 
   Future<void> _restoreSelection() async {
-    final preferences = await SharedPreferences.getInstance();
-    final savedGrade = preferences.getInt(_lastGradeKey);
-    final savedSemester = switch (preferences.getString(_lastSemesterKey)) {
-      'a' => Semester.first,
-      'b' => Semester.second,
-      _ => null,
-    };
+    final accountId = await _accountApi.accountId;
+    if (accountId == null) return;
+    try {
+      await TextbookPreference.synchronize(_accountApi);
+    } catch (_) {
+      // Offline selections stay available and pending changes retry on login.
+    }
+    final selection = await TextbookPreference.load(accountId);
     if (!mounted) return;
     setState(() {
-      if (!_selectionTouched && savedGrade != null && savedSemester != null) {
-        _grade = savedGrade >= 1 && savedGrade <= 6 ? savedGrade : null;
-        _semester = _grade == null ? null : savedSemester;
+      if (!_selectionTouched) {
+        _grade = selection?.grade;
+        _semester = selection?.semester;
       }
       _selectionReady = true;
     });
@@ -108,9 +134,13 @@ class _HomePageState extends State<HomePage> {
     try {
       final Textbook textbook = await widget.repository.load(selection);
       if (!mounted) return;
-      final preferences = await SharedPreferences.getInstance();
-      await preferences.setInt(_lastGradeKey, grade);
-      await preferences.setString(_lastSemesterKey, semester.code);
+      final accountId = await _accountApi.accountId;
+      if (accountId != null) {
+        await TextbookPreference.save(accountId, selection);
+        unawaited(
+          TextbookPreference.synchronize(_accountApi).catchError((_) {}),
+        );
+      }
       if (!mounted) return;
       await Navigator.of(context).push(
         MaterialPageRoute<void>(

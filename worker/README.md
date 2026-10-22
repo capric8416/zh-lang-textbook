@@ -51,4 +51,13 @@ src/
 
 学生个人学习记录：`GET /api/v1/practice/records?limit=100`，仅允许学生读取登录账号自己的所有历史记录，包含历史班级和 `class_id=NULL` 的作答。每页最多 500 条；返回 `records` 和 `nextCursor`，后者非空时将其中的 `beforeTime`、`afterId` 原样作为下一页查询参数。按作答时间倒序、记录 ID 升序分页；查询期间新插入到游标之前的记录会在下次刷新时获取。无需传入学生 ID。部署时应用 `0007_student_practice_history_index.sql` 索引迁移。App 按记录 ID 与本机记录合并，并按账号保存远端缓存供离线查看。
 
+跨设备学习状态：`GET /api/v1/me/study-state` 返回当前学生的聚合学习进度、宠物档案及版本号；`PUT /api/v1/me/pet-profile` 使用 `baseRevision` 乐观并发更新宠物档案，版本不匹配时返回 409。`0008_study_state.sql` 会从现有做题记录回填进度，并通过插入触发器持续更新；重复上传相同记录 ID 不会重复计数。
+
 API 前缀 `/api/v1`：`GET /health`、`POST /bootstrap`、`/auth/{register,login,logout}`、个人资料/改密、账号树、直接下级创建与禁用/重置密码、班级创建、入班码及学生加入/退班。学生答题结果写入 `practice_records`；班级管理员通过 `GET /classes/{classId}/records?offset=0&limit=500` 按班级读取原始历史记录，单页最多 500 条。查询校验班级归属，但不按当前成员关系过滤，因此退班/转班不会隐藏历史记录。题目聚合、排序和错误率统计由 App 完成。学生注册固定为 student；超级管理员能创建超级管理员和集团管理员，集团管理员创建学校管理员，学校管理员创建班级管理员；每级管理员只能管理直接下级。
+# 教材选择同步
+
+应用 `0009_textbook_preferences.sql` 迁移后，所有登录账号可使用
+`GET /api/v1/me/textbook-preference` 读取自己的选择，或使用 `PUT`
+提交 `{"grade":3,"semester":"a"}`（年级 1–6，学期 a/b）。响应为
+`{"selection":...}`，未保存时 selection 为 null。按账号隔离，以最后成功写入为准。
+App 在进入教材时保存并异步上传；登录时恢复，离线待同步选择优先上传。
