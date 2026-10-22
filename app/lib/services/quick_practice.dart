@@ -11,26 +11,33 @@ class QuickPracticeSelector {
     required QuickPracticeAction action,
     Set<String>? chapterIds,
     bool allowActionFallback = true,
+    DateTime? now,
   }) {
+    final selectionTime = now ?? DateTime.now();
     final candidates = <_Candidate>[
       for (final question in catalog.questions)
         if (chapterIds == null || chapterIds.contains(question.chapterId))
           for (final direction in PracticeDirection.values)
-            if (question.supportsDirection(direction))
+            if (question.supportsDirection(direction) &&
+                progress
+                    .forQuestion(question.attemptId(direction))
+                    .isAvailableAt(selectionTime))
               _Candidate(
                 question: question,
                 direction: direction,
                 progress: progress.forQuestion(question.attemptId(direction)),
               ),
     ];
-    candidates.sort(_compare);
+    candidates.sort((left, right) => _compare(left, right, selectionTime));
     final preferred = candidates.where((item) => _preferred(item, action));
     final fallback = allowActionFallback
         ? candidates.where((item) => !_preferred(item, action))
         : const Iterable<_Candidate>.empty();
     final selected = <_Candidate>[...preferred, ...fallback].take(3).toList();
     if (selected.length < 3) {
-      return const QuickPracticeSelection.unavailable('当前教材可用练习不足 3 题');
+      return const QuickPracticeSelection.unavailable(
+        '当前范围可练习不足 3 题，部分题目可能正在等待间隔巩固',
+      );
     }
     return QuickPracticeSelection.available(
       QuickPracticeSession(
@@ -58,10 +65,10 @@ class QuickPracticeSelector {
               item.question.category != '字',
       };
 
-  static int _compare(_Candidate left, _Candidate right) {
-    final priority = _priority(
-      left.progress,
-    ).compareTo(_priority(right.progress));
+  static int _compare(_Candidate left, _Candidate right, DateTime now) {
+    final priority = right.progress
+        .selectionWeight(now)
+        .compareTo(left.progress.selectionWeight(now));
     if (priority != 0) return priority;
     final attempts = left.progress.totalCount.compareTo(
       right.progress.totalCount,
@@ -70,12 +77,6 @@ class QuickPracticeSelector {
     final question = left.question.id.compareTo(right.question.id);
     if (question != 0) return question;
     return left.direction.index.compareTo(right.direction.index);
-  }
-
-  static int _priority(QuestionProgress progress) {
-    if (progress.isWrong) return 0;
-    if (progress.totalCount == 0) return 1;
-    return 2;
   }
 }
 

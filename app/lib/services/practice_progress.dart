@@ -12,9 +12,6 @@ class QuestionProgress {
     this.lastCorrectAt,
     this.lastWrongAt,
     this.correctStreakStartedAt,
-    this.blockedUntil,
-    this.skipUntil,
-    this.skipRemaining = 0,
   });
 
   factory QuestionProgress.fromJson(Map<String, dynamic> json) =>
@@ -26,11 +23,6 @@ class QuestionProgress {
         lastCorrectAt: _date(json['last_correct_at']),
         lastWrongAt: _date(json['last_wrong_at']),
         correctStreakStartedAt: _date(json['correct_streak_started_at']),
-        blockedUntil: _date(json['blocked_until']),
-        skipUntil: _date(json['skip_until']),
-        skipRemaining: json['skip_remaining'] is int
-            ? json['skip_remaining'] as int
-            : 0,
       );
 
   final int correctCount;
@@ -41,9 +33,6 @@ class QuestionProgress {
   /// The first correct attempt after the latest wrong attempt (or first-ever
   /// correct attempt), used to determine spaced, stable mastery.
   final DateTime? correctStreakStartedAt;
-  final DateTime? blockedUntil;
-  final DateTime? skipUntil;
-  final int skipRemaining;
 
   int get totalCount => correctCount + wrongCount;
 
@@ -71,6 +60,44 @@ class QuestionProgress {
   bool get isWrong =>
       wrongCount > 0 && masteryStage != QuestionMasteryStage.stable;
 
+  /// Derived from attempt timestamps so restores and old local files use the
+  /// same schedule. Repeating an initial success does not postpone its review.
+  DateTime? get reviewDueAt => switch (masteryStage) {
+    QuestionMasteryStage.initial =>
+      (correctStreakStartedAt ?? lastCorrectAt)?.add(const Duration(hours: 24)),
+    QuestionMasteryStage.stable => lastCorrectAt?.add(const Duration(days: 7)),
+    _ => null,
+  };
+
+  bool isAvailableAt(DateTime now) => !(reviewDueAt?.isAfter(now) ?? false);
+
+  double selectionWeight(DateTime now) {
+    if (!isAvailableAt(now)) return 0;
+    return switch (masteryStage) {
+      QuestionMasteryStage.needsReinforcement => 12,
+      QuestionMasteryStage.initial => 12,
+      QuestionMasteryStage.notPracticed => 6,
+      QuestionMasteryStage.stable => 1,
+    };
+  }
+
+  String reviewMessage(DateTime now) {
+    final due = reviewDueAt?.toLocal();
+    final waiting = due != null && due.isAfter(now);
+    final date = due == null
+        ? ''
+        : '${due.month}月${due.day}日 ${due.hour.toString().padLeft(2, '0')}:${due.minute.toString().padLeft(2, '0')}';
+    return switch (masteryStage) {
+      QuestionMasteryStage.notPracticed => '这个练习方向还没试过，一起来试试。',
+      QuestionMasteryStage.needsReinforcement => '这题还需要订正，慢慢想，再试一次。',
+      QuestionMasteryStage.initial when waiting =>
+        '已答对，稍后再巩固：$date 起可再次练习。间隔至少 24 小时再答对，就能稳定掌握。',
+      QuestionMasteryStage.initial => '已到巩固时间，这个练习方向再答对一次，就能稳定掌握。',
+      QuestionMasteryStage.stable when waiting => '已经稳定掌握！$date 起再来复习。',
+      QuestionMasteryStage.stable => '已经稳定掌握，一起复习一下，保持熟悉。',
+    };
+  }
+
   Map<String, dynamic> toJson() => {
     'correct_count': correctCount,
     'wrong_count': wrongCount,
@@ -79,21 +106,7 @@ class QuestionProgress {
     if (lastWrongAt != null) 'last_wrong_at': lastWrongAt!.toIso8601String(),
     if (correctStreakStartedAt != null)
       'correct_streak_started_at': correctStreakStartedAt!.toIso8601String(),
-    if (blockedUntil != null) 'blocked_until': blockedUntil!.toIso8601String(),
-    if (skipUntil != null) 'skip_until': skipUntil!.toIso8601String(),
-    if (skipRemaining > 0) 'skip_remaining': skipRemaining,
   };
-
-  QuestionProgress copyWith({int? skipRemaining}) => QuestionProgress(
-    correctCount: correctCount,
-    wrongCount: wrongCount,
-    lastCorrectAt: lastCorrectAt,
-    lastWrongAt: lastWrongAt,
-    correctStreakStartedAt: correctStreakStartedAt,
-    blockedUntil: blockedUntil,
-    skipUntil: skipUntil,
-    skipRemaining: skipRemaining ?? this.skipRemaining,
-  );
 }
 
 enum QuestionMasteryStage { notPracticed, needsReinforcement, initial, stable }
@@ -225,27 +238,7 @@ class PracticeProgressStore {
   }
 
   bool isBlocked(String id, DateTime now) {
-    final record = _progress.forQuestion(id);
-    return record.blockedUntil?.isAfter(now) ?? false;
-  }
-
-  double weight(String id) {
-    final record = _progress.forQuestion(id);
-    if (record.totalCount == 0) return 8;
-    return 1 + record.wrongCount * 5 / (record.correctCount + 1);
-  }
-
-  Future<bool> consumeSkip(String id, DateTime now) async {
-    final record = _progress.forQuestion(id);
-    if (record.skipRemaining <= 0 ||
-        !(record.skipUntil?.isAfter(now) ?? false)) {
-      return false;
-    }
-    final records = {..._progress.questions};
-    records[id] = record.copyWith(skipRemaining: record.skipRemaining - 1);
-    _progress = PracticeProgress(records);
-    await _save();
-    return true;
+    return !_progress.forQuestion(id).isAvailableAt(now);
   }
 
   Future<void> record(String questionId, {required bool correct}) async {
@@ -314,27 +307,12 @@ QuestionProgress _progressFromCounts({
   required DateTime? lastWrongAt,
   DateTime? correctStreakStartedAt,
 }) {
-  final occurredAt = _latest(lastCorrectAt, lastWrongAt) ?? DateTime.now();
-  final days = _dayDifference(lastCorrectAt, lastWrongAt);
-  final times = correctCount - wrongCount;
-  if (days > 0 || times < 0) {
-    return QuestionProgress(
-      correctCount: correctCount,
-      wrongCount: wrongCount,
-      lastCorrectAt: lastCorrectAt,
-      lastWrongAt: lastWrongAt,
-      correctStreakStartedAt: correctStreakStartedAt,
-      blockedUntil: occurredAt.add(Duration(days: days.abs() + times.abs())),
-    );
-  }
   return QuestionProgress(
     correctCount: correctCount,
     wrongCount: wrongCount,
     lastCorrectAt: lastCorrectAt,
     lastWrongAt: lastWrongAt,
     correctStreakStartedAt: correctStreakStartedAt,
-    skipUntil: occurredAt.add(Duration(days: days.abs())),
-    skipRemaining: times.abs(),
   );
 }
 
@@ -360,26 +338,12 @@ QuestionProgress _afterAttempt(
     lastCorrectAt: lastCorrect,
     lastWrongAt: lastWrong,
   );
-  final days = _dayDifference(lastCorrect, lastWrong);
-  final times = updatedCorrect - updatedWrong;
-  if (days > 0 || times < 0) {
-    return QuestionProgress(
-      correctCount: updatedCorrect,
-      wrongCount: updatedWrong,
-      lastCorrectAt: lastCorrect,
-      lastWrongAt: lastWrong,
-      correctStreakStartedAt: correctStreakStartedAt,
-      blockedUntil: occurredAt.add(Duration(days: days.abs() + times.abs())),
-    );
-  }
   return QuestionProgress(
     correctCount: updatedCorrect,
     wrongCount: updatedWrong,
     lastCorrectAt: lastCorrect,
     lastWrongAt: lastWrong,
     correctStreakStartedAt: correctStreakStartedAt,
-    skipUntil: occurredAt.add(Duration(days: days.abs())),
-    skipRemaining: times.abs(),
   );
 }
 
@@ -406,15 +370,6 @@ DateTime? _correctStreakStart(
   // Older local/remote formats only stored the latest success. It is safe to
   // use that success as the start when a new correct answer arrives.
   return previous.correctStreakStartedAt ?? previous.lastCorrectAt;
-}
-
-int _dayDifference(DateTime? correct, DateTime? wrong) {
-  if (correct == null && wrong == null) return 0;
-  if (correct != null && wrong == null) return 1;
-  if (correct == null) return -1;
-  final correctDay = DateTime(correct.year, correct.month, correct.day);
-  final wrongDay = DateTime(wrong!.year, wrong.month, wrong.day);
-  return correctDay.difference(wrongDay).inDays;
 }
 
 DateTime? _date(Object? value) =>

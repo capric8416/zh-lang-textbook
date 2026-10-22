@@ -15,6 +15,7 @@ import '../services/engagement_events.dart';
 import '../services/account_api.dart';
 import '../services/pet_growth.dart';
 import '../services/practice_progress.dart';
+import '../services/practice_scheduler.dart';
 import '../services/practice_record_sync.dart';
 import '../services/quick_practice.dart';
 import '../services/speech_engine.dart';
@@ -176,81 +177,27 @@ class _PracticePageState extends State<PracticePage> {
         _scheduleThinkingReaction();
         return;
       }
-      final directions = PracticeDirection.values.toList()..shuffle(_random);
       final questions = _selectedChapterId == _allMistakes
           ? catalog.questions
           : catalog.forChapter(_selectedChapterId);
-      var direction = directions.first;
-      PracticeQuestion? selected;
-      for (final candidateDirection in directions) {
-        final candidate = await _selectForDirection(
-          questions,
-          candidateDirection,
-          store,
-        );
-        if (candidate != null) {
-          direction = candidateDirection;
-          selected = candidate;
-          break;
-        }
-      }
+      final selected = PracticeScheduler.select(
+        questions: questions,
+        progress: store.progress,
+        mistakesOnly: _mistakesOnly,
+        now: DateTime.now(),
+        random: _random,
+        previousAttemptId: _question?.attemptId(_direction),
+      );
       if (!mounted) return;
       setState(() {
-        _direction = direction;
-        _question = selected;
+        _direction = selected?.direction ?? _direction;
+        _question = selected?.question;
         _graded = false;
       });
       _writingPadKey.currentState?.clear();
     } finally {
       _selecting = false;
     }
-  }
-
-  Future<PracticeQuestion?> _selectForDirection(
-    List<PracticeQuestion> questions,
-    PracticeDirection direction,
-    PracticeProgressStore store,
-  ) async {
-    final now = DateTime.now();
-    final candidates = questions
-        .where(
-          (question) =>
-              question.supportsDirection(direction) &&
-              (_mistakesOnly
-                  ? store.progress
-                        .forQuestion(question.attemptId(direction))
-                        .isWrong
-                  : !store.isBlocked(question.attemptId(direction), now)),
-        )
-        .toList();
-    while (candidates.isNotEmpty) {
-      final selected = _weightedChoice(candidates, direction, store);
-      if (!_mistakesOnly &&
-          await store.consumeSkip(selected.attemptId(direction), now)) {
-        candidates.remove(selected);
-        continue;
-      }
-      return selected;
-    }
-    return null;
-  }
-
-  PracticeQuestion _weightedChoice(
-    List<PracticeQuestion> questions,
-    PracticeDirection direction,
-    PracticeProgressStore store,
-  ) {
-    final weights = [
-      for (final question in questions)
-        store.weight(question.attemptId(direction)),
-    ];
-    var cursor =
-        _random.nextDouble() * weights.fold<double>(0, (a, b) => a + b);
-    for (var index = 0; index < questions.length; index++) {
-      cursor -= weights[index];
-      if (cursor <= 0) return questions[index];
-    }
-    return questions.last;
   }
 
   Future<void> _selectChapter(
@@ -780,6 +727,36 @@ class _PracticePageState extends State<PracticePage> {
     );
   }
 
+  String _emptyPracticeMessage(PracticeProgressStore store) {
+    final questions = _selectedChapterId == _allMistakes
+        ? _catalog!.questions
+        : _catalog!.forChapter(_selectedChapterId);
+    final now = DateTime.now();
+    final waiting =
+        [
+              for (final question in questions)
+                for (final direction in PracticeDirection.values)
+                  if (question.supportsDirection(direction))
+                    store.progress.forQuestion(question.attemptId(direction)),
+            ]
+            .where(
+              (record) =>
+                  (!_mistakesOnly || record.isWrong) &&
+                  !record.isAvailableAt(now),
+            )
+            .toList();
+    if (waiting.isNotEmpty) {
+      final due = waiting.map((record) => record.reviewDueAt!).toList()..sort();
+      final next = due.first.toLocal();
+      final locale = MaterialLocalizations.of(context);
+      final time =
+          '${locale.formatShortDate(next)} ${locale.formatTimeOfDay(TimeOfDay.fromDateTime(next), alwaysUse24HourFormat: true)}';
+      return '当前没有到期练习，还有 ${waiting.length} 项练习方向等待间隔巩固。'
+          '\n最早可在 $time 再来练习。已答对的进度会保留。';
+    }
+    return _mistakesOnly ? '当前范围没有待巩固的错题，去综合练习看看。' : '当前范围没有可练习题目。';
+  }
+
   Widget _buildContent(PracticeProgressStore store) => ListView(
     padding: const EdgeInsets.all(24),
     children: [
@@ -823,7 +800,7 @@ class _PracticePageState extends State<PracticePage> {
             ActionChip(
               avatar: const Icon(Icons.assignment_late_outlined, size: 18),
               label: Text(
-                '当前错题 ${store.progress.wrongCountFor(_catalog!.questions)}',
+                '待巩固 ${store.progress.wrongCountFor(_catalog!.questions)}',
               ),
               onPressed: _mistakesOnly ? null : () => _setMistakesOnly(true),
             ),
@@ -862,12 +839,28 @@ class _PracticePageState extends State<PracticePage> {
         Card(
           child: Padding(
             padding: const EdgeInsets.all(28),
-            child: Text(
-              _mistakesOnly ? '当前范围没有错题，去综合练习看看。' : '本课没有可练习题目，或题目尚未到复习时间。',
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(_emptyPracticeMessage(store)),
+                const SizedBox(height: 12),
+                TextButton.icon(
+                  onPressed: _chooseQuestion,
+                  icon: const Icon(Icons.refresh),
+                  label: const Text('重新检查可练习题目'),
+                ),
+              ],
             ),
           ),
         )
-      else
+      else ...[
+        Text(
+          store.progress
+              .forQuestion(_question!.attemptId(_direction))
+              .reviewMessage(DateTime.now()),
+          key: const ValueKey('practice-review-explanation'),
+        ),
+        const SizedBox(height: 12),
         _QuestionCard(
           question: _question!,
           direction: _direction,
@@ -886,6 +879,7 @@ class _PracticePageState extends State<PracticePage> {
               : '下一题',
           onNext: _graded ? _advanceQuickPractice : null,
         ),
+      ],
     ],
   );
 }

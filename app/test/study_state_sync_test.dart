@@ -83,6 +83,9 @@ void main() {
     final question = progress.progress.forQuestion('q1:writeHanzi');
     expect(question.correctCount, 3);
     expect(question.wrongCount, 1);
+    expect(question.reviewDueAt!.toUtc(), DateTime.utc(2026, 10, 22, 2));
+    expect(question.isAvailableAt(DateTime.utc(2026, 10, 22, 1, 59)), isFalse);
+    expect(question.isAvailableAt(DateTime.utc(2026, 10, 22, 2)), isTrue);
     final pet = await PetGrowthStore.open(namespace: namespace);
     expect(pet.profile.name, '团团');
     expect(pet.profile.species, PetSpecies.cat);
