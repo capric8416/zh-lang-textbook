@@ -69,7 +69,40 @@ pub(crate) async fn insert(
     Ok(())
 }
 
-pub(crate) async fn list_for_class_page(
+pub(crate) async fn class_snapshot_row_id(db: &D1Database, class_id: &str) -> Result<i64> {
+    #[derive(Deserialize)]
+    struct SnapshotRow {
+        row_id: Option<i64>,
+    }
+    Ok(db
+        .prepare("SELECT MAX(rowid) AS row_id FROM practice_records WHERE class_id=?")
+        .bind(&[class_id.into()])?
+        .first::<SnapshotRow>(None)
+        .await?
+        .and_then(|row| row.row_id)
+        .unwrap_or(0))
+}
+
+pub(crate) async fn list_for_class_cursor_page(
+    db: &D1Database,
+    class_id: &str,
+    snapshot_row_id: i64,
+    before_time: Option<&str>,
+    after_id: Option<&str>,
+    limit: u32,
+) -> Result<Vec<ClassPracticeRecord>> {
+    let statement = if let (Some(time), Some(id)) = (before_time, after_id) {
+        db.prepare("SELECT p.id,p.student_id,p.class_id,p.textbook_key,p.question_id,p.chapter_id,p.question_kind,p.category,p.source,p.direction,p.prompt,p.student_answer,p.expected_answer,p.is_correct,p.occurred_at,p.created_at,a.username,a.display_name FROM practice_records p JOIN accounts a ON a.id=p.student_id WHERE p.class_id=? AND p.rowid<=? AND (p.occurred_at<? OR (p.occurred_at=? AND p.id>?)) ORDER BY p.occurred_at DESC,p.id ASC LIMIT ?")
+            .bind(&[class_id.into(), (snapshot_row_id as f64).into(), time.into(), time.into(), id.into(), (limit as f64).into()])?
+    } else {
+        db.prepare("SELECT p.id,p.student_id,p.class_id,p.textbook_key,p.question_id,p.chapter_id,p.question_kind,p.category,p.source,p.direction,p.prompt,p.student_answer,p.expected_answer,p.is_correct,p.occurred_at,p.created_at,a.username,a.display_name FROM practice_records p JOIN accounts a ON a.id=p.student_id WHERE p.class_id=? AND p.rowid<=? ORDER BY p.occurred_at DESC,p.id ASC LIMIT ?")
+            .bind(&[class_id.into(), (snapshot_row_id as f64).into(), (limit as f64).into()])?
+    };
+    statement.all().await?.results::<ClassPracticeRecord>()
+}
+
+// Temporary compatibility for deployed clients using offset pagination.
+pub(crate) async fn list_for_class_offset_page(
     db: &D1Database,
     class_id: &str,
     limit: u32,

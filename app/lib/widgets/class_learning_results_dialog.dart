@@ -7,6 +7,7 @@ import 'package:path_provider/path_provider.dart';
 
 import '../models/textbook.dart';
 import '../services/account_api.dart';
+import '../services/class_learning_records.dart';
 
 class ClassLearningResultsDialog extends StatefulWidget {
   const ClassLearningResultsDialog({
@@ -27,62 +28,91 @@ class ClassLearningResultsDialog extends StatefulWidget {
 
 class _ClassLearningResultsDialogState
     extends State<ClassLearningResultsDialog> {
-  List<Map<String, dynamic>> _allRecords = [];
+  static const _initialPageSize = 100;
+  static const _exportPageSize = 500;
+
+  final List<Map<String, dynamic>> _loadedRecords = [];
+  final Set<String> _loadedIds = {};
   List<Map<String, dynamic>> _visibleRecords = [];
   bool _loading = true;
+  bool _loadingMore = false;
+  bool _hasMore = true;
   bool _exporting = false;
+  bool _cancelExportRequested = false;
+  ClassLearningRecordsCursor? _nextCursor;
+  int _exportFetched = 0;
   String? _error;
 
   @override
   void initState() {
     super.initState();
-    _load();
+    _loadInitial();
   }
 
-  Future<void> _load() async {
+  Future<void> _loadInitial() async {
+    if (_loading && _loadedRecords.isNotEmpty) return;
+    setState(() {
+      _loading = true;
+      _error = null;
+      _loadedRecords.clear();
+      _loadedIds.clear();
+      _visibleRecords = [];
+      _nextCursor = null;
+      _hasMore = true;
+    });
+    await _loadMore(initial: true);
+  }
+
+  Future<void> _loadMore({bool initial = false}) async {
+    if ((!initial && (!_hasMore || _loadingMore)) || !mounted) return;
+    if (!initial) setState(() => _loadingMore = true);
     try {
-      const pageSize = 500;
-      final records = <Map<String, dynamic>>[];
-      var offset = 0;
-      while (true) {
-        final response = await widget.api.request(
-          'classes/${widget.classId}/records',
-          queryParameters: {'offset': '$offset', 'limit': '$pageSize'},
-        );
-        final page = (response['records'] as List<dynamic>? ?? [])
-            .cast<Map<String, dynamic>>();
-        records.addAll(page);
-        if (page.length < pageSize) break;
-        offset += page.length;
+      final page = await ClassLearningRecords.fetchPage(
+        widget.api,
+        widget.classId,
+        cursor: _nextCursor,
+        limit: _initialPageSize,
+      );
+      if (!mounted) return;
+      for (final record in page.records) {
+        final id = record['id'] as String?;
+        if (id == null || _loadedIds.add(id)) _loadedRecords.add(record);
       }
-      records.sort(
+      _loadedRecords.sort(
         (a, b) => '${b['occurredAt']}'.compareTo('${a['occurredAt']}'),
       );
-      final visibleCounts = <String, int>{};
-      final visible = <Map<String, dynamic>>[];
-      for (final record in records) {
-        final studentId = record['studentId'] as String? ?? '';
-        final count = visibleCounts[studentId] ?? 0;
-        if (count < 500) {
-          visible.add(record);
-          visibleCounts[studentId] = count + 1;
-        }
-      }
-      if (mounted) {
-        setState(() {
-          _allRecords = records;
-          _visibleRecords = visible;
-          _loading = false;
-        });
-      }
+      setState(() {
+        _visibleRecords = _limitVisibleRecords(_loadedRecords);
+        _nextCursor = page.cursor;
+        _hasMore = page.hasMore;
+        _loading = false;
+        _loadingMore = false;
+        _error = null;
+      });
     } catch (error) {
       if (mounted) {
         setState(() {
           _error = error.toString();
           _loading = false;
+          _loadingMore = false;
         });
       }
     }
+  }
+
+  List<Map<String, dynamic>> _limitVisibleRecords(
+    List<Map<String, dynamic>> records,
+  ) {
+    final visibleCounts = <String, int>{};
+    return records
+        .where((record) {
+          final studentId = record['studentId'] as String? ?? '';
+          final count = visibleCounts[studentId] ?? 0;
+          if (count >= 500) return false;
+          visibleCounts[studentId] = count + 1;
+          return true;
+        })
+        .toList(growable: false);
   }
 
   List<_QuestionGroup> get _questionGroups {
@@ -119,14 +149,57 @@ class _ClassLearningResultsDialogState
 
   Future<void> _exportAll() async {
     if (_exporting) return;
-    setState(() => _exporting = true);
+    var cancelled = false;
+    setState(() {
+      _exporting = true;
+      _cancelExportRequested = false;
+      _exportFetched = 0;
+    });
     try {
-      final reportRecords = await _addLessonLabels(_allRecords);
+      final records = <Map<String, dynamic>>[];
+      final knownIds = <String>{};
+      ClassLearningRecordsCursor? cursor;
+      while (true) {
+        if (_cancelExportRequested) {
+          cancelled = true;
+          return;
+        }
+        final page = await ClassLearningRecords.fetchPage(
+          widget.api,
+          widget.classId,
+          cursor: cursor,
+          limit: _exportPageSize,
+        );
+        if (_cancelExportRequested) {
+          cancelled = true;
+          return;
+        }
+        for (final record in page.records) {
+          final id = record['id'] as String?;
+          if (id == null || knownIds.add(id)) records.add(record);
+        }
+        if (mounted) setState(() => _exportFetched = records.length);
+        if (!page.hasMore) break;
+        cursor = page.cursor;
+      }
+      final reportRecords = await _addLessonLabels(records);
+      if (_cancelExportRequested) {
+        cancelled = true;
+        return;
+      }
       final html = _buildReportHtml(reportRecords);
+      if (_cancelExportRequested) {
+        cancelled = true;
+        return;
+      }
       final directory =
           await getDownloadsDirectory() ??
           await getApplicationDocumentsDirectory();
       await directory.create(recursive: true);
+      if (_cancelExportRequested) {
+        cancelled = true;
+        return;
+      }
       final timestamp = DateTime.now()
           .toIso8601String()
           .replaceAll(':', '-')
@@ -142,9 +215,7 @@ class _ClassLearningResultsDialogState
       await file.writeAsString(html, encoding: utf8);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('已导出 ${_allRecords.length} 条历史记录：${file.path}'),
-          ),
+          SnackBar(content: Text('已导出 ${records.length} 条历史记录：${file.path}')),
         );
       }
     } catch (error) {
@@ -154,8 +225,23 @@ class _ClassLearningResultsDialogState
         ).showSnackBar(SnackBar(content: Text('导出失败：$error')));
       }
     } finally {
-      if (mounted) setState(() => _exporting = false);
+      if (mounted) {
+        setState(() {
+          _exporting = false;
+          _exportFetched = 0;
+        });
+        if (cancelled) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(const SnackBar(content: Text('已取消导出，未生成报告文件。')));
+        }
+      }
     }
+  }
+
+  void _cancelExport() {
+    if (!_exporting) return;
+    setState(() => _cancelExportRequested = true);
   }
 
   Future<List<Map<String, dynamic>>> _addLessonLabels(
@@ -252,7 +338,7 @@ unitFilter.addEventListener('change',updateLessons);lessonFilter.addEventListene
     final records = _visibleRecords;
     final correct = records.where(_isCorrect).length;
     final wrong = records.length - correct;
-    final studentCount = _allRecords
+    final studentCount = _loadedRecords
         .map((record) => record['studentId'])
         .toSet()
         .length;
@@ -272,20 +358,56 @@ unitFilter.addEventListener('change',updateLessons);lessonFilter.addEventListene
                 style: Theme.of(context).textTheme.titleLarge,
               ),
               const SizedBox(height: 8),
-              if (_loading) const LinearProgressIndicator(),
+              if (_loading || _loadingMore || _exporting)
+                const LinearProgressIndicator(),
               if (_error != null) ...[const SizedBox(height: 8), Text(_error!)],
-              if (!_loading && _error == null) ...[
+              if (!_loading) ...[
                 Text(
-                  '历史参与学生 $studentCount 人 · 共 ${_allRecords.length} 条 · 页面显示 ${records.length} 条（每人最近 500 条；正确 $correct，需订正 $wrong）· ${groups.length} 道题',
+                  '已加载 ${_loadedRecords.length} 条 · 当前显示 ${records.length} 条（每人最近 500 条；正确 $correct，需订正 $wrong）· $studentCount 名学生 · ${groups.length} 道题${_hasMore ? '。统计仅基于已加载记录。' : '。已加载全部记录。'}',
                 ),
+                if (_exporting)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 6),
+                    child: Text('正在下载全量历史记录，已取得 $_exportFetched 条…'),
+                  ),
                 const SizedBox(height: 8),
                 Expanded(
                   child: groups.isEmpty
-                      ? const Center(child: Text('当前班级暂无已上传做题记录'))
+                      ? Center(
+                          child: Text(
+                            _error == null ? '当前班级暂无已上传做题记录' : '加载失败，可重试。',
+                          ),
+                        )
                       : ListView.builder(
-                          itemCount: groups.length,
-                          itemBuilder: (context, index) =>
-                              _buildQuestionTile(groups[index]),
+                          itemCount: groups.length + (_hasMore ? 1 : 0),
+                          itemBuilder: (context, index) {
+                            if (index < groups.length) {
+                              return _buildQuestionTile(groups[index]);
+                            }
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                              child: Center(
+                                child: OutlinedButton.icon(
+                                  onPressed: _loadingMore || _exporting
+                                      ? null
+                                      : _loadMore,
+                                  icon: _loadingMore
+                                      ? const SizedBox.square(
+                                          dimension: 16,
+                                          child: CircularProgressIndicator(
+                                            strokeWidth: 2,
+                                          ),
+                                        )
+                                      : const Icon(Icons.expand_more),
+                                  label: Text(
+                                    _loadingMore
+                                        ? '正在加载更多…'
+                                        : '加载更多记录（已加载 ${_loadedRecords.length} 条）',
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
                         ),
                 ),
               ] else
@@ -293,7 +415,7 @@ unitFilter.addEventListener('change',updateLessons);lessonFilter.addEventListene
               Row(
                 children: [
                   OutlinedButton.icon(
-                    onPressed: _loading || _error != null || _exporting
+                    onPressed: _loading || _loadingMore || _exporting
                         ? null
                         : _exportAll,
                     icon: _exporting
@@ -304,6 +426,21 @@ unitFilter.addEventListener('change',updateLessons);lessonFilter.addEventListene
                         : const Icon(Icons.download_outlined),
                     label: Text(_exporting ? '正在导出…' : '导出 HTML 报告'),
                   ),
+                  if (_exporting) ...[
+                    const SizedBox(width: 8),
+                    TextButton(
+                      onPressed: _cancelExportRequested ? null : _cancelExport,
+                      child: Text(_cancelExportRequested ? '正在取消…' : '取消导出'),
+                    ),
+                  ],
+                  if (_error != null) ...[
+                    const SizedBox(width: 8),
+                    TextButton.icon(
+                      onPressed: _loading || _loadingMore ? null : _loadInitial,
+                      icon: const Icon(Icons.refresh),
+                      label: const Text('重试'),
+                    ),
+                  ],
                   const Spacer(),
                   TextButton(
                     onPressed: () => Navigator.pop(context),

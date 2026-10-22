@@ -65,9 +65,13 @@ pub(super) async fn record(request: &mut Request, env: &Env) -> Result<Response>
 }
 
 #[derive(Deserialize)]
-struct RecordPage {
+#[serde(rename_all = "camelCase")]
+struct ClassRecordPage {
     offset: Option<u32>,
     limit: Option<u32>,
+    before_time: Option<String>,
+    after_id: Option<String>,
+    snapshot_row_id: Option<i64>,
 }
 
 #[derive(Deserialize, Default)]
@@ -138,15 +142,69 @@ pub(super) async fn class_records(
     if !crate::db::classes::exists_for_admin(&db, class_id, &admin.id).await? {
         return error("class not found", 404);
     }
-    let page = request.query::<RecordPage>().unwrap_or(RecordPage {
-        offset: None,
-        limit: None,
-    });
-    let offset = page.offset.unwrap_or(0);
-    let limit = page.limit.unwrap_or(500).clamp(1, 500);
-    let records =
-        crate::db::practice_records::list_for_class_page(&db, class_id, limit, offset).await?;
-    Response::from_json(&serde_json::json!({"records":records,"offset":offset,"limit":limit}))
+    let page = match request.query::<ClassRecordPage>() {
+        Ok(page) => page,
+        Err(_) => return error("invalid pagination", 400),
+    };
+    let limit = page.limit.unwrap_or(100).clamp(1, 500);
+    let has_cursor =
+        page.before_time.is_some() || page.after_id.is_some() || page.snapshot_row_id.is_some();
+    if page.before_time.is_some() != page.after_id.is_some()
+        || page.snapshot_row_id.is_some() != page.before_time.is_some()
+        || page
+            .before_time
+            .as_ref()
+            .is_some_and(|value| value.is_empty() || value.len() > 40)
+        || page.after_id.as_ref().is_some_and(|value| {
+            value.len() != 32 || !value.bytes().all(|byte| byte.is_ascii_hexdigit())
+        })
+        || page.snapshot_row_id.is_some_and(|value| value <= 0)
+    {
+        return error("invalid cursor", 400);
+    }
+    if has_cursor && page.offset.is_some() {
+        return error("cannot mix cursor and offset pagination", 400);
+    }
+    if page.offset.is_some() {
+        let offset = page.offset.unwrap_or(0);
+        let records =
+            crate::db::practice_records::list_for_class_offset_page(&db, class_id, limit, offset)
+                .await?;
+        return Response::from_json(&serde_json::json!({
+            "records":records,"offset":offset,"limit":limit
+        }));
+    }
+    let snapshot_row_id = page
+        .snapshot_row_id
+        .unwrap_or(crate::db::practice_records::class_snapshot_row_id(&db, class_id).await?);
+    let mut records = crate::db::practice_records::list_for_class_cursor_page(
+        &db,
+        class_id,
+        snapshot_row_id,
+        page.before_time.as_deref(),
+        page.after_id.as_deref(),
+        limit + 1,
+    )
+    .await?;
+    let has_more = records.len() > limit as usize;
+    records.truncate(limit as usize);
+    let next_cursor = if has_more {
+        records.last().map(|record| {
+            serde_json::json!({
+                "beforeTime":record.occurred_at,
+                "afterId":record.id,
+                "snapshotRowId":snapshot_row_id
+            })
+        })
+    } else {
+        None
+    };
+    Response::from_json(&serde_json::json!({
+        "records":records,
+        "nextCursor":next_cursor,
+        "snapshotRowId":snapshot_row_id,
+        "limit":limit
+    }))
 }
 
 fn valid_input(input: &PracticeRecordInput) -> bool {
