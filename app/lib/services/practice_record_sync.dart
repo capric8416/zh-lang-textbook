@@ -102,6 +102,9 @@ class PracticeRecordSync {
     required String studentAnswer,
     required String expectedAnswer,
     required bool isCorrect,
+    String? handwritingGzip,
+    List<String>? ocrResults,
+    String? reviewBits,
     DateTime? occurredAt,
   }) async {
     final sessionToken = await api.token;
@@ -121,6 +124,9 @@ class PracticeRecordSync {
       'studentAnswer': studentAnswer,
       'expectedAnswer': expectedAnswer,
       'isCorrect': isCorrect,
+      'handwritingGzip': ?handwritingGzip,
+      'ocrResults': ?ocrResults,
+      'reviewBits': ?reviewBits,
       'occurredAt': (occurredAt ?? DateTime.now()).toUtc().toIso8601String(),
     };
     if (sessionToken == null || sessionToken.isEmpty || accountId == null) {

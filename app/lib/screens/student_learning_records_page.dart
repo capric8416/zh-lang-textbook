@@ -7,6 +7,7 @@ import '../models/textbook.dart';
 import '../services/account_api.dart';
 import '../services/practice_record_sync.dart';
 import '../services/student_learning_history.dart';
+import '../widgets/original_handwriting.dart';
 
 class StudentLearningRecordsPage extends StatefulWidget {
   const StudentLearningRecordsPage({
@@ -289,14 +290,30 @@ class _StudentLearningRecordsPageState
         ),
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: SelectableText('参考答案：${record.text('expectedAnswer')}'),
+            ),
+          ),
+          if (record.text('direction') == 'readAloud')
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: SelectableText(
+                  'ASR 识别结果：${record.text('studentAnswer').isEmpty ? '（未识别）' : record.text('studentAnswer')}',
+                ),
+              ),
+            )
+          else
+            OriginalHandwriting(record: record.data),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
             child: Align(
               alignment: Alignment.centerLeft,
               child: SelectableText(
                 [
-                  '题目：${record.text('prompt')}',
-                  '我的作答：${record.text('studentAnswer').isEmpty ? '（空白）' : record.text('studentAnswer')}',
-                  '参考答案：${record.text('expectedAnswer')}',
                   if (record.text('category').isNotEmpty)
                     '分类：${record.text('category')}',
                   if (record.text('source').isNotEmpty)

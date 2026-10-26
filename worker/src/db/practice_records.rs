@@ -1,6 +1,6 @@
-use serde::{Deserialize, Serialize};
-use wasm_bindgen::JsValue;
-use worker::{D1Database, Result};
+use base64::Engine;
+use serde::{Deserialize, Serialize, Serializer};
+use worker::{D1Database, D1Type, Result};
 
 #[derive(Deserialize, Serialize)]
 #[serde(rename_all(serialize = "camelCase", deserialize = "snake_case"))]
@@ -21,6 +21,12 @@ pub(crate) struct PracticeRecord {
     pub(crate) is_correct: i64,
     pub(crate) occurred_at: String,
     pub(crate) created_at: String,
+    #[serde(serialize_with = "serialize_handwriting")]
+    pub(crate) handwriting_gzip: Option<serde_bytes::ByteBuf>,
+    #[serde(serialize_with = "serialize_ocr_results")]
+    pub(crate) ocr_results: Option<String>,
+    #[serde(serialize_with = "serialize_handwriting")]
+    pub(crate) review_bits: Option<serde_bytes::ByteBuf>,
 }
 
 #[derive(Deserialize, Serialize)]
@@ -44,6 +50,42 @@ pub(crate) struct ClassPracticeRecord {
     pub(crate) created_at: String,
     pub(crate) username: String,
     pub(crate) display_name: String,
+    #[serde(serialize_with = "serialize_handwriting")]
+    pub(crate) handwriting_gzip: Option<serde_bytes::ByteBuf>,
+    #[serde(serialize_with = "serialize_ocr_results")]
+    pub(crate) ocr_results: Option<String>,
+    #[serde(serialize_with = "serialize_handwriting")]
+    pub(crate) review_bits: Option<serde_bytes::ByteBuf>,
+}
+
+fn serialize_ocr_results<S>(
+    value: &Option<String>,
+    serializer: S,
+) -> std::result::Result<S::Ok, S::Error>
+where
+    S: Serializer,
+{
+    match value {
+        Some(value) => serde_json::from_str::<serde_json::Value>(value)
+            .map_err(serde::ser::Error::custom)?
+            .serialize(serializer),
+        None => serializer.serialize_none(),
+    }
+}
+
+fn serialize_handwriting<S>(
+    value: &Option<serde_bytes::ByteBuf>,
+    serializer: S,
+) -> std::result::Result<S::Ok, S::Error>
+where
+    S: Serializer,
+{
+    match value {
+        Some(value) => base64::engine::general_purpose::STANDARD
+            .encode(value)
+            .serialize(serializer),
+        None => serializer.serialize_none(),
+    }
 }
 
 pub(crate) async fn insert(
@@ -52,18 +94,44 @@ pub(crate) async fn insert(
     student_id: &str,
     class_id: Option<&str>,
 ) -> Result<()> {
-    let class_value = class_id.map(JsValue::from_str).unwrap_or(JsValue::NULL);
-    db.prepare("INSERT INTO practice_records(id,student_id,class_id,textbook_key,question_id,chapter_id,question_kind,category,source,direction,prompt,student_answer,expected_answer,is_correct,occurred_at) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) ON CONFLICT(id) DO NOTHING")
-        .bind(&[
-            record.id.clone().into(), student_id.into(), class_value,
-            record.textbook_key.clone().into(), record.question_id.clone().into(),
-            record.chapter_id.clone().into(), record.question_kind.clone().into(),
-            record.category.clone().into(), record.source.clone().into(),
-            record.direction.clone().into(), record.prompt.clone().into(),
-            record.student_answer.clone().into(),
-            record.expected_answer.clone().into(), (record.is_correct as f64).into(),
-            record.occurred_at.clone().into(),
-        ])?
+    let class_value = class_id.map(D1Type::Text).unwrap_or(D1Type::Null);
+    let handwriting_value = record
+        .handwriting_gzip
+        .as_deref()
+        .map(|bytes| D1Type::Blob(bytes.as_slice()))
+        .unwrap_or(D1Type::Null);
+    let ocr_value = record
+        .ocr_results
+        .as_deref()
+        .map(D1Type::Text)
+        .unwrap_or(D1Type::Null);
+    let review_value = record
+        .review_bits
+        .as_deref()
+        .map(|bytes| D1Type::Blob(bytes.as_slice()))
+        .unwrap_or(D1Type::Null);
+    let bindings = [
+        D1Type::Text(&record.id),
+        D1Type::Text(student_id),
+        class_value,
+        D1Type::Text(&record.textbook_key),
+        D1Type::Text(&record.question_id),
+        D1Type::Text(&record.chapter_id),
+        D1Type::Text(&record.question_kind),
+        D1Type::Text(&record.category),
+        D1Type::Text(&record.source),
+        D1Type::Text(&record.direction),
+        D1Type::Text(&record.prompt),
+        D1Type::Text(&record.student_answer),
+        D1Type::Text(&record.expected_answer),
+        D1Type::Integer(record.is_correct as i32),
+        D1Type::Text(&record.occurred_at),
+        handwriting_value,
+        ocr_value,
+        review_value,
+    ];
+    db.prepare("INSERT INTO practice_records(id,student_id,class_id,textbook_key,question_id,chapter_id,question_kind,category,source,direction,prompt,student_answer,expected_answer,is_correct,occurred_at,handwriting_gzip,ocr_results,review_bits) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) ON CONFLICT(id) DO NOTHING")
+        .bind_refs(&bindings)?
         .run()
         .await?;
     Ok(())
@@ -92,10 +160,10 @@ pub(crate) async fn list_for_class_cursor_page(
     limit: u32,
 ) -> Result<Vec<ClassPracticeRecord>> {
     let statement = if let (Some(time), Some(id)) = (before_time, after_id) {
-        db.prepare("SELECT p.id,p.student_id,p.class_id,p.textbook_key,p.question_id,p.chapter_id,p.question_kind,p.category,p.source,p.direction,p.prompt,p.student_answer,p.expected_answer,p.is_correct,p.occurred_at,p.created_at,a.username,a.display_name FROM practice_records p JOIN accounts a ON a.id=p.student_id WHERE p.class_id=? AND p.rowid<=? AND (p.occurred_at<? OR (p.occurred_at=? AND p.id>?)) ORDER BY p.occurred_at DESC,p.id ASC LIMIT ?")
+        db.prepare("SELECT p.id,p.student_id,p.class_id,p.textbook_key,p.question_id,p.chapter_id,p.question_kind,p.category,p.source,p.direction,p.prompt,p.student_answer,p.expected_answer,p.is_correct,p.occurred_at,p.created_at,p.handwriting_gzip,p.ocr_results,p.review_bits,a.username,a.display_name FROM practice_records p JOIN accounts a ON a.id=p.student_id WHERE p.class_id=? AND p.rowid<=? AND (p.occurred_at<? OR (p.occurred_at=? AND p.id>?)) ORDER BY p.occurred_at DESC,p.id ASC LIMIT ?")
             .bind(&[class_id.into(), (snapshot_row_id as f64).into(), time.into(), time.into(), id.into(), (limit as f64).into()])?
     } else {
-        db.prepare("SELECT p.id,p.student_id,p.class_id,p.textbook_key,p.question_id,p.chapter_id,p.question_kind,p.category,p.source,p.direction,p.prompt,p.student_answer,p.expected_answer,p.is_correct,p.occurred_at,p.created_at,a.username,a.display_name FROM practice_records p JOIN accounts a ON a.id=p.student_id WHERE p.class_id=? AND p.rowid<=? ORDER BY p.occurred_at DESC,p.id ASC LIMIT ?")
+        db.prepare("SELECT p.id,p.student_id,p.class_id,p.textbook_key,p.question_id,p.chapter_id,p.question_kind,p.category,p.source,p.direction,p.prompt,p.student_answer,p.expected_answer,p.is_correct,p.occurred_at,p.created_at,p.handwriting_gzip,p.ocr_results,p.review_bits,a.username,a.display_name FROM practice_records p JOIN accounts a ON a.id=p.student_id WHERE p.class_id=? AND p.rowid<=? ORDER BY p.occurred_at DESC,p.id ASC LIMIT ?")
             .bind(&[class_id.into(), (snapshot_row_id as f64).into(), (limit as f64).into()])?
     };
     statement.all().await?.results::<ClassPracticeRecord>()
@@ -108,7 +176,7 @@ pub(crate) async fn list_for_class_offset_page(
     limit: u32,
     offset: u32,
 ) -> Result<Vec<ClassPracticeRecord>> {
-    db.prepare("SELECT p.id,p.student_id,p.class_id,p.textbook_key,p.question_id,p.chapter_id,p.question_kind,p.category,p.source,p.direction,p.prompt,p.student_answer,p.expected_answer,p.is_correct,p.occurred_at,p.created_at,a.username,a.display_name FROM practice_records p JOIN accounts a ON a.id=p.student_id WHERE p.class_id=? ORDER BY p.occurred_at DESC,p.id LIMIT ? OFFSET ?")
+    db.prepare("SELECT p.id,p.student_id,p.class_id,p.textbook_key,p.question_id,p.chapter_id,p.question_kind,p.category,p.source,p.direction,p.prompt,p.student_answer,p.expected_answer,p.is_correct,p.occurred_at,p.created_at,p.handwriting_gzip,p.ocr_results,p.review_bits,a.username,a.display_name FROM practice_records p JOIN accounts a ON a.id=p.student_id WHERE p.class_id=? ORDER BY p.occurred_at DESC,p.id LIMIT ? OFFSET ?")
         .bind(&[class_id.into(), (limit as f64).into(), (offset as f64).into()])?
         .all()
         .await?
@@ -139,7 +207,7 @@ mod tests {
     #[test]
     fn maps_practice_record_columns_to_api_json() {
         let record: PracticeRecord = serde_json::from_str(
-            r#"{"id":"attempt-1","student_id":"student-1","class_id":"class-1","textbook_key":"grade2b","question_id":"q1","chapter_id":"c1","question_kind":"字词","category":"字","source":"第一课","direction":"writeHanzi","prompt":"xue2","student_answer":"雪","expected_answer":"学","is_correct":1,"occurred_at":"2026-10-13T01:23:45.000Z","created_at":"2026-10-13 01:23:45"}"#,
+            r#"{"id":"attempt-1","student_id":"student-1","class_id":"class-1","textbook_key":"grade2b","question_id":"q1","chapter_id":"c1","question_kind":"字词","category":"字","source":"第一课","direction":"writeHanzi","prompt":"xue2","student_answer":"雪","expected_answer":"学","is_correct":1,"occurred_at":"2026-10-13T01:23:45.000Z","created_at":"2026-10-13 01:23:45","handwriting_gzip":[31,139],"ocr_results":"[\"雪\"]","review_bits":[1]}"#,
         )
         .unwrap();
         let response = serde_json::to_value(record).unwrap();
@@ -152,5 +220,8 @@ mod tests {
         assert_eq!(response["studentId"], "student-1");
         assert_eq!(response["classId"], "class-1");
         assert_eq!(response["createdAt"], "2026-10-13 01:23:45");
+        assert_eq!(response["handwritingGzip"], "H4s=");
+        assert_eq!(response["ocrResults"], serde_json::json!(["雪"]));
+        assert_eq!(response["reviewBits"], "AQ==");
     }
 }

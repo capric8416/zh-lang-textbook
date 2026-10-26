@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -7,6 +8,7 @@ import '../models/ocr.dart';
 import '../models/engagement_event.dart';
 import '../models/pet_mission.dart';
 import '../models/practice.dart';
+import '../models/practice_record_answers.dart';
 import '../models/quick_practice.dart';
 import '../models/speech_assessment.dart';
 import '../models/textbook.dart';
@@ -244,6 +246,9 @@ class _PracticePageState extends State<PracticePage> {
     }
     setState(() => _grading = true);
     try {
+      final handwritingGzip = base64Encode(
+        writingPad.snapshot().encodeCompressed(),
+      );
       final images = await writingPad.renderForOcr();
       if (!mounted) return;
       final recognized = await OcrEngine.instance.recognizeAll(images);
@@ -264,21 +269,26 @@ class _PracticePageState extends State<PracticePage> {
           ),
       ];
       if (!mounted) return;
-      final correct = await showDialog<bool>(
+      final reviewResults = await showDialog<List<bool>>(
         context: context,
         barrierDismissible: false,
         builder: (context) =>
             _CorrectionDialog(images: images, comparisons: comparisons),
       );
-      if (correct == null) {
+      if (reviewResults == null) {
         if (mounted) setState(() => _grading = false);
         return;
       }
+      final correct =
+          reviewResults.isNotEmpty && reviewResults.every((item) => item);
       await _recordPracticeResult(
         store,
         question,
         correct,
         studentAnswer: recognized.join('\n'),
+        handwritingGzip: handwritingGzip,
+        ocrResults: recognized,
+        reviewBits: base64Encode(_packReviewBits(reviewResults)),
       );
       if (!mounted) return;
       setState(() {
@@ -386,6 +396,9 @@ class _PracticePageState extends State<PracticePage> {
     PracticeQuestion question,
     bool correct, {
     required String studentAnswer,
+    String? handwritingGzip,
+    List<String>? ocrResults,
+    String? reviewBits,
   }) async {
     try {
       await PracticeRecordSync.record(
@@ -397,10 +410,16 @@ class _PracticePageState extends State<PracticePage> {
         category: question.category,
         source: question.source,
         direction: _direction.name,
-        prompt: question.prompt,
+        prompt: promptForPracticeDirection(question, _direction),
         studentAnswer: studentAnswer,
-        expectedAnswer: question.answer,
+        expectedAnswer: expectedAnswerForPracticeDirection(
+          question,
+          _direction,
+        ),
         isCorrect: correct,
+        handwritingGzip: handwritingGzip,
+        ocrResults: ocrResults,
+        reviewBits: reviewBits,
       );
     } catch (error, stackTrace) {
       debugPrintStack(label: '做题结果上传队列失败：$error', stackTrace: stackTrace);
@@ -1029,12 +1048,15 @@ class _QuestionCard extends StatelessWidget {
               ),
             ] else ...[
               const SizedBox(height: 18),
-              WritingPad(
-                key: writingPadKey,
-                grid: writesHanzi ? WritingGrid.hanzi : WritingGrid.pinyin,
-                slotLengths: _slotLengths(
-                  writesHanzi ? question.answer : question.prompt,
-                  writesHanzi ? WritingGrid.hanzi : WritingGrid.pinyin,
+              AbsorbPointer(
+                absorbing: grading || graded,
+                child: WritingPad(
+                  key: writingPadKey,
+                  grid: writesHanzi ? WritingGrid.hanzi : WritingGrid.pinyin,
+                  slotLengths: _slotLengths(
+                    writesHanzi ? question.answer : question.prompt,
+                    writesHanzi ? WritingGrid.hanzi : WritingGrid.pinyin,
+                  ),
                 ),
               ),
             ],
@@ -1365,7 +1387,7 @@ class _CorrectionDialogState extends State<_CorrectionDialog> {
     ),
     actions: [
       FilledButton(
-        onPressed: () => Navigator.pop(context, _correct),
+        onPressed: () => Navigator.pop(context, List<bool>.of(_reviewed)),
         child: const Text('确认'),
       ),
     ],
@@ -1675,4 +1697,12 @@ String _normalizeAnswer(String text, PracticeDirection direction) {
       .map((match) => match.group(0)!)
       .join()
       .toLowerCase();
+}
+
+List<int> _packReviewBits(List<bool> results) {
+  final bytes = List<int>.filled((results.length + 7) ~/ 8, 0);
+  for (var index = 0; index < results.length; index++) {
+    if (results[index]) bytes[index ~/ 8] |= 1 << (index % 8);
+  }
+  return bytes;
 }

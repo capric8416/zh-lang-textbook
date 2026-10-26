@@ -4,6 +4,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 
 import '../models/ocr.dart';
+import '../models/handwriting.dart';
 
 enum WritingTool { pen, eraser }
 
@@ -23,6 +24,20 @@ class WritingPadState extends State<WritingPad> {
   late List<List<_Stroke>> _slots;
 
   bool get hasWriting => _slots.any((slot) => slot.isNotEmpty);
+
+  /// Copy the exact visible ink before OCR or any asynchronous work begins.
+  InkDocument snapshot() => InkDocument([
+    for (var index = 0; index < _slots.length; index++)
+      InkCell(widget.grid.name, _slotSize(index), [
+        for (final stroke in _slots[index])
+          InkStroke.fromAbsolute(
+            color: 0xff000000,
+            width: math.max(2.2, _slotSize(index).shortestSide / 38),
+            cellSize: _slotSize(index),
+            points: stroke.points,
+          ),
+      ]),
+  ]);
 
   @override
   void initState() {
@@ -316,11 +331,7 @@ class _WritingCellState extends State<_WritingCell> {
         onPanEnd: widget.readOnly ? null : (_) => _activeStroke = null,
         onTap: widget.onTap,
         child: CustomPaint(
-          painter: _WritingPainter(
-            widget.grid,
-            widget.strokes,
-            Theme.of(context).colorScheme.primary,
-          ),
+          painter: _WritingPainter(widget.grid, widget.strokes, Colors.black),
         ),
       ),
     ),
@@ -341,39 +352,7 @@ class _WritingPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final gridPaint = Paint()
-      ..color = grid == WritingGrid.hanzi
-          ? const Color(0xffe3aeb4)
-          : const Color(0xff78c7a6)
-      ..strokeWidth = 1
-      ..style = PaintingStyle.stroke;
-    canvas.drawRect(Offset.zero & size, gridPaint);
-    if (grid == WritingGrid.hanzi) {
-      gridPaint.color = gridPaint.color.withValues(alpha: 0.55);
-      canvas.drawLine(
-        Offset(size.width / 2, 0),
-        Offset(size.width / 2, size.height),
-        gridPaint,
-      );
-      canvas.drawLine(
-        Offset(0, size.height / 2),
-        Offset(size.width, size.height / 2),
-        gridPaint,
-      );
-      canvas.drawLine(Offset.zero, Offset(size.width, size.height), gridPaint);
-      canvas.drawLine(Offset(0, size.height), Offset(size.width, 0), gridPaint);
-    } else {
-      canvas.drawLine(
-        Offset(0, size.height * 0.42),
-        Offset(size.width, size.height * 0.42),
-        gridPaint,
-      );
-      canvas.drawLine(
-        Offset(0, size.height * 0.72),
-        Offset(size.width, size.height * 0.72),
-        gridPaint,
-      );
-    }
+    paintWritingGrid(canvas, size, hanzi: grid == WritingGrid.hanzi);
     _paintInk(canvas, size, strokes, inkColor);
   }
 

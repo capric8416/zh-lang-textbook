@@ -16,6 +16,8 @@ class ClassPracticeCursorTests(unittest.TestCase):
             '0004_practice_records.sql',
             '0005_nullable_practice_record_class.sql',
             '0010_class_practice_records_cursor.sql',
+            '0012_practice_original_answers.sql',
+            '0013_practice_review_bits.sql',
         ):
             self.db.executescript((ROOT / 'migrations' / name).read_text())
         self.db.row_factory = sqlite3.Row
@@ -67,6 +69,32 @@ class ClassPracticeCursorTests(unittest.TestCase):
             ),
         ).fetchall()
         self.assertEqual([row['id'] for row in first + rest], ['a', 'b', 'c'])
+
+    def test_original_handwriting_is_stored_and_selected_as_blob(self):
+        compressed = b'\x1f\x8b\x08\x00test'
+        self.db.execute(
+            "UPDATE practice_records SET handwriting_gzip=?, ocr_results=?, review_bits=? WHERE id='a'",
+            (sqlite3.Binary(compressed), '["春"]', sqlite3.Binary(b'\x01')),
+        )
+        snapshot = self.db.execute(
+            'SELECT MAX(rowid) FROM practice_records WHERE class_id=?', ('class-a',)
+        ).fetchone()[0]
+        row = self.db.execute(self.first_sql, ('class-a', snapshot, 1)).fetchone()
+        self.assertEqual(row['handwriting_gzip'], compressed)
+        self.assertEqual(row['ocr_results'], '["春"]')
+        self.assertEqual(row['review_bits'], b'\x01')
+        self.assertEqual(
+            self.db.execute(
+                "SELECT typeof(handwriting_gzip) FROM practice_records WHERE id='a'"
+            ).fetchone()[0],
+            'blob',
+        )
+        self.assertEqual(
+            self.db.execute(
+                "SELECT typeof(review_bits) FROM practice_records WHERE id='a'"
+            ).fetchone()[0],
+            'blob',
+        )
 
     def test_class_time_id_index_supports_first_page_sort(self):
         snapshot = self.db.execute(

@@ -12,7 +12,9 @@ class StudentHistoryTests(unittest.TestCase):
         self.db = sqlite3.connect(':memory:')
         self.addCleanup(self.db.close)
         for name in ('0004_practice_records.sql', '0005_nullable_practice_record_class.sql',
-                     '0007_student_practice_history_index.sql'):
+                     '0007_student_practice_history_index.sql',
+                     '0012_practice_original_answers.sql',
+                     '0013_practice_review_bits.sql'):
             self.db.executescript((ROOT / 'migrations' / name).read_text())
         source = (ROOT / 'src/db/practice_records.rs').read_text()
         section = source.split('pub(crate) async fn list_for_student_page(')[1]

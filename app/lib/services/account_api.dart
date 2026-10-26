@@ -4,6 +4,7 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:cryptography/cryptography.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class AccountApiException implements Exception {
@@ -22,16 +23,40 @@ class AccountApi {
   static const apiBaseUrl = String.fromEnvironment('API_BASE_URL');
   static const _tokenKey = 'account_session_token';
   static const _accountIdKey = 'account_session_account_id';
+  static const _storageRetryDelay = Duration(milliseconds: 20);
   static const passwordIterations = 600000;
   final HttpClient _client;
   final FlutterSecureStorage _storage;
 
   bool get configured => apiBaseUrl.trim().isNotEmpty;
-  Future<String?> get token => _storage.read(key: _tokenKey);
-  Future<String?> get accountId => _storage.read(key: _accountIdKey);
+  Future<String?> get token =>
+      _withStorageRetry(() => _storage.read(key: _tokenKey));
+  Future<String?> get accountId =>
+      _withStorageRetry(() => _storage.read(key: _accountIdKey));
 
   Future<void> rememberAccountId(String id) =>
-      _storage.write(key: _accountIdKey, value: id);
+      _withStorageRetry(() => _storage.write(key: _accountIdKey, value: id));
+
+  Future<T> _withStorageRetry<T>(Future<T> Function() operation) async {
+    for (var attempt = 0; ; attempt++) {
+      try {
+        return await operation();
+      } on PlatformException catch (error) {
+        if (attempt >= 2 || !_isTransientKWalletSessionError(error)) rethrow;
+        await Future<void>.delayed(_storageRetryDelay);
+      }
+    }
+  }
+
+  bool _isTransientKWalletSessionError(PlatformException error) =>
+      error.code == 'Libsecret error' &&
+      (error.message ?? '').contains('Client public key size is invalid');
+
+  Future<void> _deleteCredential(String key) =>
+      _withStorageRetry(() => _storage.delete(key: key));
+
+  Future<void> _writeCredential(String key, String value) =>
+      _withStorageRetry(() => _storage.write(key: key, value: value));
 
   Future<Map<String, dynamic>> request(
     String path, {
@@ -75,8 +100,8 @@ class AccountApi {
     }
     if (response.statusCode < 200 || response.statusCode >= 300) {
       if (response.statusCode == 401) {
-        await _storage.delete(key: _tokenKey);
-        await _storage.delete(key: _accountIdKey);
+        await _deleteCredential(_tokenKey);
+        await _deleteCredential(_accountIdKey);
       }
       throw AccountApiException(
         decoded['error'] as String? ?? '请求失败（${response.statusCode}）',
@@ -105,7 +130,7 @@ class AccountApi {
       },
     );
     final session = result['token'];
-    if (session is String) await _storage.write(key: _tokenKey, value: session);
+    if (session is String) await _writeCredential(_tokenKey, session);
     final account = result['account'];
     if (account is Map && account['id'] is String) {
       await rememberAccountId(account['id'] as String);
@@ -152,13 +177,13 @@ class AccountApi {
     try {
       await request('auth/logout', method: 'POST');
     } finally {
-      await _storage.delete(key: _tokenKey);
-      await _storage.delete(key: _accountIdKey);
+      await _deleteCredential(_tokenKey);
+      await _deleteCredential(_accountIdKey);
     }
   }
 
   Future<void> clearToken() async {
-    await _storage.delete(key: _tokenKey);
-    await _storage.delete(key: _accountIdKey);
+    await _deleteCredential(_tokenKey);
+    await _deleteCredential(_accountIdKey);
   }
 }

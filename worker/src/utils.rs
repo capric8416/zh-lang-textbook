@@ -9,8 +9,15 @@ pub(crate) const SESSION_DAYS: i64 = 30;
 const MAX_BODY: usize = 16 * 1024;
 
 pub(crate) async fn read_json<T: DeserializeOwned>(request: &mut Request) -> Result<T> {
+    read_json_with_limit(request, MAX_BODY).await
+}
+
+pub(crate) async fn read_json_with_limit<T: DeserializeOwned>(
+    request: &mut Request,
+    max_body: usize,
+) -> Result<T> {
     let body = request.bytes().await?;
-    if body.is_empty() || body.len() > MAX_BODY {
+    if body.is_empty() || body.len() > max_body {
         return Err(Error::RustError("invalid body".into()));
     }
     serde_json::from_slice(&body).map_err(|_| Error::RustError("invalid JSON".into()))
