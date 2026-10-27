@@ -12,7 +12,9 @@ import 'native_inference.dart';
 class SpeechEngine {
   SpeechEngine._();
 
-  static final SpeechEngine instance = SpeechEngine._();
+  static SpeechEngine? _instance;
+  static SpeechEngine get instance => _instance ??= SpeechEngine._();
+  static SpeechEngine? get initializedInstance => _instance;
 
   static const _ttsAsset = 'assets/speech/piper-zh_CN-xiao_ya-medium/';
   static const _asrAsset = 'assets/speech/funasr-paraformer-zh/';

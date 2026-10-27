@@ -37,6 +37,12 @@ class _HomePageState extends State<HomePage> {
     _restoreAuthentication();
   }
 
+  @override
+  void dispose() {
+    StudyStateSync.unbind();
+    super.dispose();
+  }
+
   Future<void> _restoreAuthentication() async {
     var authenticated = false;
     try {

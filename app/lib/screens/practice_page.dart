@@ -105,8 +105,11 @@ class _PracticePageState extends State<PracticePage> {
 
   @override
   void dispose() {
-    unawaited(SpeechEngine.instance.stopSpeaking());
-    if (_recording) SpeechEngine.instance.cancelRecording();
+    final speechEngine = SpeechEngine.initializedInstance;
+    if (speechEngine != null) {
+      unawaited(speechEngine.stopSpeaking());
+      if (_recording) speechEngine.cancelRecording();
+    }
     _thinkingTimer?.cancel();
     _reactionTimer?.cancel();
     if (_quickSession != null && !_quickFlowCompleted) {
@@ -529,6 +532,13 @@ class _PracticePageState extends State<PracticePage> {
     );
   }
 
+  Future<void> _leavePractice() async {
+    if (_quickSession != null && !_quickFlowCompleted) {
+      await _recordQuickExit();
+    }
+    if (mounted) await Navigator.of(context).maybePop();
+  }
+
   Future<void> _finishQuickPractice() async {
     final store = _engagementStore;
     final launch = _quickLaunch;
@@ -697,7 +707,7 @@ class _PracticePageState extends State<PracticePage> {
                     tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   ),
                   icon: const Icon(Icons.arrow_back),
-                  onPressed: () => Navigator.of(context).maybePop(),
+                  onPressed: _leavePractice,
                 ),
                 if (!wide && !quick)
                   IconButton(

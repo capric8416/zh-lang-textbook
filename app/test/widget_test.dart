@@ -8,6 +8,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -21,9 +22,18 @@ import 'package:zh_textbook/screens/practice_page.dart';
 import 'package:zh_textbook/services/numeric_pinyin.dart';
 import 'package:zh_textbook/services/engagement_events.dart';
 import 'package:zh_textbook/services/practice_progress.dart';
+import 'package:zh_textbook/services/study_state_sync.dart';
 import 'package:zh_textbook/services/textbook_repository.dart';
 
 void main() {
+  setUp(() {
+    StudyStateSync.unbind();
+    FlutterSecureStorage.setMockInitialValues({
+      'account_session_token': 'widget-test-token',
+      'account_session_account_id': 'widget-test-account',
+    });
+  });
+
   test('教材拼音在运行时转换为 Piper 数字声调', () {
     final source = File(
       '../json_reviewed/zh-lang-grade2b-textbook-struct.json',
@@ -38,42 +48,29 @@ void main() {
     );
   });
 
-  testWidgets('首页显示教材选择', (WidgetTester tester) async {
+  testWidgets('未登录时先显示登录页', (WidgetTester tester) async {
     SharedPreferences.setMockInitialValues({});
+    FlutterSecureStorage.setMockInitialValues({});
     await tester.pumpWidget(const ZhTextbookApp());
-    await tester.pumpAndSettle();
+    await _pumpUntilFound(tester, find.text('登录账号'));
 
-    expect(find.text('语文基础巩固与练习'), findsOneWidget);
-    expect(find.text('进入教材'), findsOneWidget);
-    expect(
-      tester
-          .widget<DropdownButtonFormField<int>>(
-            find.byType(DropdownButtonFormField<int>),
-          )
-          .initialValue,
-      isNull,
-    );
-    expect(
-      tester
-          .widget<SegmentedButton<Semester>>(
-            find.byType(SegmentedButton<Semester>),
-          )
-          .selected,
-      isEmpty,
-    );
-    expect(
-      tester.widget<FilledButton>(find.byType(FilledButton)).onPressed,
-      isNull,
-    );
+    expect(find.text('需要连接账号服务并登录后才能进入学习。'), findsOneWidget);
+    expect(find.text('进入教材'), findsNothing);
+    await tester.pumpWidget(const SizedBox.shrink());
+    await tester.pump();
   });
 
   testWidgets('首页恢复上次进入教材时的年级和学期', (WidgetTester tester) async {
     SharedPreferences.setMockInitialValues({
-      'home.last_textbook_grade': 3,
-      'home.last_textbook_semester': 'a',
+      'textbook_selection_v1_widget-test-account':
+          '{"grade":3,"semester":"a","dirty":false}',
     });
     await tester.pumpWidget(const ZhTextbookApp());
-    await tester.pumpAndSettle();
+    await _pumpUntilFound(
+      tester,
+      find.byType(DropdownButtonFormField<int>),
+    );
+    await tester.pump(const Duration(milliseconds: 100));
 
     expect(
       tester
@@ -95,6 +92,8 @@ void main() {
       tester.widget<FilledButton>(find.byType(FilledButton)).onPressed,
       isNotNull,
     );
+    await tester.pumpWidget(const SizedBox.shrink());
+    await tester.pump();
   });
 
   testWidgets('练习页可以加载题库并显示题目', (WidgetTester tester) async {
@@ -115,10 +114,10 @@ void main() {
         ),
       ),
     );
-    await tester.pumpAndSettle();
+    await _pumpUntilFound(tester, find.byTooltip('打开目录'));
 
     await tester.tap(find.byTooltip('打开目录'));
-    await tester.pumpAndSettle();
+    await _pumpUntilFound(tester, find.text('练习目录'));
 
     expect(find.text('练习目录'), findsOneWidget);
     expect(
@@ -155,7 +154,7 @@ void main() {
         ),
       ),
     );
-    await tester.pumpAndSettle();
+    await _pumpUntilFound(tester, find.textContaining('1 道题目再练一练'));
 
     expect(find.text('再练一练'), findsOneWidget);
     expect(find.textContaining('1 道题目再练一练'), findsOneWidget);
@@ -166,16 +165,16 @@ void main() {
       findsOneWidget,
     );
     await tester.tap(find.byKey(const ValueKey('pet-practice-invitation')));
-    await tester.pumpAndSettle();
+    await _pumpUntilFound(tester, find.text('宠物三题陪练'));
     expect(find.text('宠物三题陪练'), findsOneWidget);
     expect(
       find.byKey(const ValueKey('pet-practice-companion')),
       findsOneWidget,
     );
     await tester.pump(const Duration(seconds: 10));
-    expect(find.textContaining('慢慢想'), findsOneWidget);
+    expect(find.textContaining('陪你慢慢想'), findsOneWidget);
     await tester.tap(find.byTooltip('返回'));
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(seconds: 1));
     final events = (await EngagementEventStore.open()).events;
     expect(
       events.where(
@@ -216,12 +215,15 @@ void main() {
         home: ModePage(selection: selection, textbook: textbook),
       ),
     );
-    await tester.pumpAndSettle();
+    await _pumpUntilFound(
+      tester,
+      find.byKey(const ValueKey('pet-learning-goal')),
+    );
     await tester.tap(find.byKey(const ValueKey('pet-learning-goal')));
-    await tester.pumpAndSettle();
+    await _pumpUntilFound(tester, find.text('宠物三题陪练'));
     expect(find.text('宠物三题陪练'), findsOneWidget);
     await tester.tap(find.byTooltip('返回'));
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(seconds: 1));
     final goalStarts = (await EngagementEventStore.open()).events.where(
       (event) => event.type == EngagementEventType.goalPracticeStarted,
     );
@@ -242,19 +244,19 @@ void main() {
         home: PetHomePage(selection: selection, textbook: textbook),
       ),
     );
-    await tester.pumpAndSettle();
+    await _pumpUntilFound(tester, find.text('选择房间'));
     final homeGoal = find.byKey(const ValueKey('pet-home-learning-goal'));
-    await tester.scrollUntilVisible(
+    await tester.dragUntilVisible(
       homeGoal,
-      300,
-      scrollable: find.byType(Scrollable).first,
+      find.byType(Scrollable).first,
+      const Offset(0, -300),
     );
     expect(homeGoal, findsOneWidget);
     await tester.tap(homeGoal);
-    await tester.pumpAndSettle();
+    await _pumpUntilFound(tester, find.text('宠物三题陪练'));
     expect(find.text('宠物三题陪练'), findsOneWidget);
     await tester.tap(find.byTooltip('返回'));
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(seconds: 1));
     final goalStarts = (await EngagementEventStore.open()).events.where(
       (event) => event.type == EngagementEventType.goalPracticeStarted,
     );
@@ -273,13 +275,14 @@ void main() {
         home: ModePage(selection: selection, textbook: textbook),
       ),
     );
-    await tester.pumpAndSettle();
+    await _pumpUntilFound(tester, find.textContaining('进入本课练习'));
 
     expect(find.textContaining('进入本课练习'), findsOneWidget);
     await tester.tap(find.byKey(const ValueKey('pet-learning-goal')));
     await tester.pump();
     expect(find.textContaining('不足 3 题'), findsOneWidget);
-    await tester.pumpAndSettle();
+    await _pumpUntilFound(tester, find.text('语文基础练习'));
+    await tester.pump(const Duration(seconds: 1));
     expect(find.text('语文基础练习'), findsOneWidget);
     expect(find.text('宠物三题陪练'), findsNothing);
   });
@@ -310,13 +313,34 @@ void main() {
         ),
       ),
     );
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('当前错题 1'));
-    await tester.pumpAndSettle();
+    await _pumpUntilFound(tester, find.text('待巩固 1'));
+    await tester.tap(find.text('待巩固 1'));
+    await _pumpUntilFound(tester, find.text('整本教材 · 再练一练'));
 
     expect(find.text('整本教材 · 再练一练'), findsOneWidget);
     expect(find.text('返回综合练习'), findsOneWidget);
   });
+}
+
+Future<void> _pumpUntilFound(
+  WidgetTester tester,
+  Finder finder, {
+  int maxPumps = 100,
+}) async {
+  for (var pump = 0; pump < maxPumps; pump++) {
+    await tester.pump(const Duration(milliseconds: 20));
+    if (finder.evaluate().isNotEmpty) return;
+  }
+  final visibleText = find
+      .byType(Text)
+      .evaluate()
+      .map((element) => (element.widget as Text).data)
+      .whereType<String>()
+      .take(12)
+      .join(' | ');
+  throw TestFailure(
+    '等待控件超时：${finder.describeMatch(Plurality.one)}；当前文字：$visibleText',
+  );
 }
 
 Textbook _sparseTextbook() => Textbook.fromJson({
