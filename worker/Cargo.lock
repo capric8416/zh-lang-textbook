@@ -972,6 +972,7 @@ name = "zh-lang-textbook-accounts-worker"
 version = "0.1.0"
 dependencies = [
  "base64",
+ "crc32fast",
  "flate2",
  "getrandom",
  "js-sys",

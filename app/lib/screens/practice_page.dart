@@ -361,25 +361,29 @@ class _PracticePageState extends State<PracticePage> {
       _grading = true;
     });
     try {
-      final assessment = await SpeechEngine.instance.stopAndAssess(
+      final attempt = await SpeechEngine.instance.stopAndAssess(
         expectedText: question.answer,
         expectedPinyin: question.prompt,
       );
       if (!mounted) return;
-      final correct = await showDialog<bool>(
+      final review = await showDialog<List<bool>>(
         context: context,
         barrierDismissible: false,
         builder: (context) => _SpeechReviewDialog(
           expectedText: question.answer,
-          assessment: assessment,
+          assessment: attempt.assessment,
         ),
       );
-      if (correct == null) return;
+      if (review == null) return;
+      final correct = review.isNotEmpty && review.every((value) => value);
       await _recordPracticeResult(
         store,
         question,
         correct,
-        studentAnswer: assessment.recognizedText,
+        studentAnswer: attempt.assessment.recognizedText,
+        speechSnac: base64Encode(attempt.snacBytes),
+        speechReviewBits: base64Encode(_packReviewBits(review)),
+        speechRecognizedPinyin: attempt.assessment.recognizedPinyin,
       );
       if (mounted) {
         setState(() => _graded = true);
@@ -402,31 +406,30 @@ class _PracticePageState extends State<PracticePage> {
     String? handwritingGzip,
     List<String>? ocrResults,
     String? reviewBits,
+    String? speechSnac,
+    String? speechReviewBits,
+    String? speechRecognizedPinyin,
   }) async {
-    try {
-      await PracticeRecordSync.record(
-        api: _accountApi,
-        textbookKey: widget.selection.fileName,
-        questionId: question.id,
-        chapterId: question.chapterId,
-        questionKind: question.kind,
-        category: question.category,
-        source: question.source,
-        direction: _direction.name,
-        prompt: promptForPracticeDirection(question, _direction),
-        studentAnswer: studentAnswer,
-        expectedAnswer: expectedAnswerForPracticeDirection(
-          question,
-          _direction,
-        ),
-        isCorrect: correct,
-        handwritingGzip: handwritingGzip,
-        ocrResults: ocrResults,
-        reviewBits: reviewBits,
-      );
-    } catch (error, stackTrace) {
-      debugPrintStack(label: '做题结果上传队列失败：$error', stackTrace: stackTrace);
-    }
+    await PracticeRecordSync.record(
+      api: _accountApi,
+      textbookKey: widget.selection.fileName,
+      questionId: question.id,
+      chapterId: question.chapterId,
+      questionKind: question.kind,
+      category: question.category,
+      source: question.source,
+      direction: _direction.name,
+      prompt: promptForPracticeDirection(question, _direction),
+      studentAnswer: studentAnswer,
+      expectedAnswer: expectedAnswerForPracticeDirection(question, _direction),
+      isCorrect: correct,
+      handwritingGzip: handwritingGzip,
+      ocrResults: ocrResults,
+      reviewBits: reviewBits,
+      speechSnac: speechSnac,
+      speechReviewBits: speechReviewBits,
+      speechRecognizedPinyin: speechRecognizedPinyin,
+    );
     await store.record(question.attemptId(_direction), correct: correct);
   }
 
@@ -1268,12 +1271,21 @@ class _SpeechReviewDialog extends StatefulWidget {
 }
 
 class _SpeechReviewDialogState extends State<_SpeechReviewDialog> {
-  late bool _correct = widget.assessment.automaticallyCorrect;
+  late final List<bool> _reviewed = List<bool>.of(
+    widget.assessment.syllableCorrect,
+  );
+
+  bool get _correct =>
+      _reviewed.isNotEmpty && _reviewed.every((value) => value);
 
   @override
   Widget build(BuildContext context) {
     final assessment = widget.assessment;
     final percent = (assessment.matchRate * 100).round();
+    final hanzi = widget.expectedText.replaceAll(
+      RegExp(r'[^\u3400-\u9fff]'),
+      '',
+    );
     return AlertDialog(
       title: const Text('朗读检查'),
       content: SizedBox(
@@ -1305,6 +1317,24 @@ class _SpeechReviewDialogState extends State<_SpeechReviewDialog> {
                 '${assessment.totalSyllables}（$percent%）',
               ),
               const SizedBox(height: 14),
+              const Text('逐字复核（自动结果可修改）：'),
+              const SizedBox(height: 6),
+              Wrap(
+                spacing: 6,
+                runSpacing: 6,
+                children: [
+                  for (var index = 0; index < _reviewed.length; index++)
+                    FilterChip(
+                      label: Text(
+                        '${index + 1} · ${index < hanzi.length ? hanzi[index] : ''}',
+                      ),
+                      selected: _reviewed[index],
+                      onSelected: (value) =>
+                          setState(() => _reviewed[index] = value),
+                    ),
+                ],
+              ),
+              const SizedBox(height: 14),
               SegmentedButton<bool>(
                 segments: const [
                   ButtonSegment(
@@ -1319,8 +1349,11 @@ class _SpeechReviewDialogState extends State<_SpeechReviewDialog> {
                   ),
                 ],
                 selected: {_correct},
-                onSelectionChanged: (value) =>
-                    setState(() => _correct = value.single),
+                onSelectionChanged: (value) => setState(() {
+                  for (var i = 0; i < _reviewed.length; i++) {
+                    _reviewed[i] = value.single;
+                  }
+                }),
               ),
             ],
           ),
@@ -1328,7 +1361,7 @@ class _SpeechReviewDialogState extends State<_SpeechReviewDialog> {
       ),
       actions: [
         FilledButton(
-          onPressed: () => Navigator.pop(context, _correct),
+          onPressed: () => Navigator.pop(context, List<bool>.of(_reviewed)),
           child: const Text('确认'),
         ),
       ],

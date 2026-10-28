@@ -175,7 +175,7 @@ def patch_funasr(source: Path, work: Path) -> None:
 def patch_all(config) -> None:
     speech_sources = config.speech / ".build-deps/sources"
     ocr_sources = config.ocr / ".build-deps/sources"
-    patch_onnxruntime(speech_sources / "onnxruntime-v1.22.0")
+    patch_onnxruntime(speech_sources / "onnxruntime-v1.29.0")
     patch_piper(speech_sources / "piper-404aefedbd74baa0bd43e451bc407a2b3aace0f5",
                 config.speech / ".build-deps" / config.target / "piper-source")
     patch_funasr(speech_sources / "funasr-231ec5dda739c83f35e59e875736cde3ef1af161/runtime/onnxruntime",

@@ -32,7 +32,7 @@ def main() -> None:
         from .stages.onnxruntime import build
         config = for_target(args.target).config
         checkout_sources(config.root)
-        patch_onnxruntime(config.speech / ".build-deps/sources/onnxruntime-v1.22.0")
+        patch_onnxruntime(config.speech / ".build-deps/sources/onnxruntime-v1.29.0")
         build(config)
         from .stages.re2 import build as build_re2
         build_re2(config)
@@ -43,7 +43,7 @@ def main() -> None:
         from .stages.re2 import build
         config = for_target(args.target).config
         checkout_sources(config.root)
-        patch_onnxruntime(config.speech / ".build-deps/sources/onnxruntime-v1.22.0")
+        patch_onnxruntime(config.speech / ".build-deps/sources/onnxruntime-v1.29.0")
         build_ort(config)
         build(config)
     elif args.component == "piper":
@@ -53,7 +53,7 @@ def main() -> None:
         from .stages.piper import build
         config = for_target(args.target).config
         checkout_sources(config.root)
-        patch_onnxruntime(config.speech / ".build-deps/sources/onnxruntime-v1.22.0")
+        patch_onnxruntime(config.speech / ".build-deps/sources/onnxruntime-v1.29.0")
         build_ort(config)
         from .stages.re2 import build as build_re2
         build_re2(config)
@@ -65,7 +65,7 @@ def main() -> None:
         from .stages.funasr import build
         config = for_target(args.target).config
         checkout_sources(config.root)
-        patch_onnxruntime(config.speech / ".build-deps/sources/onnxruntime-v1.22.0")
+        patch_onnxruntime(config.speech / ".build-deps/sources/onnxruntime-v1.29.0")
         build_ort(config)
         from .stages.re2 import build as build_re2
         build_re2(config)

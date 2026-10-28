@@ -34,7 +34,7 @@ if(NOT EXISTS "${ZH_SPEECH_DEPS}")
     "Run TARGET=android-arm64-v8a mise run native (or the matching target) first.")
 endif()
 
-add_library(zh_speech ${ZH_SPEECH_LIBRARY_TYPE} speech_bridge.cpp)
+add_library(zh_speech ${ZH_SPEECH_LIBRARY_TYPE} speech_bridge.cpp snac_codec.cpp)
 target_compile_features(zh_speech PRIVATE cxx_std_17)
 target_compile_definitions(zh_speech PRIVATE BUILDING_LIBPIPER)
 if(WIN32)

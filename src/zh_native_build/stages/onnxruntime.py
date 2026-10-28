@@ -9,7 +9,7 @@ from ..config import BuildConfig
 from ..runner import run
 
 
-ORT_NAME = "onnxruntime-v1.22.0"
+ORT_NAME = "onnxruntime-v1.29.0"
 
 
 def _archiver(config: BuildConfig) -> str:
@@ -83,6 +83,7 @@ def build(config: BuildConfig) -> Path:
         "--cmake_extra_defines",
         "onnxruntime_BUILD_UNIT_TESTS=OFF",
         "onnxruntime_BUILD_BENCHMARKS=OFF",
+        "onnxruntime_USE_TELEMETRY=OFF",
     ]
     if config.target == "android-arm64-v8a":
         command[5:5] = ["--parallel", "2"]

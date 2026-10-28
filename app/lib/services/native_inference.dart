@@ -62,6 +62,34 @@ class NativeInference {
         as String;
   }
 
+  Future<void> encodeSnac(
+    String encoder,
+    String decoder,
+    String wav,
+    String output,
+  ) async {
+    await _worker.run('snacEncode', {
+      'encoder': encoder,
+      'decoder': decoder,
+      'input': wav,
+      'output': output,
+    });
+  }
+
+  Future<void> decodeSnac(
+    String encoder,
+    String decoder,
+    String input,
+    String wav,
+  ) async {
+    await _worker.run('snacDecode', {
+      'encoder': encoder,
+      'decoder': decoder,
+      'input': input,
+      'output': wav,
+    });
+  }
+
   Future<void> releaseOcr() async => await _worker.run('ocrDispose', {});
 
   Future<void> dispose() async {
@@ -125,6 +153,18 @@ class _NativeHandler implements InferenceHandler {
           vadDirectory: text('vad'),
         );
         return operation == 'asr' ? speech.recognizeWav(text('wav')) : null;
+      case 'snacEncode':
+      case 'snacDecode':
+        speech.initializeSnac(
+          encoder: text('encoder'),
+          decoder: text('decoder'),
+        );
+        if (operation == 'snacEncode') {
+          speech.encodeSnac(text('input'), text('output'));
+        } else {
+          speech.decodeSnac(text('input'), text('output'));
+        }
+        return null;
       case 'ocrDispose':
         _ocr.dispose();
         return null;

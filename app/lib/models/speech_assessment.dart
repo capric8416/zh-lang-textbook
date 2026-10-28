@@ -1,4 +1,11 @@
 import 'package:lpinyin/lpinyin.dart';
+import 'dart:typed_data';
+
+class SpeechAttempt {
+  const SpeechAttempt(this.assessment, this.snacBytes);
+  final SpeechAssessment assessment;
+  final Uint8List snacBytes;
+}
 
 class SpeechAssessment {
   const SpeechAssessment({
@@ -7,6 +14,7 @@ class SpeechAssessment {
     required this.recognizedPinyin,
     required this.matchedSyllables,
     required this.totalSyllables,
+    required this.syllableCorrect,
   });
 
   factory SpeechAssessment.compare({
@@ -71,12 +79,30 @@ class SpeechAssessment {
           ),
         )
         .length;
+    final syllableCorrect = List<bool>.filled(expected.length, false);
+    for (final pair in alignment) {
+      final index = pair.expectedIndex;
+      final recognizedIndex = pair.recognizedIndex;
+      if (index != null &&
+          recognizedIndex != null &&
+          index < syllableCorrect.length) {
+        syllableCorrect[index] = _matches(
+          expectedChars,
+          expected,
+          recognizedChars,
+          recognized,
+          index,
+          recognizedIndex,
+        );
+      }
+    }
     return SpeechAssessment(
       recognizedText: correctedText.toString(),
       expectedPinyin: expected.join(' '),
       recognizedPinyin: correctedPinyin.join(' '),
       matchedSyllables: matched,
       totalSyllables: expected.length,
+      syllableCorrect: syllableCorrect,
     );
   }
 
@@ -85,6 +111,9 @@ class SpeechAssessment {
   final String recognizedPinyin;
   final int matchedSyllables;
   final int totalSyllables;
+
+  /// One provisional pronunciation match per expected syllable; not a phonetic score.
+  final List<bool> syllableCorrect;
 
   bool get automaticallyCorrect =>
       totalSyllables > 0 &&

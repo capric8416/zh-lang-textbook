@@ -76,6 +76,7 @@ flutter:
     - assets/speech/piper-zh_CN-xiao_ya-medium/
     - assets/speech/funasr-paraformer-zh/
     - assets/speech/funasr-fsmn-vad/
+    - assets/speech/snac-24khz/
 
   # To add assets to your application, add an assets section, like this:
   # assets:

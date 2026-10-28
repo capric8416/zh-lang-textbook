@@ -13,7 +13,7 @@ class Source:
 
 
 SOURCES = (
-    Source("onnxruntime-v1.22.0", "https://github.com/microsoft/onnxruntime.git", "f217402897f40ebba457e2421bc0a4702771968e", "speech"),
+    Source("onnxruntime-v1.29.0", "https://github.com/microsoft/onnxruntime.git", "2e2543fbe9fae542f921d47a72d21d5a4ef0b710", "speech"),
     Source("piper-404aefedbd74baa0bd43e451bc407a2b3aace0f5", "https://github.com/OHF-Voice/piper1-gpl.git", "404aefedbd74baa0bd43e451bc407a2b3aace0f5", "speech"),
     Source("funasr-231ec5dda739c83f35e59e875736cde3ef1af161", "https://github.com/modelscope/FunASR.git", "231ec5dda739c83f35e59e875736cde3ef1af161", "speech"),
     Source("nlohmann-json-3.11.3", "https://github.com/nlohmann/json.git", "v3.11.3", "speech"),

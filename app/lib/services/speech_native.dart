@@ -49,6 +49,13 @@ typedef _RecognizeDart =
       Pointer<Utf8> output,
       int outputCapacity,
     );
+typedef _SnacCreateNative =
+    Pointer<Void> Function(Pointer<Utf8>, Pointer<Utf8>);
+typedef _SnacCreateDart = Pointer<Void> Function(Pointer<Utf8>, Pointer<Utf8>);
+typedef _SnacConvertNative =
+    Int32 Function(Pointer<Void>, Pointer<Utf8>, Pointer<Utf8>);
+typedef _SnacConvertDart =
+    int Function(Pointer<Void>, Pointer<Utf8>, Pointer<Utf8>);
 
 class SpeechNative {
   SpeechNative._() {
@@ -71,6 +78,18 @@ class SpeechNative {
     _recognize = library.lookupFunction<_RecognizeNative, _RecognizeDart>(
       'zh_speech_asr_recognize_wav',
     );
+    _snacCreate = library.lookupFunction<_SnacCreateNative, _SnacCreateDart>(
+      'zh_speech_snac_create',
+    );
+    _snacDestroy = library.lookupFunction<_DestroyNative, _DestroyDart>(
+      'zh_speech_snac_destroy',
+    );
+    _snacEncode = library.lookupFunction<_SnacConvertNative, _SnacConvertDart>(
+      'zh_speech_snac_encode_wav',
+    );
+    _snacDecode = library.lookupFunction<_SnacConvertNative, _SnacConvertDart>(
+      'zh_speech_snac_decode_wav',
+    );
   }
 
   static SpeechNative? _instance;
@@ -82,8 +101,52 @@ class SpeechNative {
   late final _AsrCreateDart _asrCreate;
   late final _DestroyDart _asrDestroy;
   late final _RecognizeDart _recognize;
+  late final _SnacCreateDart _snacCreate;
+  late final _DestroyDart _snacDestroy;
+  late final _SnacConvertDart _snacEncode;
+  late final _SnacConvertDart _snacDecode;
   Pointer<Void>? _ttsHandle;
   Pointer<Void>? _asrHandle;
+  Pointer<Void>? _snacHandle;
+
+  void initializeSnac({required String encoder, required String decoder}) {
+    if (_snacHandle != null) return;
+    final input = encoder.toNativeUtf8();
+    final output = decoder.toNativeUtf8();
+    try {
+      final handle = _snacCreate(input, output);
+      if (handle == nullptr) throw StateError('SNAC 模型初始化失败');
+      _snacHandle = handle;
+    } finally {
+      malloc.free(output);
+      malloc.free(input);
+    }
+  }
+
+  void encodeSnac(String inputPath, String outputPath) =>
+      _convertSnac(_snacEncode, inputPath, outputPath, '编码');
+
+  void decodeSnac(String inputPath, String outputPath) =>
+      _convertSnac(_snacDecode, inputPath, outputPath, '解码');
+
+  void _convertSnac(
+    _SnacConvertDart operation,
+    String inputPath,
+    String outputPath,
+    String name,
+  ) {
+    final handle = _snacHandle;
+    if (handle == null) throw StateError('SNAC 尚未初始化');
+    final input = inputPath.toNativeUtf8();
+    final output = outputPath.toNativeUtf8();
+    try {
+      final code = operation(handle, input, output);
+      if (code != 0) throw StateError('SNAC $name失败，错误码 $code');
+    } finally {
+      malloc.free(output);
+      malloc.free(input);
+    }
+  }
 
   void initializeTts({required String model, required String config}) {
     if (_ttsHandle != null) return;
@@ -158,8 +221,11 @@ class SpeechNative {
     final asr = _asrHandle;
     if (tts != null) _ttsDestroy(tts);
     if (asr != null) _asrDestroy(asr);
+    final snac = _snacHandle;
+    if (snac != null) _snacDestroy(snac);
     _ttsHandle = null;
     _asrHandle = null;
+    _snacHandle = null;
   }
 
   DynamicLibrary _openLibrary() {

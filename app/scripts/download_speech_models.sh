@@ -8,8 +8,9 @@ cache_dir="${SPEECH_MODEL_CACHE:-$app_dir/.dart_tool/speech-models-v2}"
 tts_dir="$asset_dir/piper-zh_CN-xiao_ya-medium"
 asr_dir="$asset_dir/funasr-paraformer-zh"
 vad_dir="$asset_dir/funasr-fsmn-vad"
+snac_dir="$asset_dir/snac-24khz"
 
-mkdir -p "$cache_dir" "$tts_dir" "$asr_dir" "$vad_dir"
+mkdir -p "$cache_dir" "$tts_dir" "$asr_dir" "$vad_dir" "$snac_dir"
 
 download_archive() {
   local url="$1" target="$2"
@@ -40,21 +41,11 @@ download_archive() {
 # CI can use a single archive uploaded to the `models` GitHub Release. Keeping
 # this as an opt-in environment variable preserves the per-file fallback for
 # local development and mirrors the same asset layout after extraction.
-if [[ -n "${SPEECH_MODEL_ARCHIVE_URL:-}" ]]; then
-  archive="$cache_dir/speech-models.tar.xz"
-  download_archive "$SPEECH_MODEL_ARCHIVE_URL" "$archive"
-  # The archive contains both `speech/` and `ocr/` at the assets root.
-  tar -xJf "$archive" -C "$app_dir/assets"
-  test -s "$tts_dir/model.onnx"
-  test -s "$asr_dir/model_quant.onnx"
-  test -s "$vad_dir/model_quant.onnx"
-  test -s "$app_dir/assets/ocr/PP_OCRv6_small_det.bin"
-  test -s "$app_dir/assets/ocr/PP_OCRv6_small_rec.bin"
-  exit 0
-fi
-
 fetch() {
   local url="$1" sha256="$2" target="$3"
+  if [[ -s "$target" ]] && echo "$sha256  $target" | sha256sum -c - >/dev/null 2>&1; then
+    return
+  fi
   local cached="$cache_dir/$sha256"
   if [[ ! -f "$cached" ]] || ! echo "$sha256  $cached" | sha256sum -c - >/dev/null 2>&1; then
     rm -f "$cached"
@@ -83,6 +74,30 @@ fetch() {
   fi
   cp "$cached" "$target"
 }
+
+fetch_snac() {
+  local root="https://huggingface.co/onnx-community/snac_24khz-ONNX/resolve/main/onnx"
+  fetch "$root/encoder_model_int8.onnx" \
+    4561d076b5f1dfdee95deb540d1c888c1fe845a65923ba80612be7de2ccd2130 \
+    "$snac_dir/encoder_model_int8.onnx"
+  fetch "$root/decoder_model_int8.onnx" \
+    daac132d7c0166eeade9cdd9c96bff458667e4285838c757008c1331f69598b0 \
+    "$snac_dir/decoder_model_int8.onnx"
+}
+
+if [[ -n "${SPEECH_MODEL_ARCHIVE_URL:-}" ]]; then
+  archive="$cache_dir/speech-models.tar.xz"
+  download_archive "$SPEECH_MODEL_ARCHIVE_URL" "$archive"
+  # The archive contains both `speech/` and `ocr/` at the assets root.
+  tar -xJf "$archive" -C "$app_dir/assets"
+  test -s "$tts_dir/model.onnx"
+  test -s "$asr_dir/model_quant.onnx"
+  test -s "$vad_dir/model_quant.onnx"
+  test -s "$app_dir/assets/ocr/PP_OCRv6_small_det.bin"
+  test -s "$app_dir/assets/ocr/PP_OCRv6_small_rec.bin"
+  fetch_snac
+  exit 0
+fi
 
 piper_root="https://huggingface.co/rhasspy/piper-voices/resolve/main/zh/zh_CN/xiao_ya/medium"
 fetch "$piper_root/zh_CN-xiao_ya-medium.onnx" \
@@ -129,3 +144,4 @@ test -s "$tts_dir/model.onnx"
 test -s "$asr_dir/model_quant.onnx"
 test -s "$asr_dir/tokens.json"
 test -s "$vad_dir/model_quant.onnx"
+fetch_snac

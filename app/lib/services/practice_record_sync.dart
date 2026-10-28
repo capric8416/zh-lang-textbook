@@ -105,6 +105,9 @@ class PracticeRecordSync {
     String? handwritingGzip,
     List<String>? ocrResults,
     String? reviewBits,
+    String? speechSnac,
+    String? speechReviewBits,
+    String? speechRecognizedPinyin,
     DateTime? occurredAt,
   }) async {
     final sessionToken = await api.token;
@@ -127,6 +130,9 @@ class PracticeRecordSync {
       'handwritingGzip': ?handwritingGzip,
       'ocrResults': ?ocrResults,
       'reviewBits': ?reviewBits,
+      'speechSnac': ?speechSnac,
+      'speechReviewBits': ?speechReviewBits,
+      'speechRecognizedPinyin': ?speechRecognizedPinyin,
       'occurredAt': (occurredAt ?? DateTime.now()).toUtc().toIso8601String(),
     };
     if (sessionToken == null || sessionToken.isEmpty || accountId == null) {

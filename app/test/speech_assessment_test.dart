@@ -32,6 +32,7 @@ void main() {
     );
 
     expect(result.matchRate, 0.5);
+    expect(result.syllableCorrect, [true, false]);
     expect(result.automaticallyCorrect, isFalse);
   });
 

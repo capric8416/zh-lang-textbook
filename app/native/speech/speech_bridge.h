@@ -31,6 +31,18 @@ ZH_SPEECH_API void zh_speech_asr_destroy(void *handle);
 ZH_SPEECH_API int32_t zh_speech_asr_recognize_wav(
     void *handle, const char *wav_path, char *output, int32_t output_capacity);
 
+// SNAC 24 kHz INT8 ONNX. The codec container stores three 12-bit token streams.
+// 0 means success; negative values indicate invalid input, I/O or inference.
+ZH_SPEECH_API void *zh_speech_snac_create(const char *encoder_path,
+                                          const char *decoder_path);
+ZH_SPEECH_API void zh_speech_snac_destroy(void *handle);
+ZH_SPEECH_API int32_t zh_speech_snac_encode_wav(void *handle,
+                                               const char *wav_path,
+                                               const char *output_path);
+ZH_SPEECH_API int32_t zh_speech_snac_decode_wav(void *handle,
+                                               const char *snac_path,
+                                               const char *output_path);
+
 #ifdef __cplusplus
 }
 #endif

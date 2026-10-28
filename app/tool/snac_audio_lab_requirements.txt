@@ -1,0 +1,6 @@
+numpy>=1.26
+snac>=1.2.1
+sounddevice>=0.5
+soundfile>=0.12
+soxr>=0.5
+torch>=2.2

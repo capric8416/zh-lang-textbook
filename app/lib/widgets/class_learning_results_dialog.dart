@@ -9,6 +9,7 @@ import '../models/textbook.dart';
 import '../services/account_api.dart';
 import '../services/class_learning_records.dart';
 import 'original_handwriting.dart';
+import 'original_speech.dart';
 
 class ClassLearningResultsDialog extends StatefulWidget {
   const ClassLearningResultsDialog({
@@ -498,7 +499,7 @@ unitFilter.addEventListener('change',updateLessons);lessonFilter.addEventListene
               ),
             ),
             if (record['direction'] == 'readAloud')
-              _detail('ASR 识别结果', record['studentAnswer'])
+              OriginalSpeech(record: record)
             else
               OriginalHandwriting(record: record),
             _detail('记录 ID', record['id']),

@@ -27,6 +27,11 @@ pub(crate) struct PracticeRecord {
     pub(crate) ocr_results: Option<String>,
     #[serde(serialize_with = "serialize_handwriting")]
     pub(crate) review_bits: Option<serde_bytes::ByteBuf>,
+    #[serde(serialize_with = "serialize_handwriting")]
+    pub(crate) speech_snac: Option<serde_bytes::ByteBuf>,
+    #[serde(serialize_with = "serialize_handwriting")]
+    pub(crate) speech_review_bits: Option<serde_bytes::ByteBuf>,
+    pub(crate) speech_recognized_pinyin: Option<String>,
 }
 
 #[derive(Deserialize, Serialize)]
@@ -56,6 +61,11 @@ pub(crate) struct ClassPracticeRecord {
     pub(crate) ocr_results: Option<String>,
     #[serde(serialize_with = "serialize_handwriting")]
     pub(crate) review_bits: Option<serde_bytes::ByteBuf>,
+    #[serde(serialize_with = "serialize_handwriting")]
+    pub(crate) speech_snac: Option<serde_bytes::ByteBuf>,
+    #[serde(serialize_with = "serialize_handwriting")]
+    pub(crate) speech_review_bits: Option<serde_bytes::ByteBuf>,
+    pub(crate) speech_recognized_pinyin: Option<String>,
 }
 
 fn serialize_ocr_results<S>(
@@ -110,6 +120,21 @@ pub(crate) async fn insert(
         .as_deref()
         .map(|bytes| D1Type::Blob(bytes.as_slice()))
         .unwrap_or(D1Type::Null);
+    let speech_value = record
+        .speech_snac
+        .as_deref()
+        .map(|bytes| D1Type::Blob(bytes.as_slice()))
+        .unwrap_or(D1Type::Null);
+    let speech_review_value = record
+        .speech_review_bits
+        .as_deref()
+        .map(|bytes| D1Type::Blob(bytes.as_slice()))
+        .unwrap_or(D1Type::Null);
+    let speech_pinyin_value = record
+        .speech_recognized_pinyin
+        .as_deref()
+        .map(D1Type::Text)
+        .unwrap_or(D1Type::Null);
     let bindings = [
         D1Type::Text(&record.id),
         D1Type::Text(student_id),
@@ -129,8 +154,11 @@ pub(crate) async fn insert(
         handwriting_value,
         ocr_value,
         review_value,
+        speech_value,
+        speech_review_value,
+        speech_pinyin_value,
     ];
-    db.prepare("INSERT INTO practice_records(id,student_id,class_id,textbook_key,question_id,chapter_id,question_kind,category,source,direction,prompt,student_answer,expected_answer,is_correct,occurred_at,handwriting_gzip,ocr_results,review_bits) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) ON CONFLICT(id) DO NOTHING")
+    db.prepare("INSERT INTO practice_records(id,student_id,class_id,textbook_key,question_id,chapter_id,question_kind,category,source,direction,prompt,student_answer,expected_answer,is_correct,occurred_at,handwriting_gzip,ocr_results,review_bits,speech_snac,speech_review_bits,speech_recognized_pinyin) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) ON CONFLICT(id) DO NOTHING")
         .bind_refs(&bindings)?
         .run()
         .await?;
@@ -160,10 +188,10 @@ pub(crate) async fn list_for_class_cursor_page(
     limit: u32,
 ) -> Result<Vec<ClassPracticeRecord>> {
     let statement = if let (Some(time), Some(id)) = (before_time, after_id) {
-        db.prepare("SELECT p.id,p.student_id,p.class_id,p.textbook_key,p.question_id,p.chapter_id,p.question_kind,p.category,p.source,p.direction,p.prompt,p.student_answer,p.expected_answer,p.is_correct,p.occurred_at,p.created_at,p.handwriting_gzip,p.ocr_results,p.review_bits,a.username,a.display_name FROM practice_records p JOIN accounts a ON a.id=p.student_id WHERE p.class_id=? AND p.rowid<=? AND (p.occurred_at<? OR (p.occurred_at=? AND p.id>?)) ORDER BY p.occurred_at DESC,p.id ASC LIMIT ?")
+        db.prepare("SELECT p.id,p.student_id,p.class_id,p.textbook_key,p.question_id,p.chapter_id,p.question_kind,p.category,p.source,p.direction,p.prompt,p.student_answer,p.expected_answer,p.is_correct,p.occurred_at,p.created_at,p.handwriting_gzip,p.ocr_results,p.review_bits,p.speech_snac,p.speech_review_bits,p.speech_recognized_pinyin,a.username,a.display_name FROM practice_records p JOIN accounts a ON a.id=p.student_id WHERE p.class_id=? AND p.rowid<=? AND (p.occurred_at<? OR (p.occurred_at=? AND p.id>?)) ORDER BY p.occurred_at DESC,p.id ASC LIMIT ?")
             .bind(&[class_id.into(), (snapshot_row_id as f64).into(), time.into(), time.into(), id.into(), (limit as f64).into()])?
     } else {
-        db.prepare("SELECT p.id,p.student_id,p.class_id,p.textbook_key,p.question_id,p.chapter_id,p.question_kind,p.category,p.source,p.direction,p.prompt,p.student_answer,p.expected_answer,p.is_correct,p.occurred_at,p.created_at,p.handwriting_gzip,p.ocr_results,p.review_bits,a.username,a.display_name FROM practice_records p JOIN accounts a ON a.id=p.student_id WHERE p.class_id=? AND p.rowid<=? ORDER BY p.occurred_at DESC,p.id ASC LIMIT ?")
+        db.prepare("SELECT p.id,p.student_id,p.class_id,p.textbook_key,p.question_id,p.chapter_id,p.question_kind,p.category,p.source,p.direction,p.prompt,p.student_answer,p.expected_answer,p.is_correct,p.occurred_at,p.created_at,p.handwriting_gzip,p.ocr_results,p.review_bits,p.speech_snac,p.speech_review_bits,p.speech_recognized_pinyin,a.username,a.display_name FROM practice_records p JOIN accounts a ON a.id=p.student_id WHERE p.class_id=? AND p.rowid<=? ORDER BY p.occurred_at DESC,p.id ASC LIMIT ?")
             .bind(&[class_id.into(), (snapshot_row_id as f64).into(), (limit as f64).into()])?
     };
     statement.all().await?.results::<ClassPracticeRecord>()
@@ -176,7 +204,7 @@ pub(crate) async fn list_for_class_offset_page(
     limit: u32,
     offset: u32,
 ) -> Result<Vec<ClassPracticeRecord>> {
-    db.prepare("SELECT p.id,p.student_id,p.class_id,p.textbook_key,p.question_id,p.chapter_id,p.question_kind,p.category,p.source,p.direction,p.prompt,p.student_answer,p.expected_answer,p.is_correct,p.occurred_at,p.created_at,p.handwriting_gzip,p.ocr_results,p.review_bits,a.username,a.display_name FROM practice_records p JOIN accounts a ON a.id=p.student_id WHERE p.class_id=? ORDER BY p.occurred_at DESC,p.id LIMIT ? OFFSET ?")
+    db.prepare("SELECT p.id,p.student_id,p.class_id,p.textbook_key,p.question_id,p.chapter_id,p.question_kind,p.category,p.source,p.direction,p.prompt,p.student_answer,p.expected_answer,p.is_correct,p.occurred_at,p.created_at,p.handwriting_gzip,p.ocr_results,p.review_bits,p.speech_snac,p.speech_review_bits,p.speech_recognized_pinyin,a.username,a.display_name FROM practice_records p JOIN accounts a ON a.id=p.student_id WHERE p.class_id=? ORDER BY p.occurred_at DESC,p.id LIMIT ? OFFSET ?")
         .bind(&[class_id.into(), (limit as f64).into(), (offset as f64).into()])?
         .all()
         .await?

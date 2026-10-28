@@ -8,6 +8,7 @@ crate-type = ["cdylib", "rlib"]
 
 [dependencies]
 base64 = "0.22"
+crc32fast = "1"
 flate2 = "1"
 getrandom = { version = "0.2", features = ["js"] }
 js-sys = "0.3"

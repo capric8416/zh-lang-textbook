@@ -19,18 +19,21 @@ class SpeechEngine {
   static const _ttsAsset = 'assets/speech/piper-zh_CN-xiao_ya-medium/';
   static const _asrAsset = 'assets/speech/funasr-paraformer-zh/';
   static const _vadAsset = 'assets/speech/funasr-fsmn-vad/';
+  static const _snacAsset = 'assets/speech/snac-24khz/';
 
   final SoLoud _player = SoLoud.instance;
   final AudioRecorder _recorder = AudioRecorder();
   Future<void>? _audioInitializing;
   Future<void>? _ttsInitializing;
   Future<void>? _asrInitializing;
+  Future<void>? _snacInitializing;
   String? _recordingPath;
   SoundHandle? _playingHandle;
   AudioSource? _playingSource;
   String? _ttsDirectory;
   String? _asrDirectory;
   String? _vadDirectory;
+  String? _snacDirectory;
   int _playbackGeneration = 0;
 
   Future<void> speak({required String pinyin, required String cacheKey}) async {
@@ -92,7 +95,7 @@ class SpeechEngine {
     await _recorder.start(
       const RecordConfig(
         encoder: AudioEncoder.wav,
-        sampleRate: 16000,
+        sampleRate: 24000,
         numChannels: 1,
       ),
       path: path,
@@ -100,7 +103,7 @@ class SpeechEngine {
     _recordingPath = path;
   }
 
-  Future<SpeechAssessment> stopAndAssess({
+  Future<SpeechAttempt> stopAndAssess({
     required String expectedText,
     required String expectedPinyin,
   }) async {
@@ -115,14 +118,82 @@ class SpeechEngine {
         path,
       )).trim();
       if (text.isEmpty) throw StateError('没有识别到朗读内容');
-      return SpeechAssessment.compare(
+      final assessment = SpeechAssessment.compare(
         expectedText: expectedText,
         expectedPinyin: expectedPinyin,
         recognizedText: text,
       );
+      await _initializeSnac();
+      final encoded = File('$path.snaclab');
+      try {
+        await NativeInference.instance.encodeSnac(
+          '$_snacDirectory/encoder_model_int8.onnx',
+          '$_snacDirectory/decoder_model_int8.onnx',
+          path,
+          encoded.path,
+        );
+        return SpeechAttempt(assessment, await encoded.readAsBytes());
+      } finally {
+        encoded.delete().ignore();
+      }
     } finally {
       File(path).delete().ignore();
     }
+  }
+
+  Future<void> _initializeSnac() =>
+      _snacInitializing ??= _loadSnac().catchError((Object error) {
+        _snacInitializing = null;
+        throw error;
+      });
+
+  Future<void> _loadSnac() async {
+    final directory = await _extractTree(_snacAsset, 'snac-24khz');
+    _snacDirectory = directory.path;
+  }
+
+  Future<File> decodeSnac(Uint8List bytes) async {
+    await _initializeSnac();
+    final cache = await _audioCacheDirectory();
+    final stem = '${cache.path}/snac-${DateTime.now().microsecondsSinceEpoch}';
+    final input = File('$stem.snaclab');
+    final output = File('$stem.wav');
+    try {
+      await input.writeAsBytes(bytes, flush: true);
+      await NativeInference.instance.decodeSnac(
+        '$_snacDirectory/encoder_model_int8.onnx',
+        '$_snacDirectory/decoder_model_int8.onnx',
+        input.path,
+        output.path,
+      );
+      return output;
+    } finally {
+      input.delete().ignore();
+    }
+  }
+
+  Future<void> playWav(File file) async {
+    await _initializeAudio();
+    final previous = _playingHandle;
+    final previousSource = _playingSource;
+    if (previous != null) await _player.stop(previous);
+    if (previousSource != null) _player.disposeSource(previousSource);
+    final source = await _player.loadFile(file.path, autoDispose: false);
+    final handle = _player.play(source);
+    if (handle.isError) {
+      _player.disposeSource(source);
+      throw StateError('系统音频设备无法开始播放');
+    }
+    _playingHandle = handle;
+    _playingSource = source;
+    source.allInstancesFinished.first.then((_) {
+      if (identical(_playingSource, source)) {
+        _playingSource = null;
+        _playingHandle = null;
+      }
+      _player.disposeSource(source);
+      file.delete().ignore();
+    });
   }
 
   Future<void> cancelRecording() async {

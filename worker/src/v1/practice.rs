@@ -25,6 +25,9 @@ struct PracticeRecordInput {
     handwriting_gzip: Option<String>,
     ocr_results: Option<Vec<String>>,
     review_bits: Option<String>,
+    speech_snac: Option<String>,
+    speech_review_bits: Option<String>,
+    speech_recognized_pinyin: Option<String>,
 }
 
 pub(super) async fn record(request: &mut Request, env: &Env) -> Result<Response> {
@@ -78,6 +81,17 @@ pub(super) async fn record(request: &mut Request, env: &Env) -> Result<Response>
             .as_deref()
             .and_then(|value| STANDARD.decode(value).ok())
             .map(Into::into),
+        speech_snac: input
+            .speech_snac
+            .as_deref()
+            .and_then(decode_valid_snac)
+            .map(Into::into),
+        speech_review_bits: input
+            .speech_review_bits
+            .as_deref()
+            .and_then(|value| STANDARD.decode(value).ok())
+            .map(Into::into),
+        speech_recognized_pinyin: input.speech_recognized_pinyin,
     };
     crate::db::practice_records::insert(&db, &record, &student.id, class_id.as_deref()).await?;
     Response::from_json(&serde_json::json!({"ok":true,"classId":class_id}))
@@ -236,10 +250,32 @@ fn valid_input(input: &PracticeRecordInput) -> bool {
         &input.ocr_results,
         &input.review_bits,
     ) {
-        (None, None, None) => input.direction == "readAloud",
+        (None, None, None) => {
+            input.direction == "readAloud"
+                && input
+                    .speech_snac
+                    .as_deref()
+                    .and_then(decode_valid_snac)
+                    .is_some()
+                && input
+                    .speech_recognized_pinyin
+                    .as_ref()
+                    .is_some_and(|value| value.len() <= 4000)
+                && input.speech_review_bits.as_ref().is_some_and(|bits| {
+                    let count = input
+                        .expected_answer
+                        .chars()
+                        .filter(|ch| ('\u{3400}'..='\u{9fff}').contains(ch))
+                        .count();
+                    count > 0 && valid_review_bits(bits, count, input.is_correct)
+                })
+        }
         (Some(handwriting), Some(ocr), Some(review_bits)) => {
             let cell_count = handwriting_cell_count(handwriting);
             input.direction != "readAloud"
+                && input.speech_snac.is_none()
+                && input.speech_review_bits.is_none()
+                && input.speech_recognized_pinyin.is_none()
                 && cell_count.is_some_and(|count| {
                     ocr.len() == count && valid_review_bits(review_bits, count, input.is_correct)
                 })
@@ -264,6 +300,46 @@ fn valid_input(input: &PracticeRecordInput) -> bool {
             input.direction.as_str(),
             "writeHanzi" | "writePinyin" | "listenWriteHanzi" | "readAloud"
         )
+}
+
+fn decode_valid_snac(value: &str) -> Option<Vec<u8>> {
+    if value.len() > 64 * 1024 {
+        return None;
+    }
+    let bytes = STANDARD.decode(value).ok()?;
+    if bytes.len() < 60
+        || bytes.len() > 48 * 1024
+        || &bytes[..8] != b"SNACLB01"
+        || u16::from_le_bytes([bytes[8], bytes[9]]) != 1
+        || u16::from_le_bytes([bytes[10], bytes[11]]) != 3
+        || u32::from_le_bytes(bytes[12..16].try_into().ok()?) != 24000
+        || u32::from_le_bytes(bytes[16..20].try_into().ok()?) != 4096
+    {
+        return None;
+    }
+    let samples = u64::from_le_bytes(bytes[20..28].try_into().ok()?);
+    if samples == 0 || samples > 120 * 24000 {
+        return None;
+    }
+    let mut offset = 28usize;
+    for _ in 0..3 {
+        let count = u32::from_le_bytes(bytes.get(offset..offset + 4)?.try_into().ok()?) as usize;
+        let length =
+            u32::from_le_bytes(bytes.get(offset + 4..offset + 8)?.try_into().ok()?) as usize;
+        if count == 0 || length != count.saturating_mul(12).div_ceil(8) {
+            return None;
+        }
+        offset = offset.checked_add(8 + length)?;
+        if offset > bytes.len() - 4 {
+            return None;
+        }
+    }
+    if offset != bytes.len() - 4 {
+        return None;
+    }
+    let expected_crc = u32::from_le_bytes(bytes[offset..].try_into().ok()?);
+    let actual_crc = crc32fast::hash(&bytes[..offset]);
+    (expected_crc == actual_crc).then_some(bytes)
 }
 
 #[cfg(target_arch = "wasm32")]
@@ -391,6 +467,23 @@ mod tests {
     use flate2::{write::GzEncoder, Compression};
     use std::io::Write;
 
+    fn snac_fixture() -> String {
+        let mut bytes = b"SNACLB01".to_vec();
+        bytes.extend_from_slice(&1u16.to_le_bytes());
+        bytes.extend_from_slice(&3u16.to_le_bytes());
+        bytes.extend_from_slice(&24000u32.to_le_bytes());
+        bytes.extend_from_slice(&4096u32.to_le_bytes());
+        bytes.extend_from_slice(&24000u64.to_le_bytes());
+        for _ in 0..3 {
+            bytes.extend_from_slice(&1u32.to_le_bytes());
+            bytes.extend_from_slice(&2u32.to_le_bytes());
+            bytes.extend_from_slice(&[0, 0]);
+        }
+        let crc = crc32fast::hash(&bytes);
+        bytes.extend_from_slice(&crc.to_le_bytes());
+        STANDARD.encode(bytes)
+    }
+
     fn input() -> PracticeRecordInput {
         PracticeRecordInput {
             id: "0123456789abcdef0123456789abcdef".into(),
@@ -409,6 +502,9 @@ mod tests {
             handwriting_gzip: None,
             ocr_results: None,
             review_bits: None,
+            speech_snac: Some(snac_fixture()),
+            speech_review_bits: Some(STANDARD.encode([0b00011111])),
+            speech_recognized_pinyin: Some("chuáng qián míng yuè guāng".into()),
         }
     }
 
@@ -429,6 +525,23 @@ mod tests {
     }
 
     #[test]
+    fn reading_requires_valid_audio_and_per_character_review() {
+        let mut record = input();
+        assert!(valid_input(&record));
+        record.speech_snac = None;
+        assert!(!valid_input(&record));
+        record.speech_snac = Some(STANDARD.encode(b"not snac"));
+        assert!(!valid_input(&record));
+        record.speech_snac = Some(snac_fixture());
+        record.speech_review_bits = Some(STANDARD.encode([0b11111111]));
+        assert!(!valid_input(&record));
+        record.speech_review_bits = Some(STANDARD.encode([0b00011110]));
+        assert!(!valid_input(&record));
+        record.is_correct = false;
+        assert!(valid_input(&record));
+    }
+
+    #[test]
     fn accepts_valid_original_handwriting_and_rejects_partial_or_plain_data() {
         let document = br#"{"version":1,"coordinates":"cell-relative","brushWidthUnit":"cell-height","layout":"ordered-wrap","spacing":12,"cells":[{"grid":"hanzi","width":72,"height":72,"strokes":[{"color":4278190080,"width":0.05,"points":[[0.1,0.2],[0.8,0.9]]}]}]}"#;
         let mut encoder = GzEncoder::new(Vec::new(), Compression::default());
@@ -437,6 +550,9 @@ mod tests {
 
         let mut record = input();
         record.direction = "writeHanzi".into();
+        record.speech_snac = None;
+        record.speech_review_bits = None;
+        record.speech_recognized_pinyin = None;
         record.handwriting_gzip = Some(compressed);
         record.ocr_results = Some(vec!["春".into()]);
         record.review_bits = Some(STANDARD.encode([1]));

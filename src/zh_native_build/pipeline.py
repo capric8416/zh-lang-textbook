@@ -13,7 +13,7 @@ from .stages.validate import validate
 
 def speech(config) -> None:
     checkout_sources(config.root)
-    patch_onnxruntime(config.speech / ".build-deps/sources/onnxruntime-v1.22.0")
+    patch_onnxruntime(config.speech / ".build-deps/sources/onnxruntime-v1.29.0")
     build_ort(config)
     build_re2(config)
     build_piper(config)
