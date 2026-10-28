@@ -4,7 +4,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 from zh_native_build.config import BuildConfig
-from zh_native_build.stages.onnxruntime import build
+from zh_native_build.stages.onnxruntime import ORT_NAME, build
 
 
 class OnnxRuntimeAdapterTest(unittest.TestCase):
@@ -12,10 +12,7 @@ class OnnxRuntimeAdapterTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             config = BuildConfig(root=root, target="ios-arm64")
-            source = (
-                config.speech
-                / ".build-deps/sources/onnxruntime-v1.22.0"
-            )
+            source = config.speech / ".build-deps/sources" / ORT_NAME
             session_include = source / "include/onnxruntime/core/session"
             session_include.mkdir(parents=True)
             for name in ("onnxruntime_c_api.h", "onnxruntime_cxx_api.h"):
@@ -41,6 +38,19 @@ class OnnxRuntimeAdapterTest(unittest.TestCase):
             self.assertTrue(
                 (include / "onnxruntime/onnxruntime_cxx_api.h").is_file()
             )
+
+    def test_linux_disables_avxvnni_for_older_assembler(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            config = BuildConfig(root=Path(directory), target="linux-x64")
+            release = config.speech / ".build-deps/linux-x64/onnxruntime/Release"
+            release.mkdir(parents=True)
+            (release / "libonnxruntime_common.a").touch()
+
+            with patch("zh_native_build.stages.onnxruntime.run") as run:
+                build(config)
+
+            ort_command = [str(part) for part in run.call_args_list[0].args[0]]
+            self.assertIn("MLAS_COMPILER_SUPPORTS_AVXVNNI=OFF", ort_command)
 
 
 if __name__ == "__main__":

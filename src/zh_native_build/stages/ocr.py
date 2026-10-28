@@ -37,8 +37,11 @@ def build(config: BuildConfig) -> Path:
     common = ["-G", "Ninja", "-DCMAKE_BUILD_TYPE=Release", "-DBUILD_SHARED_LIBS=OFF",
               "-DCMAKE_POSITION_INDEPENDENT_CODE=ON", f"-DCMAKE_INSTALL_PREFIX={vendor}"]
     platform_args = _platform_args(config)
+    # GCC 11 accepts -mavxvnni on Ubuntu 20.04, but its binutils 2.34
+    # assembler cannot assemble the emitted vpdpwssd instructions.
+    ncnn_args = ["-DNCNN_AVXVNNI=OFF"] if config.target == "linux-x64" else []
     ncnn_build = root / "ncnn"
-    run(["cmake", "-S", ncnn, "-B", ncnn_build, *common, *platform_args,
+    run(["cmake", "-S", ncnn, "-B", ncnn_build, *common, *platform_args, *ncnn_args,
          "-DNCNN_SHARED_LIB=OFF", "-DNCNN_VULKAN=OFF", "-DNCNN_BUILD_TOOLS=OFF",
          "-DNCNN_BUILD_EXAMPLES=OFF", "-DNCNN_BUILD_BENCHMARK=OFF", "-DNCNN_BUILD_TESTS=OFF"], cwd=config.app)
     run(["cmake", "--build", ncnn_build, "--parallel"], cwd=config.app)

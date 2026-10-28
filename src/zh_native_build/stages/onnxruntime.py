@@ -85,6 +85,11 @@ def build(config: BuildConfig) -> Path:
         "onnxruntime_BUILD_BENCHMARKS=OFF",
         "onnxruntime_USE_TELEMETRY=OFF",
     ]
+    if config.target == "linux-x64":
+        # Ubuntu 20.04's binutils cannot assemble AVX-VNNI instructions even
+        # though GCC 11 accepts -mavxvnni. ORT's probe optimizes its intrinsic
+        # away and incorrectly reports support, so force its AVX2 fallback.
+        command.append("MLAS_COMPILER_SUPPORTS_AVXVNNI=OFF")
     if config.target == "android-arm64-v8a":
         command[5:5] = ["--parallel", "2"]
     else:
