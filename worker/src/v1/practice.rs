@@ -75,7 +75,7 @@ pub(super) async fn record(request: &mut Request, env: &Env) -> Result<Response>
             .map(Into::into),
         ocr_results: input
             .ocr_results
-            .map(|items| serde_json::to_string(&items).unwrap_or_default()),
+            .map(|items| serde_json::to_string(&compact_ocr_results(items)).unwrap_or_default()),
         review_bits: input
             .review_bits
             .as_deref()
@@ -277,7 +277,7 @@ fn valid_input(input: &PracticeRecordInput) -> bool {
                 && input.speech_review_bits.is_none()
                 && input.speech_recognized_pinyin.is_none()
                 && cell_count.is_some_and(|count| {
-                    ocr.len() == count && valid_review_bits(review_bits, count, input.is_correct)
+                    ocr.len() <= count && valid_review_bits(review_bits, count, input.is_correct)
                 })
                 && ocr.iter().all(|value| value.chars().count() <= 256)
         }
@@ -300,6 +300,13 @@ fn valid_input(input: &PracticeRecordInput) -> bool {
             input.direction.as_str(),
             "writeHanzi" | "writePinyin" | "listenWriteHanzi" | "readAloud"
         )
+}
+
+fn compact_ocr_results(mut items: Vec<String>) -> Vec<String> {
+    while items.last().is_some_and(String::is_empty) {
+        items.pop();
+    }
+    items
 }
 
 fn decode_valid_snac(value: &str) -> Option<Vec<u8>> {
@@ -462,7 +469,7 @@ fn valid_ink_cells(value: Option<&serde_json::Value>) -> bool {
 
 #[cfg(test)]
 mod tests {
-    use super::{valid_input, PracticeRecordInput};
+    use super::{compact_ocr_results, valid_input, PracticeRecordInput};
     use base64::{engine::general_purpose::STANDARD, Engine};
     use flate2::{write::GzEncoder, Compression};
     use std::io::Write;
@@ -558,6 +565,11 @@ mod tests {
         record.review_bits = Some(STANDARD.encode([1]));
         assert!(valid_input(&record));
 
+        record.ocr_results = Some(vec![]);
+        assert!(valid_input(&record));
+        record.ocr_results = Some(vec!["春".into(), "天".into()]);
+        assert!(!valid_input(&record));
+
         record.ocr_results = None;
         assert!(!valid_input(&record));
         record.ocr_results = Some(vec!["春".into()]);
@@ -568,5 +580,24 @@ mod tests {
         assert!(!valid_input(&record));
         record.direction = "readAloud".into();
         assert!(!valid_input(&record));
+    }
+
+    #[test]
+    fn ocr_results_drop_only_trailing_empty_cells() {
+        assert_eq!(
+            compact_ocr_results(vec!["Xià".into(), "ke".into(), "".into()]),
+            vec!["Xià", "ke"]
+        );
+        assert_eq!(
+            compact_ocr_results(vec![
+                "".into(),
+                "".into(),
+                "你".into(),
+                "好".into(),
+                "".into()
+            ]),
+            vec!["", "", "你", "好"]
+        );
+        assert!(compact_ocr_results(vec!["".into(), "".into()]).is_empty());
     }
 }

@@ -74,6 +74,22 @@ void main() {
     );
   });
 
+  test('OCR results remove only empty suffix cells', () {
+    expect(trimTrailingEmptyOcrResults(['Xià', 'ke', 'lē', '', '']), [
+      'Xià',
+      'ke',
+      'lē',
+    ]);
+    expect(trimTrailingEmptyOcrResults(['', '', '', '你', '好', '', '']), [
+      '',
+      '',
+      '',
+      '你',
+      '好',
+    ]);
+    expect(trimTrailingEmptyOcrResults(['', '']), isEmpty);
+  });
+
   testWidgets('history expands and renders handwriting with per-cell OCR', (
     tester,
   ) async {
@@ -92,7 +108,7 @@ void main() {
               'direction': 'writeHanzi',
               'expectedAnswer': '春天',
               'handwritingGzip': base64Encode(document.encodeCompressed()),
-              'ocrResults': const ['春', ''],
+              'ocrResults': const ['春'],
               'reviewBits': base64Encode(const [1]),
             },
           ),
@@ -102,7 +118,7 @@ void main() {
     expect(find.text('作答与批改'), findsOneWidget);
     await tester.pumpAndSettle();
     expect(find.text('识别：春'), findsOneWidget);
-    expect(find.text('识别：—'), findsOneWidget);
+    expect(find.text('识别：-'), findsOneWidget);
     expect(find.text('正确：春'), findsOneWidget);
     expect(find.text('复核：正确'), findsOneWidget);
     expect(find.text('复核：错误'), findsOneWidget);
@@ -112,6 +128,33 @@ void main() {
       ),
       findsNWidgets(2),
     );
+  });
+
+  testWidgets('history keeps leading empty OCR cells in their original slots', (
+    tester,
+  ) async {
+    final document = InkDocument([
+      for (var index = 0; index < 3; index++)
+        InkCell('hanzi', const Size(72, 72), []),
+    ]);
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: OriginalHandwriting(
+            record: {
+              'direction': 'writeHanzi',
+              'expectedAnswer': '你好吗',
+              'handwritingGzip': base64Encode(document.encodeCompressed()),
+              'ocrResults': const ['', '好'],
+              'reviewBits': base64Encode(const [2]),
+            },
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('识别：-'), findsNWidgets(2));
+    expect(find.text('识别：好'), findsOneWidget);
   });
 
   test(

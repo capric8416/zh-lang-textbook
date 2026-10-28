@@ -290,7 +290,7 @@ class _PracticePageState extends State<PracticePage> {
         correct,
         studentAnswer: recognized.join('\n'),
         handwritingGzip: handwritingGzip,
-        ocrResults: recognized,
+        ocrResults: trimTrailingEmptyOcrResults(recognized),
         reviewBits: base64Encode(_packReviewBits(reviewResults)),
       );
       if (!mounted) return;

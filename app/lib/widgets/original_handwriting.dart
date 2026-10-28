@@ -58,7 +58,7 @@ class _OriginalHandwritingState extends State<OriginalHandwriting> {
         widget.record['direction']?.toString() ?? '',
       );
       final reviewBytes = base64Decode(reviewValue);
-      if (ocr.length != document.cells.length ||
+      if (ocr.length > document.cells.length ||
           expected.length != document.cells.length ||
           reviewBytes.length != (document.cells.length + 7) ~/ 8) {
         throw const FormatException('逐格批改数据数量不匹配');
@@ -153,7 +153,9 @@ class _OriginalHandwritingState extends State<OriginalHandwriting> {
           ),
           const SizedBox(height: 4),
           Text('第 ${index + 1} 格'),
-          Text('识别：${_ocrResults[index].isEmpty ? '—' : _ocrResults[index]}'),
+          Text(
+            '识别：${index >= _ocrResults.length || _ocrResults[index].isEmpty ? '-' : _ocrResults[index]}',
+          ),
           Text('正确：${_expectedResults[index]}'),
           Text(
             reviewed ? '复核：正确' : '复核：错误',
