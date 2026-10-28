@@ -155,23 +155,10 @@ class _OriginalHandwritingState extends State<OriginalHandwriting> {
           Text('第 ${index + 1} 格'),
           Text('识别：${_ocrResults[index].isEmpty ? '—' : _ocrResults[index]}'),
           Text('正确：${_expectedResults[index]}'),
-          FittedBox(
-            fit: BoxFit.scaleDown,
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  reviewed ? Icons.check_circle_outline : Icons.cancel_outlined,
-                  size: 16,
-                  color: resultColor,
-                ),
-                const SizedBox(width: 4),
-                Text(
-                  reviewed ? '复核：正确' : '复核：错误',
-                  style: TextStyle(color: resultColor),
-                ),
-              ],
-            ),
+          Text(
+            reviewed ? '复核：正确' : '复核：错误',
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 12, color: resultColor),
           ),
         ],
       ),
