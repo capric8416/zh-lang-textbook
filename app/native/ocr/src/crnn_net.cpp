@@ -48,7 +48,7 @@ bool CRNNNet::Initialize(const RecConfig &config)
 
     // load keys
     std::string line;
-    std::ifstream ifs{config_.keys_path};
+    std::ifstream ifs = OpenUtf8Input(config_.keys_path);
     if (!ifs.is_open())
     {
         PLOGE << "Failed to load keys " << config_.keys_path;
@@ -59,8 +59,7 @@ bool CRNNNet::Initialize(const RecConfig &config)
         keys_.emplace_back(line);
     PLOGD << "Total keys: " << keys_.size();
 
-    if (net_->load_param((config_.model_path + ".param").c_str()) ||
-        net_->load_model((config_.model_path + ".bin").c_str()))
+    if (!LoadNcnnModel(*net_, config_.model_path))
     {
         PLOGE << "Failed to load model " << config_.model_path;
         net_.reset();

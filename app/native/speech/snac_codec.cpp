@@ -6,6 +6,7 @@
 #include <cstdint>
 #include <cstring>
 #include <cstdio>
+#include <filesystem>
 #include <fstream>
 #include <limits>
 #include <memory>
@@ -84,7 +85,8 @@ uint32_t crc32(const uint8_t *data, size_t length) {
   return ~crc;
 }
 std::vector<uint8_t> read_file(const char *path) {
-  std::ifstream input(path, std::ios::binary | std::ios::ate);
+  std::ifstream input(std::filesystem::u8path(path),
+                      std::ios::binary | std::ios::ate);
   if (!input) throw std::runtime_error("file not found");
   const auto length = input.tellg();
   if (length <= 0 || length > 32 * 1024 * 1024)
@@ -96,7 +98,8 @@ std::vector<uint8_t> read_file(const char *path) {
   return bytes;
 }
 void write_file(const char *path, const std::vector<uint8_t> &bytes) {
-  std::ofstream output(path, std::ios::binary | std::ios::trunc);
+  std::ofstream output(std::filesystem::u8path(path),
+                       std::ios::binary | std::ios::trunc);
   if (!output || !output.write(reinterpret_cast<const char *>(bytes.data()), bytes.size()))
     throw std::runtime_error("cannot write file");
 }

@@ -1,4 +1,7 @@
 #include <cmath>
+#include <cstdio>
+#include <filesystem>
+#include <memory>
 #include <string>
 #include <algorithm>
 #include <string_view>
@@ -9,6 +12,7 @@
 #endif
 
 #include <opencv2/imgproc.hpp>
+#include <ncnn/net.h>
 
 #include "clipper2/clipper.h"
 
@@ -17,45 +21,48 @@
 namespace OCR
 {
 
-std::string NcnnPath(const std::string &path)
+namespace
+{
+
+#ifdef _WIN32
+std::wstring Utf8ToWide(const std::string &value)
+{
+    if (value.empty()) return {};
+    const int size = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS,
+        value.c_str(), static_cast<int>(value.size()), nullptr, 0);
+    if (size <= 0) return {};
+    std::wstring result(size, L'\0');
+    if (MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, value.c_str(),
+        static_cast<int>(value.size()), result.data(), size) != size)
+        return {};
+    return result;
+}
+#endif
+
+FILE *OpenUtf8File(const std::string &path)
 {
 #ifdef _WIN32
-    auto utf8_to_wide = [](const std::string &value) {
-        if (value.empty()) return std::wstring{};
-        const int size = MultiByteToWideChar(CP_UTF8, 0, value.c_str(),
-            static_cast<int>(value.size()), nullptr, 0);
-        std::wstring result(size, L'\0');
-        MultiByteToWideChar(CP_UTF8, 0, value.c_str(),
-            static_cast<int>(value.size()), result.data(), size);
-        return result;
-    };
-    auto wide_to_utf8 = [](const std::wstring &value) {
-        if (value.empty()) return std::string{};
-        const int size = WideCharToMultiByte(CP_UTF8, 0, value.c_str(),
-            static_cast<int>(value.size()), nullptr, 0, nullptr, nullptr);
-        std::string result(size, '\0');
-        WideCharToMultiByte(CP_UTF8, 0, value.c_str(),
-            static_cast<int>(value.size()), result.data(), size, nullptr, nullptr);
-        return result;
-    };
-
-    const std::wstring wide = utf8_to_wide(path);
-    if (wide.empty()) return path;
-    const std::wstring probe = GetFileAttributesW((wide + L".param").c_str()) != INVALID_FILE_ATTRIBUTES
-        ? wide + L".param" : wide;
-    const DWORD required = GetShortPathNameW(probe.c_str(), nullptr, 0);
-    if (required == 0) return path;
-    std::wstring short_path(required, L'\0');
-    const DWORD written = GetShortPathNameW(probe.c_str(), short_path.data(), required);
-    if (written == 0 || written >= required) return path;
-    short_path.resize(written);
-    if (probe != wide && short_path.size() >= 6 &&
-        short_path.compare(short_path.size() - 6, 6, L".param") == 0)
-        short_path.resize(short_path.size() - 6);
-    return wide_to_utf8(short_path);
+    const std::wstring wide = Utf8ToWide(path);
+    return wide.empty() ? nullptr : _wfopen(wide.c_str(), L"rb");
 #else
-    return path;
+    return std::fopen(path.c_str(), "rb");
 #endif
+}
+
+}  // namespace
+
+std::ifstream OpenUtf8Input(const std::string &path)
+{
+    return std::ifstream(std::filesystem::u8path(path), std::ios::binary);
+}
+
+bool LoadNcnnModel(ncnn::Net &net, const std::string &model_path)
+{
+    using File = std::unique_ptr<FILE, decltype(&std::fclose)>;
+    File param(OpenUtf8File(model_path + ".param"), &std::fclose);
+    File model(OpenUtf8File(model_path + ".bin"), &std::fclose);
+    if (!param || !model) return false;
+    return net.load_param(param.get()) == 0 && net.load_model(model.get()) == 0;
 }
 
 int GetThreads(const int threads)

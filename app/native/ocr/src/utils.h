@@ -2,7 +2,14 @@
 #define UTILS_H_
 
 #include <vector>
+#include <fstream>
+#include <string>
 #include <opencv2/core.hpp>
+
+namespace ncnn
+{
+class Net;
+}
 
 namespace OCR
 {
@@ -21,10 +28,11 @@ cv::Mat GetRotatedCropImage(const cv::Mat &image, std::vector<cv::Point> points)
 
 void Trim(std::string &s);
 
-// ncnn's Windows file loader uses narrow fopen; convert Unicode paths to an
-// ASCII short path when possible so model loading also works under Chinese
-// user/profile directories.
-std::string NcnnPath(const std::string &path);
+// Open UTF-8 paths through the native wide-character APIs on Windows.
+std::ifstream OpenUtf8Input(const std::string &path);
+
+// Load both .param and .bin through FILE handles opened with Unicode support.
+bool LoadNcnnModel(ncnn::Net &net, const std::string &model_path);
 
 }   // namespace OCR
 

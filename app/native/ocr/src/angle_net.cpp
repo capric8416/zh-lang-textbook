@@ -5,6 +5,7 @@
 
 #include "plog/Log.h"
 
+#include "utils.h"
 #include "angle_net.h"
 
 namespace OCR
@@ -43,8 +44,7 @@ bool AngleNet::Initialize(const ClsConfig &config)
     net_->opt.use_fp16_storage = config_.is_fp16;
     net_->opt.use_fp16_arithmetic = config_.is_fp16;
 
-    if (net_->load_param((config_.model_path + ".param").c_str()) ||
-        net_->load_model((config_.model_path + ".bin").c_str()))
+    if (!LoadNcnnModel(*net_, config_.model_path))
     {
         PLOGE << "Failed to load model " << config_.model_path;
         net_.reset();

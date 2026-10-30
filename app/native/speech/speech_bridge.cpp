@@ -4,6 +4,7 @@
 #include <cmath>
 #include <cstdint>
 #include <cstring>
+#include <filesystem>
 #include <fstream>
 #include <map>
 #include <memory>
@@ -11,10 +12,45 @@
 #include <string>
 #include <vector>
 
+#ifdef _WIN32
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
+#include <windows.h>
+#endif
+
 #include <piper.h>
 #include <funasrruntime.h>
 
 namespace {
+
+#ifdef _WIN32
+std::string native_library_path(const char *utf8) {
+  const int wide_size = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS,
+                                             utf8, -1, nullptr, 0);
+  if (wide_size <= 0) throw std::runtime_error("invalid UTF-8 path");
+  std::wstring wide(wide_size, L'\0');
+  if (MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, utf8, -1,
+                          wide.data(), wide_size) != wide_size)
+    throw std::runtime_error("invalid UTF-8 path");
+  BOOL used_default = FALSE;
+  const int native_size = WideCharToMultiByte(
+      CP_ACP, WC_NO_BEST_FIT_CHARS, wide.c_str(), -1, nullptr, 0, nullptr,
+      &used_default);
+  if (native_size <= 0 || used_default)
+    throw std::runtime_error("path is not representable in system code page");
+  std::string native(native_size, '\0');
+  if (WideCharToMultiByte(CP_ACP, WC_NO_BEST_FIT_CHARS, wide.c_str(), -1,
+                          native.data(), native_size, nullptr, &used_default) !=
+          native_size ||
+      used_default)
+    throw std::runtime_error("path is not representable in system code page");
+  native.resize(native_size - 1);
+  return native;
+}
+#else
+std::string native_library_path(const char *utf8) { return utf8; }
+#endif
 
 struct TtsHandle {
   piper_synthesizer *synth = nullptr;
@@ -57,8 +93,9 @@ uint32_t read_u32(const unsigned char *bytes) {
          (static_cast<uint32_t>(bytes[3]) << 24);
 }
 
-bool has_audible_pcm16(const char *path) {
-  std::ifstream input(path, std::ios::binary);
+bool read_audible_pcm16(const char *path, std::vector<unsigned char> &audio,
+                        int &sample_rate) {
+  std::ifstream input(std::filesystem::u8path(path), std::ios::binary);
   unsigned char riff[12]{};
   if (!input.read(reinterpret_cast<char *>(riff), sizeof(riff)) ||
       std::memcmp(riff, "RIFF", 4) != 0 ||
@@ -69,8 +106,8 @@ bool has_audible_pcm16(const char *path) {
   uint16_t format = 0;
   uint16_t channels = 0;
   uint16_t bits_per_sample = 0;
-  uint32_t sample_rate = 0;
-  std::vector<unsigned char> audio;
+  uint32_t wav_sample_rate = 0;
+  audio.clear();
   while (input) {
     unsigned char chunk[8]{};
     if (!input.read(reinterpret_cast<char *>(chunk), sizeof(chunk))) break;
@@ -81,7 +118,7 @@ bool has_audible_pcm16(const char *path) {
         return false;
       format = read_u16(contents.data());
       channels = read_u16(contents.data() + 2);
-      sample_rate = read_u32(contents.data() + 4);
+      wav_sample_rate = read_u32(contents.data() + 4);
       bits_per_sample = read_u16(contents.data() + 14);
     } else if (std::memcmp(chunk, "data", 4) == 0) {
       audio.resize(size);
@@ -94,7 +131,8 @@ bool has_audible_pcm16(const char *path) {
   }
 
   if (format != 1 || channels == 0 || bits_per_sample != 16 ||
-      sample_rate == 0 || audio.size() < sample_rate / 5 * channels * 2) {
+      wav_sample_rate == 0 ||
+      audio.size() < wav_sample_rate / 5 * channels * 2) {
     return false;
   }
   double energy = 0.0;
@@ -107,13 +145,15 @@ bool has_audible_pcm16(const char *path) {
     energy += static_cast<double>(sample) * sample;
   }
   const double rms = std::sqrt(energy / sample_count);
-  return peak >= 256 && rms >= 64.0;
+  if (peak < 256 || rms < 64.0) return false;
+  sample_rate = static_cast<int>(wav_sample_rate);
+  return true;
 }
 
 bool write_wav(const char *path, const std::vector<float> &samples,
                int sample_rate) {
   if (path == nullptr || samples.empty() || sample_rate <= 0) return false;
-  std::ofstream out(path, std::ios::binary);
+  std::ofstream out(std::filesystem::u8path(path), std::ios::binary);
   if (!out) return false;
   const uint32_t data_size = static_cast<uint32_t>(samples.size() * 2);
   out.write("RIFF", 4);
@@ -142,10 +182,12 @@ void *zh_speech_tts_create(const char *model_path, const char *config_path) {
   if (model_path == nullptr || config_path == nullptr) return nullptr;
   try {
     auto handle = std::make_unique<TtsHandle>();
+    const std::string native_model_path = native_library_path(model_path);
+    const std::string native_config_path = native_library_path(config_path);
     piper_create_options options;
     piper_init_create_options(&options);
-    options.model_path = model_path;
-    options.config_path = config_path;
+    options.model_path = native_model_path.c_str();
+    options.config_path = native_config_path.c_str();
     // Numeric pinyin does not need espeak-ng or a Hanzi pronunciation model.
     handle->synth = piper_create_with_options(&options);
     return handle->synth == nullptr ? nullptr : handle.release();
@@ -208,10 +250,12 @@ void *zh_speech_asr_create(const char *paraformer_model_dir,
     return nullptr;
   try {
     auto handle = std::make_unique<AsrHandle>();
+    const std::string native_model_dir = native_library_path(paraformer_model_dir);
+    const std::string native_vad_dir = native_library_path(vad_model_dir);
     std::map<std::string, std::string> asr_paths{
-        {"model-dir", paraformer_model_dir}, {"quantize", "true"}};
+        {"model-dir", native_model_dir}, {"quantize", "true"}};
     std::map<std::string, std::string> vad_paths{
-        {"model-dir", vad_model_dir}, {"quantize", "true"}};
+        {"model-dir", native_vad_dir}, {"quantize", "true"}};
     handle->asr = FunOfflineInit(asr_paths, 2, false, 1);
     handle->vad = FsmnVadInit(vad_paths, 1);
     return handle->asr == nullptr || handle->vad == nullptr ? nullptr
@@ -233,16 +277,22 @@ int32_t zh_speech_asr_recognize_wav(void *handle, const char *wav_path,
   try {
     auto *speech = static_cast<AsrHandle *>(handle);
     std::lock_guard<std::mutex> lock(speech->mutex);
-    if (!has_audible_pcm16(wav_path)) return -3;
-    FUNASR_RESULT vad_result = FsmnVadInfer(speech->vad, wav_path, nullptr);
+    std::vector<unsigned char> pcm;
+    int sample_rate = 0;
+    if (!read_audible_pcm16(wav_path, pcm, sample_rate)) return -3;
+    FUNASR_RESULT vad_result = FsmnVadInferBuffer(
+        speech->vad, reinterpret_cast<const char *>(pcm.data()),
+        static_cast<int>(pcm.size()), nullptr, true, sample_rate, "pcm");
     if (vad_result == nullptr) return -2;
     const auto *segments = FsmnVadGetResult(vad_result, 0);
     const bool has_speech = segments != nullptr && !segments->empty();
     FsmnVadFreeResult(vad_result);
     if (!has_speech) return -3;
 
-    FUNASR_RESULT result = FunOfflineInfer(
-        speech->asr, wav_path, RASR_NONE, nullptr, {{0.0f}}, 16000, false, nullptr);
+    FUNASR_RESULT result = FunOfflineInferBuffer(
+        speech->asr, reinterpret_cast<const char *>(pcm.data()),
+        static_cast<int>(pcm.size()), RASR_NONE, nullptr, {{0.0f}},
+        sample_rate, "pcm", false, nullptr);
     if (result == nullptr) return -4;
     const char *recognized = FunASRGetResult(result, 0);
     const std::string text = recognized == nullptr ? "" : recognized;
