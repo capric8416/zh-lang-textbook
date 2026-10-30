@@ -1,5 +1,9 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:zh_textbook/models/handwriting.dart';
 import 'package:zh_textbook/services/account_api.dart';
 import 'package:zh_textbook/widgets/class_learning_results_dialog.dart';
 
@@ -61,6 +65,71 @@ Map<String, dynamic> _record(int index) => {
 };
 
 void main() {
+  test('lays out exported writing cells horizontally and wraps them', () {
+    expect(classLearningReportInkLayoutCss, contains('display:flex'));
+    expect(classLearningReportInkLayoutCss, contains('flex-flow:row wrap'));
+    expect(classLearningReportInkLayoutCss, contains('grid-column:1/-1'));
+    expect(classLearningReportInkLayoutCss, contains('max-width:none'));
+  });
+
+  test('prepares handwriting SVG data and embedded speech WAV data', () async {
+    final document = InkDocument([
+      InkCell('hanzi', const Size(140, 140), [
+        InkStroke(const Color(0xff123456).toARGB32(), 0.04, const [
+          Offset(0.1, 0.2),
+          Offset(0.8, 0.9),
+        ]),
+      ]),
+    ]);
+    final speechInput = Uint8List.fromList([1, 2, 3]);
+    final wavOutput = Uint8List.fromList([82, 73, 70, 70, 4, 5, 6]);
+    Uint8List? decodedInput;
+
+    final records = await prepareClassLearningReportRecords(
+      [
+        {
+          'id': 'writing',
+          'direction': 'writeHanzi',
+          'handwritingGzip': base64Encode(document.encodeCompressed()),
+        },
+        {
+          'id': 'reading',
+          'direction': 'readAloud',
+          'speechSnac': base64Encode(speechInput),
+        },
+      ],
+      decodeSpeech: (bytes) async {
+        decodedInput = bytes;
+        return wavOutput;
+      },
+    );
+
+    final handwriting = records.first['handwritingDocument'] as Map;
+    expect((handwriting['cells'] as List).single['grid'], 'hanzi');
+    expect(records.first.containsKey('handwritingGzip'), isFalse);
+    expect(decodedInput, speechInput);
+    expect(records.last['speechWav'], base64Encode(wavOutput));
+    expect(records.last.containsKey('speechSnac'), isFalse);
+  });
+
+  test('keeps exporting when original-answer data is malformed', () async {
+    final records = await prepareClassLearningReportRecords([
+      {
+        'id': 'writing',
+        'direction': 'writePinyin',
+        'handwritingGzip': 'not-base64',
+      },
+      {
+        'id': 'reading',
+        'direction': 'readAloud',
+        'speechSnac': base64Encode([1]),
+      },
+    ], decodeSpeech: (_) async => throw StateError('decode failed'));
+
+    expect(records.first['handwritingError'], isTrue);
+    expect(records.last['speechError'], isTrue);
+  });
+
   testWidgets('opens after one small page and loads more only on demand', (
     tester,
   ) async {

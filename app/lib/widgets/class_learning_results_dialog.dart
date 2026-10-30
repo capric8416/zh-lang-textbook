@@ -5,11 +5,57 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 
+import '../models/handwriting.dart';
 import '../models/textbook.dart';
 import '../services/account_api.dart';
 import '../services/class_learning_records.dart';
+import '../services/speech_engine.dart';
 import 'original_handwriting.dart';
 import 'original_speech.dart';
+
+typedef ReportSpeechDecoder = Future<Uint8List> Function(Uint8List bytes);
+
+const classLearningReportInkLayoutCss =
+    '.attempts thead tr,.attempts tbody tr{display:grid;grid-template-columns:minmax(55px,.5fr) minmax(140px,1.4fr) repeat(5,minmax(120px,1fr))}'
+    '.attempts th:nth-child(2),.attempts td:nth-child(2){grid-column:1/-1;grid-row:2}'
+    '.ink-document{display:flex;flex-flow:row wrap;align-items:flex-start;gap:6px;width:100%;min-width:0;max-width:none}';
+
+Future<List<Map<String, dynamic>>> prepareClassLearningReportRecords(
+  List<Map<String, dynamic>> records, {
+  required ReportSpeechDecoder decodeSpeech,
+  bool Function()? isCancelled,
+  void Function(int processed, int total)? onProgress,
+}) async {
+  final preparedRecords = <Map<String, dynamic>>[];
+  for (var index = 0; index < records.length; index++) {
+    if (isCancelled?.call() ?? false) break;
+    final prepared = Map<String, dynamic>.from(records[index]);
+    if (prepared['direction'] == 'readAloud') {
+      final encoded = prepared.remove('speechSnac');
+      if (encoded is String && encoded.isNotEmpty) {
+        try {
+          final wav = await decodeSpeech(base64Decode(encoded));
+          prepared['speechWav'] = base64Encode(wav);
+        } catch (_) {
+          prepared['speechError'] = true;
+        }
+      }
+    } else {
+      final encoded = prepared.remove('handwritingGzip');
+      if (encoded is String && encoded.isNotEmpty) {
+        try {
+          final document = InkDocument.decodeBytes(base64Decode(encoded));
+          prepared['handwritingDocument'] = jsonDecode(document.encode());
+        } catch (_) {
+          prepared['handwritingError'] = true;
+        }
+      }
+    }
+    preparedRecords.add(prepared);
+    onProgress?.call(index + 1, records.length);
+  }
+  return preparedRecords;
+}
 
 class ClassLearningResultsDialog extends StatefulWidget {
   const ClassLearningResultsDialog({
@@ -40,9 +86,11 @@ class _ClassLearningResultsDialogState
   bool _loadingMore = false;
   bool _hasMore = true;
   bool _exporting = false;
+  bool _exportPreparing = false;
   bool _cancelExportRequested = false;
   ClassLearningRecordsCursor? _nextCursor;
   int _exportFetched = 0;
+  int _exportPrepared = 0;
   String? _error;
 
   @override
@@ -156,6 +204,8 @@ class _ClassLearningResultsDialogState
       _exporting = true;
       _cancelExportRequested = false;
       _exportFetched = 0;
+      _exportPrepared = 0;
+      _exportPreparing = false;
     });
     try {
       final records = <Map<String, dynamic>>[];
@@ -184,7 +234,22 @@ class _ClassLearningResultsDialogState
         if (!page.hasMore) break;
         cursor = page.cursor;
       }
-      final reportRecords = await _addLessonLabels(records);
+      final labelledRecords = await _addLessonLabels(records);
+      if (_cancelExportRequested) {
+        cancelled = true;
+        return;
+      }
+      if (mounted) setState(() => _exportPreparing = true);
+      final reportRecords = await prepareClassLearningReportRecords(
+        labelledRecords,
+        decodeSpeech: _decodeSpeechForReport,
+        isCancelled: () => _cancelExportRequested,
+        onProgress: (processed, total) {
+          if (mounted && (processed == total || processed % 25 == 0)) {
+            setState(() => _exportPrepared = processed);
+          }
+        },
+      );
       if (_cancelExportRequested) {
         cancelled = true;
         return;
@@ -230,7 +295,9 @@ class _ClassLearningResultsDialogState
       if (mounted) {
         setState(() {
           _exporting = false;
+          _exportPreparing = false;
           _exportFetched = 0;
+          _exportPrepared = 0;
         });
         if (cancelled) {
           ScaffoldMessenger.of(
@@ -244,6 +311,15 @@ class _ClassLearningResultsDialogState
   void _cancelExport() {
     if (!_exporting) return;
     setState(() => _cancelExportRequested = true);
+  }
+
+  Future<Uint8List> _decodeSpeechForReport(Uint8List encoded) async {
+    final wav = await SpeechEngine.instance.decodeSnac(encoded);
+    try {
+      return await wav.readAsBytes();
+    } finally {
+      wav.delete().ignore();
+    }
   }
 
   Future<List<Map<String, dynamic>>> _addLessonLabels(
@@ -312,7 +388,8 @@ class _ClassLearningResultsDialogState
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>$escapedClassName学习报告</title>
 <style>
-:root{color-scheme:light;--ink:#263449;--muted:#728096;--line:#e6eaf0;--blue:#356ae6;--red:#c84d55;--green:#21845b;--paper:#f5f7fb;--card:#fff}*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.6 system-ui,-apple-system,"Segoe UI","Noto Sans CJK SC",sans-serif}.wrap{max-width:1200px;margin:0 auto;padding:32px 22px 60px}.hero{padding:28px 30px;border-radius:22px;background:linear-gradient(120deg,#233d72,#497ce2);color:#fff;box-shadow:0 14px 34px #29477a24}.eyebrow{font-size:12px;letter-spacing:.16em;text-transform:uppercase;opacity:.75}.hero h1{margin:5px 0;font-size:clamp(25px,4vw,36px)}.hero p{margin:0;opacity:.85}.stats{display:flex;gap:12px;flex-wrap:wrap;margin-top:22px}.stat{min-width:120px;padding:11px 15px;border:1px solid #ffffff35;border-radius:13px;background:#ffffff12}.stat b{display:block;font-size:21px}.toolbar{display:grid;grid-template-columns:repeat(4,minmax(150px,1fr));gap:12px;margin:22px 0;padding:17px;border:1px solid var(--line);border-radius:18px;background:var(--card);box-shadow:0 4px 14px #1d35570a}.field label{display:block;margin:0 0 5px;color:var(--muted);font-size:12px}.field select{width:100%;padding:10px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--ink);font:inherit}.section-title{display:flex;align-items:end;justify-content:space-between;margin:26px 2px 12px}.section-title h2{margin:0;font-size:20px}.muted{color:var(--muted)}.question{margin:12px 0;overflow:hidden;border:1px solid var(--line);border-radius:17px;background:var(--card);box-shadow:0 5px 18px #1d35570a}.qhead{display:grid;grid-template-columns:1fr auto;gap:18px;align-items:center;padding:18px 20px;cursor:pointer}.qtitle{font-weight:750;font-size:17px}.qprompt{margin-top:5px;color:var(--muted);white-space:pre-wrap}.meta{margin-top:8px;color:var(--muted);font-size:13px}.badge{display:inline-flex;align-items:center;padding:7px 11px;border-radius:999px;background:#fff0ef;color:var(--red);font-weight:750;white-space:nowrap}.badge.low{background:#e9f7ef;color:var(--green)}.qbody{display:none;padding:0 20px 20px;border-top:1px solid var(--line)}.question.open .qbody{display:block}.qdetails{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0;color:var(--muted);font-size:13px}.pill{padding:5px 9px;border-radius:8px;background:#f1f4f9}.students{display:grid;gap:10px}.student{border:1px solid var(--line);border-radius:13px;overflow:hidden}.student-head{display:grid;grid-template-columns:1fr auto;gap:10px;padding:12px 14px;background:#fafbfd}.student-name{font-weight:700}.student-score{font-weight:750}.attempts{width:100%;border-collapse:collapse;font-size:13px}.attempts th,.attempts td{padding:9px 11px;text-align:left;vertical-align:top;border-top:1px solid var(--line)}.attempts th{color:var(--muted);font-weight:600;background:#fcfdff}.ok{color:var(--green);font-weight:700}.bad{color:var(--red);font-weight:700}.empty{padding:40px;text-align:center;color:var(--muted);border:1px dashed #cbd3df;border-radius:16px;background:#fff}@media(max-width:760px){.wrap{padding:18px 12px 40px}.toolbar{grid-template-columns:1fr 1fr}.qhead{grid-template-columns:1fr}.badge{justify-self:start}.attempts{display:block;overflow:auto}.student-head{grid-template-columns:1fr}.hero{padding:22px}.stat{flex:1}}
+:root{color-scheme:light;--ink:#263449;--muted:#728096;--line:#e6eaf0;--blue:#356ae6;--red:#c84d55;--green:#21845b;--paper:#f5f7fb;--card:#fff}*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.6 system-ui,-apple-system,"Segoe UI","Noto Sans CJK SC",sans-serif}.wrap{max-width:1200px;margin:0 auto;padding:32px 22px 60px}.hero{padding:28px 30px;border-radius:22px;background:linear-gradient(120deg,#233d72,#497ce2);color:#fff;box-shadow:0 14px 34px #29477a24}.eyebrow{font-size:12px;letter-spacing:.16em;text-transform:uppercase;opacity:.75}.hero h1{margin:5px 0;font-size:clamp(25px,4vw,36px)}.hero p{margin:0;opacity:.85}.stats{display:flex;gap:12px;flex-wrap:wrap;margin-top:22px}.stat{min-width:120px;padding:11px 15px;border:1px solid #ffffff35;border-radius:13px;background:#ffffff12}.stat b{display:block;font-size:21px}.toolbar{display:grid;grid-template-columns:repeat(4,minmax(150px,1fr));gap:12px;margin:22px 0;padding:17px;border:1px solid var(--line);border-radius:18px;background:var(--card);box-shadow:0 4px 14px #1d35570a}.field label{display:block;margin:0 0 5px;color:var(--muted);font-size:12px}.field select{width:100%;padding:10px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--ink);font:inherit}.section-title{display:flex;align-items:end;justify-content:space-between;margin:26px 2px 12px}.section-title h2{margin:0;font-size:20px}.muted{color:var(--muted)}.question{margin:12px 0;overflow:hidden;border:1px solid var(--line);border-radius:17px;background:var(--card);box-shadow:0 5px 18px #1d35570a}.qhead{display:grid;grid-template-columns:1fr auto;gap:18px;align-items:center;padding:18px 20px;cursor:pointer}.qtitle{font-weight:750;font-size:17px}.qprompt{margin-top:5px;color:var(--muted);white-space:pre-wrap}.meta{margin-top:8px;color:var(--muted);font-size:13px}.badge{display:inline-flex;align-items:center;padding:7px 11px;border-radius:999px;background:#fff0ef;color:var(--red);font-weight:750;white-space:nowrap}.badge.low{background:#e9f7ef;color:var(--green)}.qbody{display:none;padding:0 20px 20px;border-top:1px solid var(--line)}.question.open .qbody{display:block}.qdetails{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0;color:var(--muted);font-size:13px}.pill{padding:5px 9px;border-radius:8px;background:#f1f4f9}.students{display:grid;gap:10px}.student{border:1px solid var(--line);border-radius:13px;overflow:hidden}.student-head{display:grid;grid-template-columns:1fr auto;gap:10px;padding:12px 14px;background:#fafbfd}.student-name{font-weight:700}.student-score{font-weight:750}.attempts{width:100%;border-collapse:collapse;font-size:13px}.attempts th,.attempts td{padding:9px 11px;text-align:left;vertical-align:top;border-top:1px solid var(--line)}.attempts th{color:var(--muted);font-weight:600;background:#fcfdff}.original-answer{min-width:190px}.ink-document{display:flex;align-items:flex-start;flex-wrap:wrap;gap:6px;min-width:170px;max-width:470px}.ink-cell{display:block;flex:0 0 auto;max-width:100%;height:auto;background:#fff}.speech-player{display:block;width:260px;max-width:100%}.ok{color:var(--green);font-weight:700}.bad{color:var(--red);font-weight:700}.empty{padding:40px;text-align:center;color:var(--muted);border:1px dashed #cbd3df;border-radius:16px;background:#fff}@media(max-width:760px){.wrap{padding:18px 12px 40px}.toolbar{grid-template-columns:1fr 1fr}.qhead{grid-template-columns:1fr}.badge{justify-self:start}.attempts{display:block;overflow:auto}.student-head{grid-template-columns:1fr}.hero{padding:22px}.stat{flex:1}}
+$classLearningReportInkLayoutCss
 </style></head><body><main class="wrap"><header class="hero"><div class="eyebrow">Class learning report</div><h1>$escapedClassName · 学习报告</h1><p>按题目汇总班级作答表现；展开题目查看学生正确率及逐次作答。</p><div class="stats" id="stats"></div></header>
 <section class="toolbar"><div class="field"><label for="unitFilter">筛选单元</label><select id="unitFilter"><option value="">全部单元</option></select></div><div class="field"><label for="lessonFilter">筛选课文</label><select id="lessonFilter"><option value="">全部课文</option></select></div><div class="field"><label for="questionSort">题目排序</label><select id="questionSort"><option value="error-desc">学生错误率：高到低</option><option value="error-asc">学生错误率：低到高</option><option value="attempt-error-desc">错误作答率：高到低</option><option value="attempts-desc">作答次数：多到少</option></select></div><div class="field"><label for="studentSort">题内学生排序</label><select id="studentSort"><option value="accuracy-asc">学生正确率：低到高</option><option value="accuracy-desc">学生正确率：高到低</option></select></div></section>
 <div class="section-title"><h2>题目表现</h2><span class="muted" id="resultCount"></span></div><section id="questions"></section></main>
@@ -322,6 +399,10 @@ const byId=id=>document.getElementById(id), unitFilter=byId('unitFilter'), lesso
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const correct=r=>r.isCorrect===true||r.isCorrect===1;
 const groupBy=(items,keyFn)=>{const m=new Map();for(const item of items){const k=keyFn(item);if(!m.has(k))m.set(k,[]);m.get(k).push(item)}return m};
+const finite=(value,fallback=0)=>Number.isFinite(Number(value))?Number(value):fallback;
+const inkColor=value=>{const color=finite(value)>>>0,a=((color>>>24)&255)/255;return 'rgba('+((color>>>16)&255)+','+((color>>>8)&255)+','+(color&255)+','+a.toFixed(3)+')'};
+function inkCell(cell){const w=Math.max(1,finite(cell.width,140)),h=Math.max(1,finite(cell.height,140)),hanzi=cell.grid==='hanzi',grid=hanzi?'#e3aeb4':'#78c7a6';let guides='<rect x="0.5" y="0.5" width="'+(w-1)+'" height="'+(h-1)+'" fill="white" stroke="'+grid+'" vector-effect="non-scaling-stroke"/>';if(hanzi)guides+='<g stroke="'+grid+'" stroke-opacity=".55" vector-effect="non-scaling-stroke"><path d="M'+w/2+' 0V'+h+'M0 '+h/2+'H'+w+'M0 0L'+w+' '+h+'M0 '+h+'L'+w+' 0"/></g>';else guides+='<g stroke="'+grid+'" vector-effect="non-scaling-stroke"><path d="M0 '+h*.42+'H'+w+'M0 '+h*.72+'H'+w+'"/></g>';const strokes=Array.isArray(cell.strokes)?cell.strokes.map(stroke=>{const points=Array.isArray(stroke.points)?stroke.points.map(p=>[finite(p?.[0])*w,finite(p?.[1])*h]):[];if(!points.length)return '';const color=inkColor(stroke.color),width=Math.max(.5,finite(stroke.width,.01)*h);if(points.length===1)return '<circle cx="'+points[0][0]+'" cy="'+points[0][1]+'" r="'+width/2+'" fill="'+color+'"/>';return '<path d="'+points.map((p,i)=>(i?'L':'M')+p[0]+' '+p[1]).join(' ')+'" fill="none" stroke="'+color+'" stroke-width="'+width+'" stroke-linecap="round" stroke-linejoin="round"/>'}).join(''):'';const displayWidth=Math.min(w,hanzi?140:350);return '<svg class="ink-cell" style="width:'+displayWidth+'px" viewBox="0 0 '+w+' '+h+'" role="img" aria-label="原始书写轨迹">'+guides+strokes+'</svg>'}
+function originalAnswer(record){if(record.direction==='readAloud'){if(record.speechWav)return '<audio class="speech-player" controls preload="none" src="data:audio/wav;base64,'+record.speechWav+'">浏览器不支持音频播放</audio>';return '<span class="muted">'+(record.speechError?'录音无法解码':'录音数据缺失')+'</span>'}const document=record.handwritingDocument;if(!document||!Array.isArray(document.cells))return '<span class="muted">'+(record.handwritingError?'轨迹无法读取':'轨迹数据缺失')+'</span>';return '<div class="ink-document">'+document.cells.map(inkCell).join('')+'</div>'}
 const units=[...new Set(records.map(r=>r.unitName).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'zh-CN'));
 for(const unit of units){const o=document.createElement('option');o.value=unit;o.textContent=unit;unitFilter.append(o)}
 function updateLessons(){const current=lessonFilter.value;lessonFilter.innerHTML='<option value="">全部课文</option>';const lessons=[...new Set(records.filter(r=>!unitFilter.value||r.unitName===unitFilter.value).map(r=>r.lessonName).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'zh-CN'));for(const lesson of lessons){const o=document.createElement('option');o.value=lesson;o.textContent=lesson;lessonFilter.append(o)}if(lessons.includes(current))lessonFilter.value=current;render()}
@@ -329,7 +410,7 @@ function render(){const filtered=records.filter(r=>(!unitFilter.value||r.unitNam
 const sort=questionSort.value;questions.sort((a,b)=>sort==='error-asc'?a.studentErrorRate-b.studentErrorRate:sort==='attempt-error-desc'?b.attemptErrorRate-a.attemptErrorRate:sort==='attempts-desc'?b.attempts.length-a.attempts.length:b.studentErrorRate-a.studentErrorRate);
 const right=filtered.filter(correct).length,wrong=filtered.length-right;byId('stats').innerHTML='<div class="stat"><b>'+filtered.length+'</b>答题记录</div><div class="stat"><b>'+questions.length+'</b>道题</div><div class="stat"><b>'+right+'</b>正确作答</div><div class="stat"><b>'+wrong+'</b>错误作答</div>';byId('resultCount').textContent='当前筛选 '+questions.length+' 道题 · '+filtered.length+' 条记录';
 if(!questions.length){byId('questions').innerHTML='<div class="empty">当前筛选条件下没有答题记录</div>';return}
-byId('questions').innerHTML=questions.map((item,index)=>{const q=item.q;const err=(item.studentErrorRate*100).toFixed(1),attemptErr=(item.attemptErrorRate*100).toFixed(1);const students=[...item.students].sort((a,b)=>studentSort.value==='accuracy-desc'?b.accuracy-a.accuracy:a.accuracy-b.accuracy||a.name.localeCompare(b.name,'zh-CN'));return '<article class="question" id="q'+index+'"><div class="qhead" onclick="this.parentElement.classList.toggle(&#39;open&#39;)"><div><div class="qtitle">'+esc(q.source)+' · '+esc(q.prompt)+'</div><div class="meta">'+esc(q.unitName)+' / '+esc(q.lessonName)+' · '+esc(q.textbookKey)+' · '+esc(q.chapterId)+' · '+esc(q.category)+' · '+esc(q.direction)+'</div></div><span class="badge '+(item.studentErrorRate===0?'low':'')+'">学生错误率 '+err+'%</span></div><div class="qbody"><div class="qdetails"><span class="pill">题目 ID：'+esc(q.questionId)+'</span><span class="pill">题型：'+esc(q.questionKind)+'</span><span class="pill">错误学生：'+item.students.filter(s=>s.rows.some(r=>!correct(r))).length+'/'+item.students.length+'</span><span class="pill">错误作答率：'+attemptErr+'%</span><span class="pill">标准答案：'+esc(q.expectedAnswer)+'</span></div><div class="students">'+students.map(s=>'<section class="student"><div class="student-head"><div><div class="student-name">'+esc(s.name)+'</div><div class="muted">'+esc(s.username)+' · '+s.rows.length+' 次作答</div></div><div class="student-score">正确率 '+(s.accuracy*100).toFixed(1)+'% ('+s.rows.filter(correct).length+'/'+s.rows.length+')</div></div><table class="attempts"><thead><tr><th>结果</th><th>OCR / ASR 识别结果</th><th>作答时间</th><th>记录 ID</th><th>入库时间</th><th>学生 ID</th><th>班级 ID</th></tr></thead><tbody>'+[...s.rows].sort((a,b)=>String(b.occurredAt).localeCompare(String(a.occurredAt))).map(r=>'<tr><td class="'+(correct(r)?'ok':'bad')+'">'+(correct(r)?'正确':'错误')+'</td><td>'+esc(r.studentAnswer)+'</td><td>'+esc(r.occurredAt)+'</td><td>'+esc(r.id)+'</td><td>'+esc(r.createdAt)+'</td><td>'+esc(r.studentId)+'</td><td>'+esc(r.classId)+'</td></tr>').join('')+'</tbody></table></section>').join('')+'</div></div></article>'}).join('')}
+byId('questions').innerHTML=questions.map((item,index)=>{const q=item.q;const err=(item.studentErrorRate*100).toFixed(1),attemptErr=(item.attemptErrorRate*100).toFixed(1);const students=[...item.students].sort((a,b)=>studentSort.value==='accuracy-desc'?b.accuracy-a.accuracy:a.accuracy-b.accuracy||a.name.localeCompare(b.name,'zh-CN'));return '<article class="question" id="q'+index+'"><div class="qhead" onclick="this.parentElement.classList.toggle(&#39;open&#39;)"><div><div class="qtitle">'+esc(q.source)+' · '+esc(q.prompt)+'</div><div class="meta">'+esc(q.unitName)+' / '+esc(q.lessonName)+' · '+esc(q.textbookKey)+' · '+esc(q.chapterId)+' · '+esc(q.category)+' · '+esc(q.direction)+'</div></div><span class="badge '+(item.studentErrorRate===0?'low':'')+'">学生错误率 '+err+'%</span></div><div class="qbody"><div class="qdetails"><span class="pill">题目 ID：'+esc(q.questionId)+'</span><span class="pill">题型：'+esc(q.questionKind)+'</span><span class="pill">错误学生：'+item.students.filter(s=>s.rows.some(r=>!correct(r))).length+'/'+item.students.length+'</span><span class="pill">错误作答率：'+attemptErr+'%</span><span class="pill">标准答案：'+esc(q.expectedAnswer)+'</span></div><div class="students">'+students.map(s=>'<section class="student"><div class="student-head"><div><div class="student-name">'+esc(s.name)+'</div><div class="muted">'+esc(s.username)+' · '+s.rows.length+' 次作答</div></div><div class="student-score">正确率 '+(s.accuracy*100).toFixed(1)+'% ('+s.rows.filter(correct).length+'/'+s.rows.length+')</div></div><table class="attempts"><thead><tr><th>结果</th><th>原始作答</th><th>OCR / ASR 识别结果</th><th>作答时间</th><th>记录 ID</th><th>入库时间</th><th>学生 ID</th><th>班级 ID</th></tr></thead><tbody>'+[...s.rows].sort((a,b)=>String(b.occurredAt).localeCompare(String(a.occurredAt))).map(r=>'<tr><td class="'+(correct(r)?'ok':'bad')+'">'+(correct(r)?'正确':'错误')+'</td><td class="original-answer">'+originalAnswer(r)+'</td><td>'+esc(r.studentAnswer)+'</td><td>'+esc(r.occurredAt)+'</td><td>'+esc(r.id)+'</td><td>'+esc(r.createdAt)+'</td><td>'+esc(r.studentId)+'</td><td>'+esc(r.classId)+'</td></tr>').join('')+'</tbody></table></section>').join('')+'</div></div></article>'}).join('')}
 unitFilter.addEventListener('change',updateLessons);lessonFilter.addEventListener('change',render);questionSort.addEventListener('change',render);studentSort.addEventListener('change',render);updateLessons();
 </script></body></html>''';
   }
@@ -370,7 +451,11 @@ unitFilter.addEventListener('change',updateLessons);lessonFilter.addEventListene
                 if (_exporting)
                   Padding(
                     padding: const EdgeInsets.only(top: 6),
-                    child: Text('正在下载全量历史记录，已取得 $_exportFetched 条…'),
+                    child: Text(
+                      _exportPreparing
+                          ? '正在解码原始作答，已处理 $_exportPrepared / $_exportFetched 条…'
+                          : '正在下载全量历史记录，已取得 $_exportFetched 条…',
+                    ),
                   ),
                 const SizedBox(height: 8),
                 Expanded(
