@@ -24,6 +24,22 @@ def _archiver(config: BuildConfig) -> str:
     return shutil.which("ar") or "ar"
 
 
+def _deduplicate_onnx_archives(archives: list[Path], ext: str) -> list[Path]:
+    """Drop ONNX's standalone proto archive when the main archive is present.
+
+    ONNX 1.20+ builds ``onnx`` with the generated protobuf objects already
+    embedded, while also producing ``onnx_proto`` with the same objects.  A
+    normal linker only extracts required members, but iOS force-loads our
+    combined speech archive and reports every protobuf symbol twice.
+    """
+    onnx_name = "onnx.lib" if ext == ".lib" else "libonnx.a"
+    proto_name = "onnx_proto.lib" if ext == ".lib" else "libonnx_proto.a"
+    names = {path.name.lower() for path in archives}
+    if onnx_name in names and proto_name in names:
+        return [path for path in archives if path.name.lower() != proto_name]
+    return archives
+
+
 def build(config: BuildConfig) -> Path:
     root = config.speech / ".build-deps" / config.target
     vendor = config.speech_vendor
@@ -35,6 +51,7 @@ def build(config: BuildConfig) -> Path:
     re2 = vendor / "lib" / re2_name
     ort = [path for path in _find(root / "onnxruntime", ext)
            if path.name.lower() != re2_name.lower()]
+    ort = _deduplicate_onnx_archives(ort, ext)
     piper = _find(root / "piper", ext)
     funasr = _find(root / "funasr", ext)
     if not ort or not piper or not funasr or not re2.exists():
