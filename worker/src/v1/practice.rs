@@ -245,6 +245,9 @@ fn valid_input(input: &PracticeRecordInput) -> bool {
     let id_is_hex = input.id.len() == 32 && input.id.bytes().all(|byte| byte.is_ascii_hexdigit());
     let valid_text =
         |value: &str, max: usize| !value.trim().is_empty() && value.chars().count() <= max;
+    // Original handwriting or speech audio is the authoritative answer.
+    // OCR and ASR may legitimately return no derived text.
+    let student_answer_is_valid = input.student_answer.chars().count() <= 2000;
     let original_answer_is_valid = match (
         &input.handwriting_gzip,
         &input.ocr_results,
@@ -291,7 +294,7 @@ fn valid_input(input: &PracticeRecordInput) -> bool {
         && valid_text(&input.category, 64)
         && valid_text(&input.source, 256)
         && valid_text(&input.prompt, 2000)
-        && valid_text(&input.student_answer, 2000)
+        && student_answer_is_valid
         && valid_text(&input.expected_answer, 2000)
         && valid_text(&input.occurred_at, 40)
         && timestamp_is_valid
@@ -535,6 +538,9 @@ mod tests {
     fn reading_requires_valid_audio_and_per_character_review() {
         let mut record = input();
         assert!(valid_input(&record));
+        record.student_answer.clear();
+        record.speech_recognized_pinyin = Some(String::new());
+        assert!(valid_input(&record));
         record.speech_snac = None;
         assert!(!valid_input(&record));
         record.speech_snac = Some(STANDARD.encode(b"not snac"));
@@ -566,6 +572,8 @@ mod tests {
         assert!(valid_input(&record));
 
         record.ocr_results = Some(vec![]);
+        assert!(valid_input(&record));
+        record.student_answer.clear();
         assert!(valid_input(&record));
         record.ocr_results = Some(vec!["春".into(), "天".into()]);
         assert!(!valid_input(&record));
