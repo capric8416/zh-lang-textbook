@@ -85,6 +85,7 @@ class RubyText extends StatelessWidget {
                   height: 1.35,
                   fontWeight: fontWeight,
                   fontFamilyFallback: const [
+                    'Microsoft YaHei',
                     'Kaiti SC',
                     'STKaiti',
                     'KaiTi',
@@ -152,10 +153,10 @@ class RubyText extends StatelessWidget {
               height: 1.6,
               fontWeight: fontWeight,
               fontFamilyFallback: const [
+                'Microsoft YaHei',
                 'Kaiti SC',
                 'STKaiti',
                 'KaiTi',
-                'Noto Serif CJK SC',
               ],
             ),
           ),
