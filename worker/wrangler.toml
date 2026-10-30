@@ -4,7 +4,7 @@ compatibility_date = "2026-10-13"
 workers_dev = true
 
 [build]
-command = "cargo install -q worker-build@^0.1 && worker-build --release"
+command = "node scripts/build_worker.mjs"
 
 [[d1_databases]]
 binding = "DB"
