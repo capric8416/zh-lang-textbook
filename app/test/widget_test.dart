@@ -66,10 +66,7 @@ void main() {
           '{"grade":3,"semester":"a","dirty":false}',
     });
     await tester.pumpWidget(const ZhTextbookApp());
-    await _pumpUntilFound(
-      tester,
-      find.byType(DropdownButtonFormField<int>),
-    );
+    await _pumpUntilFound(tester, find.byType(DropdownButtonFormField<int>));
     await tester.pump(const Duration(milliseconds: 100));
 
     expect(
@@ -121,7 +118,7 @@ void main() {
 
     expect(find.text('练习目录'), findsOneWidget);
     expect(
-      find.textContaining(RegExp(r'看拼音写汉字|看汉字写拼音|听音写汉字|朗读检查')),
+      find.textContaining(RegExp(r'看拼音写汉字|看汉字写拼音|听音写汉字|朗读检查|填空')),
       findsOneWidget,
     );
     expect(find.text('下一题'), findsNothing);

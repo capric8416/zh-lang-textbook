@@ -259,7 +259,8 @@ fn valid_input(input: &PracticeRecordInput) -> bool {
     let student_answer_is_valid = input.student_answer.chars().count() <= 2000;
     let is_speech_direction = matches!(input.direction.as_str(), "readAloud" | "poemReadAloud");
     let is_poem_direction = matches!(input.direction.as_str(), "poemDictation" | "poemReadAloud");
-    let poem_metadata_is_valid = if is_poem_direction {
+    let fill_blank_poem = input.direction == "fillBlank" && !input.poem_title.is_empty();
+    let poem_metadata_is_valid = if is_poem_direction || fill_blank_poem {
         valid_text(&input.poem_title, 256)
             && input.poem_dynasty.chars().count() <= 64
             && input.poem_author.chars().count() <= 128
@@ -326,6 +327,7 @@ fn valid_input(input: &PracticeRecordInput) -> bool {
                 | "readAloud"
                 | "poemDictation"
                 | "poemReadAloud"
+                | "fillBlank"
         )
 }
 
@@ -606,10 +608,16 @@ mod tests {
         record.review_bits = Some(STANDARD.encode([1]));
         assert!(valid_input(&record));
 
+        record.direction = "fillBlank".into();
+        assert!(valid_input(&record));
+
         record.direction = "poemDictation".into();
         record.poem_title = "春晓".into();
         record.poem_dynasty = "唐".into();
         record.poem_author = "孟浩然".into();
+        assert!(valid_input(&record));
+
+        record.direction = "fillBlank".into();
         assert!(valid_input(&record));
 
         record.ocr_results = Some(vec![]);

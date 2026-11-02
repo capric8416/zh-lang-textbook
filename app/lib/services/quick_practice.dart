@@ -60,7 +60,8 @@ class QuickPracticeSelector {
         QuickPracticeAction.characters =>
           item.direction == PracticeDirection.writeHanzi ||
               item.direction == PracticeDirection.writePinyin ||
-              item.direction == PracticeDirection.poemDictation,
+              item.direction == PracticeDirection.poemDictation ||
+              item.direction == PracticeDirection.fillBlank,
         QuickPracticeAction.readAloud =>
           (item.direction == PracticeDirection.readAloud ||
                   item.direction == PracticeDirection.poemReadAloud) &&

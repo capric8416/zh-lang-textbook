@@ -133,6 +133,7 @@ class _StudentLearningRecordsPageState
         'readAloud' => '朗读',
         'poemDictation' => '古诗词默写',
         'poemReadAloud' => '古诗词朗读',
+        'fillBlank' => '填空',
         final value => value,
       };
 

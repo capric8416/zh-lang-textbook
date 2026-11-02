@@ -972,8 +972,10 @@ class _QuestionCard extends StatelessWidget {
     final writesHanzi =
         direction == PracticeDirection.writeHanzi ||
         direction == PracticeDirection.listenWriteHanzi ||
-        direction == PracticeDirection.poemDictation;
+        direction == PracticeDirection.poemDictation ||
+        direction == PracticeDirection.fillBlank;
     final isDictation = direction == PracticeDirection.listenWriteHanzi;
+    final isFillBlank = direction == PracticeDirection.fillBlank;
     final isPoem = question.isPoem;
     final isReadAloud =
         direction == PracticeDirection.readAloud ||
@@ -982,6 +984,7 @@ class _QuestionCard extends StatelessWidget {
       PracticeDirection.writeHanzi => question.promptLines,
       PracticeDirection.poemDictation ||
       PracticeDirection.poemReadAloud => const <String>[],
+      PracticeDirection.fillBlank => question.promptLines,
       _ => question.answerLines,
     };
     final title = switch (direction) {
@@ -991,6 +994,7 @@ class _QuestionCard extends StatelessWidget {
       PracticeDirection.readAloud => '朗读检查',
       PracticeDirection.poemDictation => '古诗词默写',
       PracticeDirection.poemReadAloud => '古诗词朗读',
+      PracticeDirection.fillBlank => '填空',
     };
     return Card(
       elevation: 0,
@@ -1023,6 +1027,8 @@ class _QuestionCard extends StatelessWidget {
                       ? Icons.hearing
                       : isReadAloud
                       ? Icons.mic_outlined
+                      : isFillBlank
+                      ? Icons.space_bar
                       : direction == PracticeDirection.writeHanzi
                       ? Icons.translate
                       : Icons.text_fields,
@@ -1057,6 +1063,14 @@ class _QuestionCard extends StatelessWidget {
                             ].where((value) => value.isNotEmpty).join(' · '),
                             textAlign: TextAlign.center,
                             style: Theme.of(context).textTheme.titleMedium,
+                          ),
+                        ],
+                        if (isFillBlank) ...[
+                          const SizedBox(height: 18),
+                          Text(
+                            prompt.join('\n'),
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(fontSize: 24, height: 1.8),
                           ),
                         ],
                       ],

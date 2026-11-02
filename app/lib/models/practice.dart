@@ -7,6 +7,7 @@ enum PracticeDirection {
   readAloud,
   poemDictation,
   poemReadAloud,
+  fillBlank,
 }
 
 class PracticeQuestion {
@@ -21,6 +22,7 @@ class PracticeQuestion {
     this.poemTitle = '',
     this.poemDynasty = '',
     this.poemAuthor = '',
+    this.fillBlankOnly = false,
   });
 
   final String id;
@@ -33,6 +35,7 @@ class PracticeQuestion {
   final String poemTitle;
   final String poemDynasty;
   final String poemAuthor;
+  final bool fillBlankOnly;
 
   String get answer => answerLines.join('\n');
 
@@ -46,6 +49,8 @@ class PracticeQuestion {
   ].where((value) => value.isNotEmpty).join('\n');
 
   bool supportsDirection(PracticeDirection direction) {
+    if (fillBlankOnly) return direction == PracticeDirection.fillBlank;
+    if (direction == PracticeDirection.fillBlank) return false;
     if (isPoem) {
       return direction == PracticeDirection.poemDictation ||
           direction == PracticeDirection.poemReadAloud;
@@ -186,7 +191,10 @@ class PracticeCatalog {
         }
       }
     }
-    return PracticeCatalog(questions);
+    return PracticeCatalog([
+      ...questions,
+      for (final question in questions) ..._fillBlankQuestions(question),
+    ]);
   }
 
   static String _appendixCategory(String id) => switch (id) {
@@ -196,6 +204,104 @@ class PracticeCatalog {
     _ => '附录',
   };
 }
+
+Iterable<PracticeQuestion> _fillBlankQuestions(
+  PracticeQuestion question,
+) sync* {
+  if (question.category == '词') {
+    final characters = _hanziCharacters(question.answer);
+    if (characters.length < 2) return;
+    final missingCount = (characters.length + 1) ~/ 2;
+    final shownCount = characters.length - missingCount;
+    yield _fillBlankQuestion(
+      source: question,
+      idSuffix: 'left',
+      promptLines: [
+        _wordBlankPrompt(
+          missingCount: missingCount,
+          shown: characters.skip(missingCount),
+          blankFirst: true,
+        ),
+      ],
+      answer: characters.take(missingCount).join(),
+    );
+    yield _fillBlankQuestion(
+      source: question,
+      idSuffix: 'right',
+      promptLines: [
+        _wordBlankPrompt(
+          missingCount: missingCount,
+          shown: characters.take(shownCount),
+          blankFirst: false,
+        ),
+      ],
+      answer: characters.skip(shownCount).join(),
+    );
+    return;
+  }
+
+  if (!question.isPoem || question.answerLines.length < 2) return;
+  for (var index = 0; index + 1 < question.answerLines.length; index += 2) {
+    final first = question.answerLines[index];
+    final second = question.answerLines[index + 1];
+    final firstAnswer = _hanziCharacters(first).join();
+    final secondAnswer = _hanziCharacters(second).join();
+    if (firstAnswer.isEmpty || secondAnswer.isEmpty) continue;
+    final pair = index ~/ 2 + 1;
+    yield _fillBlankQuestion(
+      source: question,
+      idSuffix: 'pair-$pair-first',
+      promptLines: [_blankHanzi(first), second],
+      answer: firstAnswer,
+    );
+    yield _fillBlankQuestion(
+      source: question,
+      idSuffix: 'pair-$pair-second',
+      promptLines: [first, _blankHanzi(second)],
+      answer: secondAnswer,
+    );
+  }
+}
+
+PracticeQuestion _fillBlankQuestion({
+  required PracticeQuestion source,
+  required String idSuffix,
+  required List<String> promptLines,
+  required String answer,
+}) => PracticeQuestion(
+  id: '${source.id}:fill:$idSuffix',
+  kind: source.isPoem ? '古诗词填空' : '词语填空',
+  category: source.category,
+  answerLines: [answer],
+  promptLines: promptLines,
+  source: source.source,
+  chapterId: source.chapterId,
+  poemTitle: source.poemTitle,
+  poemDynasty: source.poemDynasty,
+  poemAuthor: source.poemAuthor,
+  fillBlankOnly: true,
+);
+
+List<String> _hanziCharacters(String text) => [
+  for (final match in RegExp(r'[\u3400-\u9FFF]').allMatches(text))
+    match.group(0)!,
+];
+
+String _wordBlankPrompt({
+  required int missingCount,
+  required Iterable<String> shown,
+  required bool blankFirst,
+}) {
+  final blanks = List.filled(missingCount, '＿');
+  return [
+    if (blankFirst) ...blanks,
+    ...shown,
+    if (!blankFirst) ...blanks,
+  ].join(' ');
+}
+
+String _blankHanzi(String text) =>
+    text.replaceAll(RegExp(r'[\u3400-\u9FFF]'), '＿');
 
 Iterable<ContentNode> _descendants(ContentNode node) sync* {
   yield node;

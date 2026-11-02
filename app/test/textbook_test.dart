@@ -193,4 +193,73 @@ void main() {
     expect(poem.supportsDirection(PracticeDirection.writeHanzi), isFalse);
     expect(poem.supportsDirection(PracticeDirection.readAloud), isFalse);
   });
+
+  test('填空题按对称规则生成词语和诗词缺字', () {
+    final source = File(
+      '../json_reviewed/zh-lang-grade3a-textbook-struct.json',
+    ).readAsStringSync();
+    final catalog = PracticeCatalog.fromTextbook(
+      Textbook.fromJsonString(source),
+    );
+
+    final fourCharacterWord = catalog.questions.firstWhere((question) {
+      if (!question.fillBlankOnly || question.category != '词') return false;
+      final expected = RegExp(
+        r'[\u3400-\u9FFF]',
+      ).allMatches(question.answer).length;
+      final shown = RegExp(
+        r'[\u3400-\u9FFF]',
+      ).allMatches(question.prompt).length;
+      return expected + shown == 4;
+    });
+    expect(
+      RegExp(r'[\u3400-\u9FFF]').allMatches(fourCharacterWord.answer),
+      hasLength(2),
+    );
+    expect(
+      RegExp(r'[\u3400-\u9FFF]').allMatches(fourCharacterWord.prompt),
+      hasLength(2),
+    );
+    expect(
+      fourCharacterWord.supportsDirection(PracticeDirection.fillBlank),
+      isTrue,
+    );
+    expect(
+      fourCharacterWord.supportsDirection(PracticeDirection.writeHanzi),
+      isFalse,
+    );
+
+    final twoCharacterWord = catalog.questions.firstWhere((question) {
+      if (!question.fillBlankOnly || question.category != '词') return false;
+      return RegExp(
+            r'[\u3400-\u9FFF]',
+          ).allMatches('${question.answer}${question.prompt}').length ==
+          2;
+    });
+    final wordId = twoCharacterWord.id.split(':fill:').first;
+    final wordVariants = catalog.questions.where(
+      (question) => question.id.startsWith('$wordId:fill:'),
+    );
+    expect(wordVariants, hasLength(2));
+    expect(
+      wordVariants.every(
+        (question) =>
+            RegExp(r'[\u3400-\u9FFF]').allMatches(question.answer).length ==
+                1 &&
+            RegExp(r'[\u3400-\u9FFF]').allMatches(question.prompt).length == 1,
+      ),
+      isTrue,
+    );
+
+    final poemBlanks = catalog.questions
+        .where(
+          (question) => question.fillBlankOnly && question.poemTitle == '山行',
+        )
+        .toList();
+    expect(poemBlanks, hasLength(4));
+    expect(poemBlanks[0].promptLines, ['＿＿＿＿＿＿＿，', '白云生处有人家。']);
+    expect(poemBlanks[0].answer, '远上寒山石径斜');
+    expect(poemBlanks[1].promptLines, ['远上寒山石径斜，', '＿＿＿＿＿＿＿。']);
+    expect(poemBlanks[1].answer, '白云生处有人家');
+  });
 }

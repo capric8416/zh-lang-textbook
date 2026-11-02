@@ -15,7 +15,8 @@ String promptForPracticeDirection(
   PracticeDirection direction,
 ) => switch (direction) {
   PracticeDirection.writeHanzi ||
-  PracticeDirection.listenWriteHanzi => question.prompt,
+  PracticeDirection.listenWriteHanzi ||
+  PracticeDirection.fillBlank => question.prompt,
   PracticeDirection.writePinyin ||
   PracticeDirection.readAloud => question.answer,
   PracticeDirection.poemDictation ||
@@ -32,5 +33,6 @@ String expectedAnswerForPracticeDirection(
   PracticeDirection.listenWriteHanzi ||
   PracticeDirection.readAloud ||
   PracticeDirection.poemDictation ||
-  PracticeDirection.poemReadAloud => question.answer,
+  PracticeDirection.poemReadAloud ||
+  PracticeDirection.fillBlank => question.answer,
 };
