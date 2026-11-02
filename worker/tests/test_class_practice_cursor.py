@@ -18,6 +18,8 @@ class ClassPracticeCursorTests(unittest.TestCase):
             '0010_class_practice_records_cursor.sql',
             '0012_practice_original_answers.sql',
             '0013_practice_review_bits.sql',
+            '0014_practice_speech_audio.sql',
+            '0015_practice_poem_metadata.sql',
         ):
             self.db.executescript((ROOT / 'migrations' / name).read_text())
         self.db.row_factory = sqlite3.Row
@@ -33,7 +35,7 @@ class ClassPracticeCursorTests(unittest.TestCase):
             "INSERT INTO classes(id,name,created_by,school_admin_id) "
             "VALUES('class-a','测试班','admin','admin')"
         )
-        source = (ROOT / 'src/db/practice_records.rs').read_text()
+        source = (ROOT / 'src/db/practice_records.rs').read_text(encoding='utf-8')
         section = source.split('pub(crate) async fn list_for_class_cursor_page(')[1]
         self.next_sql, self.first_sql = re.findall(r'db.prepare\("([^"]+)"\)', section)[:2]
         for record_id in ('a', 'b', 'c'):

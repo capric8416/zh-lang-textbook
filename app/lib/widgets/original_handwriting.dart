@@ -77,7 +77,8 @@ class _OriginalHandwritingState extends State<OriginalHandwriting> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.record['direction'] == 'readAloud') {
+    if (widget.record['direction'] == 'readAloud' ||
+        widget.record['direction'] == 'poemReadAloud') {
       return const SizedBox.shrink();
     }
     if (widget.record['handwritingGzip'] is! String) {

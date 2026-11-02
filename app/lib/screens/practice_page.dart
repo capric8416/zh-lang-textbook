@@ -418,6 +418,9 @@ class _PracticePageState extends State<PracticePage> {
       questionKind: question.kind,
       category: question.category,
       source: question.source,
+      poemTitle: question.poemTitle,
+      poemDynasty: question.poemDynasty,
+      poemAuthor: question.poemAuthor,
       direction: _direction.name,
       prompt: promptForPracticeDirection(question, _direction),
       studentAnswer: studentAnswer,
@@ -968,17 +971,26 @@ class _QuestionCard extends StatelessWidget {
     final colors = Theme.of(context).colorScheme;
     final writesHanzi =
         direction == PracticeDirection.writeHanzi ||
-        direction == PracticeDirection.listenWriteHanzi;
+        direction == PracticeDirection.listenWriteHanzi ||
+        direction == PracticeDirection.poemDictation;
     final isDictation = direction == PracticeDirection.listenWriteHanzi;
-    final isReadAloud = direction == PracticeDirection.readAloud;
-    final prompt = direction == PracticeDirection.writeHanzi
-        ? question.promptLines
-        : question.answerLines;
+    final isPoem = question.isPoem;
+    final isReadAloud =
+        direction == PracticeDirection.readAloud ||
+        direction == PracticeDirection.poemReadAloud;
+    final prompt = switch (direction) {
+      PracticeDirection.writeHanzi => question.promptLines,
+      PracticeDirection.poemDictation ||
+      PracticeDirection.poemReadAloud => const <String>[],
+      _ => question.answerLines,
+    };
     final title = switch (direction) {
       PracticeDirection.writeHanzi => '看拼音写汉字',
       PracticeDirection.writePinyin => '看汉字写拼音',
       PracticeDirection.listenWriteHanzi => '听音写汉字',
       PracticeDirection.readAloud => '朗读检查',
+      PracticeDirection.poemDictation => '古诗词默写',
+      PracticeDirection.poemReadAloud => '古诗词朗读',
     };
     return Card(
       elevation: 0,
@@ -1027,7 +1039,29 @@ class _QuestionCard extends StatelessWidget {
                 color: colors.primaryContainer.withValues(alpha: 0.35),
                 borderRadius: BorderRadius.circular(14),
               ),
-              child: isDictation
+              child: isPoem
+                  ? Column(
+                      children: [
+                        Text(
+                          '《${question.poemTitle}》',
+                          textAlign: TextAlign.center,
+                          style: Theme.of(context).textTheme.headlineSmall,
+                        ),
+                        if (question.poemDynasty.isNotEmpty ||
+                            question.poemAuthor.isNotEmpty) ...[
+                          const SizedBox(height: 8),
+                          Text(
+                            [
+                              question.poemDynasty,
+                              question.poemAuthor,
+                            ].where((value) => value.isNotEmpty).join(' · '),
+                            textAlign: TextAlign.center,
+                            style: Theme.of(context).textTheme.titleMedium,
+                          ),
+                        ],
+                      ],
+                    )
+                  : isDictation
                   ? Center(
                       child: FilledButton.tonalIcon(
                         onPressed: playing ? null : onPlay,
@@ -1053,13 +1087,7 @@ class _QuestionCard extends StatelessWidget {
                       ),
                     ),
             ),
-            if (isReadAloud) ...[
-              const SizedBox(height: 12),
-              Text(
-                '仅检查朗读内容是否匹配，并非严格的发音评分；识别结果需要人工复核。',
-                style: TextStyle(color: colors.onSurfaceVariant),
-              ),
-            ] else ...[
+            if (!isReadAloud) ...[
               const SizedBox(height: 18),
               AbsorbPointer(
                 absorbing: grading || graded,
@@ -1070,6 +1098,12 @@ class _QuestionCard extends StatelessWidget {
                     writesHanzi ? question.answer : question.prompt,
                     writesHanzi ? WritingGrid.hanzi : WritingGrid.pinyin,
                   ),
+                  lineLengths: direction == PracticeDirection.poemDictation
+                      ? [
+                          for (final line in question.answerLines)
+                            _slotLengths(line, WritingGrid.hanzi).length,
+                        ]
+                      : const [],
                 ),
               ),
             ],

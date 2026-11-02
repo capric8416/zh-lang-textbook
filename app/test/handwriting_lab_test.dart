@@ -8,6 +8,7 @@ import 'package:zh_textbook/models/handwriting.dart';
 import 'package:zh_textbook/models/practice.dart';
 import 'package:zh_textbook/models/practice_record_answers.dart';
 import 'package:zh_textbook/widgets/original_handwriting.dart';
+import 'package:zh_textbook/widgets/writing_pad.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -157,6 +158,33 @@ void main() {
     expect(find.text('识别：好'), findsOneWidget);
   });
 
+  testWidgets('poem handwriting keeps one textbook sentence per line', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      const MaterialApp(
+        home: Scaffold(
+          body: WritingPad(
+            grid: WritingGrid.hanzi,
+            slotLengths: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            lineLengths: [2, 3, 1, 4],
+          ),
+        ),
+      ),
+    );
+
+    for (var index = 0; index < 4; index++) {
+      expect(find.byKey(ValueKey('writing-line-$index')), findsOneWidget);
+    }
+    expect(
+      find.descendant(
+        of: find.byType(WritingPad),
+        matching: find.byType(SingleChildScrollView),
+      ),
+      findsNWidgets(4),
+    );
+  });
+
   test(
     'fixed black brush converts absolute points and width to cell-relative',
     () {
@@ -201,6 +229,33 @@ void main() {
           PracticeDirection.writeHanzi,
         ),
         '洁白',
+      );
+
+      final poem = PracticeQuestion(
+        id: 'poem:test',
+        kind: '古诗词',
+        category: '诗词',
+        answerLines: const ['床前明月光，', '疑是地上霜。'],
+        promptLines: const [
+          'chuáng qián míng yuè guāng',
+          'yí shì dì shàng shuāng',
+        ],
+        source: '静夜思',
+        chapterId: 'c',
+        poemTitle: '静夜思',
+        poemDynasty: '唐',
+        poemAuthor: '李白',
+      );
+      expect(
+        promptForPracticeDirection(poem, PracticeDirection.poemDictation),
+        '《静夜思》\n唐 · 李白',
+      );
+      expect(
+        expectedAnswerForPracticeDirection(
+          poem,
+          PracticeDirection.poemReadAloud,
+        ),
+        '床前明月光，\n疑是地上霜。',
       );
     },
   );

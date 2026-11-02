@@ -170,4 +170,27 @@ void main() {
       isTrue,
     );
   });
+
+  test('古诗词按整首生成默写和朗读题并保留题头信息', () {
+    final source = File(
+      '../json_reviewed/zh-lang-grade3a-textbook-struct.json',
+    ).readAsStringSync();
+    final catalog = PracticeCatalog.fromTextbook(
+      Textbook.fromJsonString(source),
+    );
+    final poem = catalog.questions.firstWhere(
+      (question) => question.id == 'poem:u01-garden-poem-01',
+    );
+
+    expect(poem.poemTitle, '所见');
+    expect(poem.poemDynasty, '清');
+    expect(poem.poemAuthor, '袁枚');
+    expect(poem.answerLines, hasLength(4));
+    expect(poem.promptLines, hasLength(4));
+    expect(poem.poemPrompt, '《所见》\n清 · 袁枚');
+    expect(poem.supportsDirection(PracticeDirection.poemDictation), isTrue);
+    expect(poem.supportsDirection(PracticeDirection.poemReadAloud), isTrue);
+    expect(poem.supportsDirection(PracticeDirection.writeHanzi), isFalse);
+    expect(poem.supportsDirection(PracticeDirection.readAloud), isFalse);
+  });
 }

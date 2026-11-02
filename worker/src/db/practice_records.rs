@@ -14,6 +14,9 @@ pub(crate) struct PracticeRecord {
     pub(crate) question_kind: String,
     pub(crate) category: String,
     pub(crate) source: String,
+    pub(crate) poem_title: String,
+    pub(crate) poem_dynasty: String,
+    pub(crate) poem_author: String,
     pub(crate) direction: String,
     pub(crate) prompt: String,
     pub(crate) student_answer: String,
@@ -46,6 +49,9 @@ pub(crate) struct ClassPracticeRecord {
     pub(crate) question_kind: String,
     pub(crate) category: String,
     pub(crate) source: String,
+    pub(crate) poem_title: String,
+    pub(crate) poem_dynasty: String,
+    pub(crate) poem_author: String,
     pub(crate) direction: String,
     pub(crate) prompt: String,
     pub(crate) student_answer: String,
@@ -145,6 +151,9 @@ pub(crate) async fn insert(
         D1Type::Text(&record.question_kind),
         D1Type::Text(&record.category),
         D1Type::Text(&record.source),
+        D1Type::Text(&record.poem_title),
+        D1Type::Text(&record.poem_dynasty),
+        D1Type::Text(&record.poem_author),
         D1Type::Text(&record.direction),
         D1Type::Text(&record.prompt),
         D1Type::Text(&record.student_answer),
@@ -158,7 +167,7 @@ pub(crate) async fn insert(
         speech_review_value,
         speech_pinyin_value,
     ];
-    db.prepare("INSERT INTO practice_records(id,student_id,class_id,textbook_key,question_id,chapter_id,question_kind,category,source,direction,prompt,student_answer,expected_answer,is_correct,occurred_at,handwriting_gzip,ocr_results,review_bits,speech_snac,speech_review_bits,speech_recognized_pinyin) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) ON CONFLICT(id) DO NOTHING")
+    db.prepare("INSERT INTO practice_records(id,student_id,class_id,textbook_key,question_id,chapter_id,question_kind,category,source,poem_title,poem_dynasty,poem_author,direction,prompt,student_answer,expected_answer,is_correct,occurred_at,handwriting_gzip,ocr_results,review_bits,speech_snac,speech_review_bits,speech_recognized_pinyin) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) ON CONFLICT(id) DO NOTHING")
         .bind_refs(&bindings)?
         .run()
         .await?;
@@ -188,10 +197,10 @@ pub(crate) async fn list_for_class_cursor_page(
     limit: u32,
 ) -> Result<Vec<ClassPracticeRecord>> {
     let statement = if let (Some(time), Some(id)) = (before_time, after_id) {
-        db.prepare("SELECT p.id,p.student_id,p.class_id,p.textbook_key,p.question_id,p.chapter_id,p.question_kind,p.category,p.source,p.direction,p.prompt,p.student_answer,p.expected_answer,p.is_correct,p.occurred_at,p.created_at,p.handwriting_gzip,p.ocr_results,p.review_bits,p.speech_snac,p.speech_review_bits,p.speech_recognized_pinyin,a.username,a.display_name FROM practice_records p JOIN accounts a ON a.id=p.student_id WHERE p.class_id=? AND p.rowid<=? AND (p.occurred_at<? OR (p.occurred_at=? AND p.id>?)) ORDER BY p.occurred_at DESC,p.id ASC LIMIT ?")
+        db.prepare("SELECT p.id,p.student_id,p.class_id,p.textbook_key,p.question_id,p.chapter_id,p.question_kind,p.category,p.source,p.poem_title,p.poem_dynasty,p.poem_author,p.direction,p.prompt,p.student_answer,p.expected_answer,p.is_correct,p.occurred_at,p.created_at,p.handwriting_gzip,p.ocr_results,p.review_bits,p.speech_snac,p.speech_review_bits,p.speech_recognized_pinyin,a.username,a.display_name FROM practice_records p JOIN accounts a ON a.id=p.student_id WHERE p.class_id=? AND p.rowid<=? AND (p.occurred_at<? OR (p.occurred_at=? AND p.id>?)) ORDER BY p.occurred_at DESC,p.id ASC LIMIT ?")
             .bind(&[class_id.into(), (snapshot_row_id as f64).into(), time.into(), time.into(), id.into(), (limit as f64).into()])?
     } else {
-        db.prepare("SELECT p.id,p.student_id,p.class_id,p.textbook_key,p.question_id,p.chapter_id,p.question_kind,p.category,p.source,p.direction,p.prompt,p.student_answer,p.expected_answer,p.is_correct,p.occurred_at,p.created_at,p.handwriting_gzip,p.ocr_results,p.review_bits,p.speech_snac,p.speech_review_bits,p.speech_recognized_pinyin,a.username,a.display_name FROM practice_records p JOIN accounts a ON a.id=p.student_id WHERE p.class_id=? AND p.rowid<=? ORDER BY p.occurred_at DESC,p.id ASC LIMIT ?")
+        db.prepare("SELECT p.id,p.student_id,p.class_id,p.textbook_key,p.question_id,p.chapter_id,p.question_kind,p.category,p.source,p.poem_title,p.poem_dynasty,p.poem_author,p.direction,p.prompt,p.student_answer,p.expected_answer,p.is_correct,p.occurred_at,p.created_at,p.handwriting_gzip,p.ocr_results,p.review_bits,p.speech_snac,p.speech_review_bits,p.speech_recognized_pinyin,a.username,a.display_name FROM practice_records p JOIN accounts a ON a.id=p.student_id WHERE p.class_id=? AND p.rowid<=? ORDER BY p.occurred_at DESC,p.id ASC LIMIT ?")
             .bind(&[class_id.into(), (snapshot_row_id as f64).into(), (limit as f64).into()])?
     };
     statement.all().await?.results::<ClassPracticeRecord>()
@@ -204,7 +213,7 @@ pub(crate) async fn list_for_class_offset_page(
     limit: u32,
     offset: u32,
 ) -> Result<Vec<ClassPracticeRecord>> {
-    db.prepare("SELECT p.id,p.student_id,p.class_id,p.textbook_key,p.question_id,p.chapter_id,p.question_kind,p.category,p.source,p.direction,p.prompt,p.student_answer,p.expected_answer,p.is_correct,p.occurred_at,p.created_at,p.handwriting_gzip,p.ocr_results,p.review_bits,p.speech_snac,p.speech_review_bits,p.speech_recognized_pinyin,a.username,a.display_name FROM practice_records p JOIN accounts a ON a.id=p.student_id WHERE p.class_id=? ORDER BY p.occurred_at DESC,p.id LIMIT ? OFFSET ?")
+    db.prepare("SELECT p.id,p.student_id,p.class_id,p.textbook_key,p.question_id,p.chapter_id,p.question_kind,p.category,p.source,p.poem_title,p.poem_dynasty,p.poem_author,p.direction,p.prompt,p.student_answer,p.expected_answer,p.is_correct,p.occurred_at,p.created_at,p.handwriting_gzip,p.ocr_results,p.review_bits,p.speech_snac,p.speech_review_bits,p.speech_recognized_pinyin,a.username,a.display_name FROM practice_records p JOIN accounts a ON a.id=p.student_id WHERE p.class_id=? ORDER BY p.occurred_at DESC,p.id LIMIT ? OFFSET ?")
         .bind(&[class_id.into(), (limit as f64).into(), (offset as f64).into()])?
         .all()
         .await?
@@ -235,7 +244,7 @@ mod tests {
     #[test]
     fn maps_practice_record_columns_to_api_json() {
         let record: PracticeRecord = serde_json::from_str(
-            r#"{"id":"attempt-1","student_id":"student-1","class_id":"class-1","textbook_key":"grade2b","question_id":"q1","chapter_id":"c1","question_kind":"字词","category":"字","source":"第一课","direction":"writeHanzi","prompt":"xue2","student_answer":"雪","expected_answer":"学","is_correct":1,"occurred_at":"2026-10-13T01:23:45.000Z","created_at":"2026-10-13 01:23:45","handwriting_gzip":[31,139],"ocr_results":"[\"雪\"]","review_bits":[1]}"#,
+            r#"{"id":"attempt-1","student_id":"student-1","class_id":"class-1","textbook_key":"grade2b","question_id":"q1","chapter_id":"c1","question_kind":"字词","category":"字","source":"第一课","poem_title":"","poem_dynasty":"","poem_author":"","direction":"writeHanzi","prompt":"xue2","student_answer":"雪","expected_answer":"学","is_correct":1,"occurred_at":"2026-10-13T01:23:45.000Z","created_at":"2026-10-13 01:23:45","handwriting_gzip":[31,139],"ocr_results":"[\"雪\"]","review_bits":[1]}"#,
         )
         .unwrap();
         let response = serde_json::to_value(record).unwrap();
@@ -244,6 +253,7 @@ mod tests {
         assert_eq!(response["questionId"], "q1");
         assert_eq!(response["isCorrect"], 1);
         assert_eq!(response["studentAnswer"], "雪");
+        assert_eq!(response["poemTitle"], "");
         assert_eq!(response["occurredAt"], "2026-10-13T01:23:45.000Z");
         assert_eq!(response["studentId"], "student-1");
         assert_eq!(response["classId"], "class-1");

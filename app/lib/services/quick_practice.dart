@@ -59,9 +59,11 @@ class QuickPracticeSelector {
         QuickPracticeAction.mistakeFirst => item.progress.isWrong,
         QuickPracticeAction.characters =>
           item.direction == PracticeDirection.writeHanzi ||
-              item.direction == PracticeDirection.writePinyin,
+              item.direction == PracticeDirection.writePinyin ||
+              item.direction == PracticeDirection.poemDictation,
         QuickPracticeAction.readAloud =>
-          item.direction == PracticeDirection.readAloud &&
+          (item.direction == PracticeDirection.readAloud ||
+                  item.direction == PracticeDirection.poemReadAloud) &&
               item.question.category != '字',
       };
 

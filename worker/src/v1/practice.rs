@@ -16,6 +16,12 @@ struct PracticeRecordInput {
     question_kind: String,
     category: String,
     source: String,
+    #[serde(default)]
+    poem_title: String,
+    #[serde(default)]
+    poem_dynasty: String,
+    #[serde(default)]
+    poem_author: String,
     direction: String,
     prompt: String,
     student_answer: String,
@@ -61,6 +67,9 @@ pub(super) async fn record(request: &mut Request, env: &Env) -> Result<Response>
         question_kind: input.question_kind,
         category: input.category,
         source: input.source,
+        poem_title: input.poem_title,
+        poem_dynasty: input.poem_dynasty,
+        poem_author: input.poem_author,
         direction: input.direction,
         prompt: input.prompt,
         student_answer: input.student_answer,
@@ -248,13 +257,22 @@ fn valid_input(input: &PracticeRecordInput) -> bool {
     // Original handwriting or speech audio is the authoritative answer.
     // OCR and ASR may legitimately return no derived text.
     let student_answer_is_valid = input.student_answer.chars().count() <= 2000;
+    let is_speech_direction = matches!(input.direction.as_str(), "readAloud" | "poemReadAloud");
+    let is_poem_direction = matches!(input.direction.as_str(), "poemDictation" | "poemReadAloud");
+    let poem_metadata_is_valid = if is_poem_direction {
+        valid_text(&input.poem_title, 256)
+            && input.poem_dynasty.chars().count() <= 64
+            && input.poem_author.chars().count() <= 128
+    } else {
+        input.poem_title.is_empty() && input.poem_dynasty.is_empty() && input.poem_author.is_empty()
+    };
     let original_answer_is_valid = match (
         &input.handwriting_gzip,
         &input.ocr_results,
         &input.review_bits,
     ) {
         (None, None, None) => {
-            input.direction == "readAloud"
+            is_speech_direction
                 && input
                     .speech_snac
                     .as_deref()
@@ -275,7 +293,7 @@ fn valid_input(input: &PracticeRecordInput) -> bool {
         }
         (Some(handwriting), Some(ocr), Some(review_bits)) => {
             let cell_count = handwriting_cell_count(handwriting);
-            input.direction != "readAloud"
+            !is_speech_direction
                 && input.speech_snac.is_none()
                 && input.speech_review_bits.is_none()
                 && input.speech_recognized_pinyin.is_none()
@@ -298,10 +316,16 @@ fn valid_input(input: &PracticeRecordInput) -> bool {
         && valid_text(&input.expected_answer, 2000)
         && valid_text(&input.occurred_at, 40)
         && timestamp_is_valid
+        && poem_metadata_is_valid
         && original_answer_is_valid
         && matches!(
             input.direction.as_str(),
-            "writeHanzi" | "writePinyin" | "listenWriteHanzi" | "readAloud"
+            "writeHanzi"
+                | "writePinyin"
+                | "listenWriteHanzi"
+                | "readAloud"
+                | "poemDictation"
+                | "poemReadAloud"
         )
 }
 
@@ -503,6 +527,9 @@ mod tests {
             question_kind: "诗词".into(),
             category: "诗词".into(),
             source: "静夜思".into(),
+            poem_title: String::new(),
+            poem_dynasty: String::new(),
+            poem_author: String::new(),
             direction: "readAloud".into(),
             prompt: "chuáng qián míng yuè guāng".into(),
             student_answer: "床前明月光".into(),
@@ -538,6 +565,14 @@ mod tests {
     fn reading_requires_valid_audio_and_per_character_review() {
         let mut record = input();
         assert!(valid_input(&record));
+        record.direction = "poemReadAloud".into();
+        record.poem_title = "静夜思".into();
+        record.poem_dynasty = "唐".into();
+        record.poem_author = "李白".into();
+        assert!(valid_input(&record));
+        record.poem_title.clear();
+        assert!(!valid_input(&record));
+        record.poem_title = "静夜思".into();
         record.student_answer.clear();
         record.speech_recognized_pinyin = Some(String::new());
         assert!(valid_input(&record));
@@ -569,6 +604,12 @@ mod tests {
         record.handwriting_gzip = Some(compressed);
         record.ocr_results = Some(vec!["春".into()]);
         record.review_bits = Some(STANDARD.encode([1]));
+        assert!(valid_input(&record));
+
+        record.direction = "poemDictation".into();
+        record.poem_title = "春晓".into();
+        record.poem_dynasty = "唐".into();
+        record.poem_author = "孟浩然".into();
         assert!(valid_input(&record));
 
         record.ocr_results = Some(vec![]);

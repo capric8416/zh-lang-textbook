@@ -94,7 +94,7 @@ void main() {
         },
         {
           'id': 'reading',
-          'direction': 'readAloud',
+          'direction': 'poemReadAloud',
           'speechSnac': base64Encode(speechInput),
         },
       ],

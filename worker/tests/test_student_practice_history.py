@@ -14,9 +14,11 @@ class StudentHistoryTests(unittest.TestCase):
         for name in ('0004_practice_records.sql', '0005_nullable_practice_record_class.sql',
                      '0007_student_practice_history_index.sql',
                      '0012_practice_original_answers.sql',
-                     '0013_practice_review_bits.sql'):
+                     '0013_practice_review_bits.sql',
+                     '0014_practice_speech_audio.sql',
+                     '0015_practice_poem_metadata.sql'):
             self.db.executescript((ROOT / 'migrations' / name).read_text())
-        source = (ROOT / 'src/db/practice_records.rs').read_text()
+        source = (ROOT / 'src/db/practice_records.rs').read_text(encoding='utf-8')
         section = source.split('pub(crate) async fn list_for_student_page(')[1]
         self.next_sql, self.first_sql = re.findall(r'db.prepare\("([^"]+)"\)', section)[:2]
         self.db.row_factory = sqlite3.Row

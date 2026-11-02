@@ -131,6 +131,8 @@ class _StudentLearningRecordsPageState
         'writePinyin' => '看汉字写拼音',
         'listenWriteHanzi' => '听写',
         'readAloud' => '朗读',
+        'poemDictation' => '古诗词默写',
+        'poemReadAloud' => '古诗词朗读',
         final value => value,
       };
 
@@ -145,6 +147,9 @@ class _StudentLearningRecordsPageState
         r.text('prompt'),
         r.text('studentAnswer'),
         r.text('expectedAnswer'),
+        r.text('poemTitle'),
+        r.text('poemDynasty'),
+        r.text('poemAuthor'),
       ].join(' ').toLowerCase().contains(_search.trim().toLowerCase());
     }).toList();
     return Scaffold(
@@ -297,7 +302,7 @@ class _StudentLearningRecordsPageState
               child: SelectableText('参考答案：${record.text('expectedAnswer')}'),
             ),
           ),
-          if (record.text('direction') == 'readAloud')
+          if (_isSpeechDirection(record.text('direction')))
             OriginalSpeech(record: record.data)
           else
             OriginalHandwriting(record: record.data),
@@ -311,6 +316,12 @@ class _StudentLearningRecordsPageState
                     '分类：${record.text('category')}',
                   if (record.text('source').isNotEmpty)
                     '来源：${record.text('source')}',
+                  if (record.text('poemTitle').isNotEmpty)
+                    '诗词：${record.text('poemTitle')}',
+                  if (record.text('poemDynasty').isNotEmpty)
+                    '朝代：${record.text('poemDynasty')}',
+                  if (record.text('poemAuthor').isNotEmpty)
+                    '作者：${record.text('poemAuthor')}',
                   if (record.syncState == AttemptSyncState.unknown)
                     '这条记录保存在本机，但没有成功上传凭据，无法确认是否已上传。',
                   if (record.syncState == AttemptSyncState.pending)
@@ -324,3 +335,6 @@ class _StudentLearningRecordsPageState
     );
   }
 }
+
+bool _isSpeechDirection(String direction) =>
+    direction == 'readAloud' || direction == 'poemReadAloud';

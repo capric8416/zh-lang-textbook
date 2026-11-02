@@ -11,10 +11,16 @@ enum WritingTool { pen, eraser }
 enum WritingGrid { hanzi, pinyin }
 
 class WritingPad extends StatefulWidget {
-  const WritingPad({super.key, required this.grid, required this.slotLengths});
+  const WritingPad({
+    super.key,
+    required this.grid,
+    required this.slotLengths,
+    this.lineLengths = const [],
+  });
 
   final WritingGrid grid;
   final List<int> slotLengths;
+  final List<int> lineLengths;
 
   @override
   State<WritingPad> createState() => WritingPadState();
@@ -49,7 +55,8 @@ class WritingPadState extends State<WritingPad> {
   void didUpdateWidget(covariant WritingPad oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.grid != widget.grid ||
-        oldWidget.slotLengths.join(',') != widget.slotLengths.join(',')) {
+        oldWidget.slotLengths.join(',') != widget.slotLengths.join(',') ||
+        oldWidget.lineLengths.join(',') != widget.lineLengths.join(',')) {
       _slots = _emptySlots(widget.slotLengths.length);
     }
   }
@@ -143,23 +150,66 @@ class WritingPadState extends State<WritingPad> {
           ],
         ),
         const SizedBox(height: 6),
-        Wrap(
-          spacing: isHanzi ? 6 : 10,
-          runSpacing: isHanzi ? 6 : 10,
-          children: [
-            for (var index = 0; index < _slots.length; index++)
-              _WritingCell(
-                size: _slotSize(index),
-                grid: widget.grid,
-                tool: WritingTool.pen,
-                strokes: _slots[index],
-                onChanged: (_) {},
-                readOnly: true,
-                onTap: () => _openSlot(index),
-              ),
-          ],
-        ),
+        if (widget.lineLengths.isEmpty)
+          Wrap(
+            spacing: isHanzi ? 6 : 10,
+            runSpacing: isHanzi ? 6 : 10,
+            children: [
+              for (var index = 0; index < _slots.length; index++) _cell(index),
+            ],
+          )
+        else
+          _fixedLines(isHanzi ? 6 : 10),
       ],
+    );
+  }
+
+  Widget _cell(int index) => _WritingCell(
+    size: _slotSize(index),
+    grid: widget.grid,
+    tool: WritingTool.pen,
+    strokes: _slots[index],
+    onChanged: (_) {},
+    readOnly: true,
+    onTap: () => _openSlot(index),
+  );
+
+  Widget _fixedLines(double spacing) {
+    var offset = 0;
+    final lines = <Widget>[];
+    for (
+      var lineIndex = 0;
+      lineIndex < widget.lineLengths.length;
+      lineIndex++
+    ) {
+      final count = widget.lineLengths[lineIndex];
+      final start = offset;
+      final end = math.min(start + count, _slots.length);
+      offset = end;
+      if (end <= start) continue;
+      lines.add(
+        Padding(
+          key: ValueKey('writing-line-$lineIndex'),
+          padding: EdgeInsets.only(
+            bottom: lineIndex == widget.lineLengths.length - 1 ? 0 : spacing,
+          ),
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: [
+                for (var index = start; index < end; index++) ...[
+                  if (index > start) SizedBox(width: spacing),
+                  _cell(index),
+                ],
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: lines,
     );
   }
 }

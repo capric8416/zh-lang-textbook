@@ -30,7 +30,7 @@ Future<List<Map<String, dynamic>>> prepareClassLearningReportRecords(
   for (var index = 0; index < records.length; index++) {
     if (isCancelled?.call() ?? false) break;
     final prepared = Map<String, dynamic>.from(records[index]);
-    if (prepared['direction'] == 'readAloud') {
+    if (_isSpeechDirection(prepared['direction'])) {
       final encoded = prepared.remove('speechSnac');
       if (encoded is String && encoded.isNotEmpty) {
         try {
@@ -402,7 +402,7 @@ const groupBy=(items,keyFn)=>{const m=new Map();for(const item of items){const k
 const finite=(value,fallback=0)=>Number.isFinite(Number(value))?Number(value):fallback;
 const inkColor=value=>{const color=finite(value)>>>0,a=((color>>>24)&255)/255;return 'rgba('+((color>>>16)&255)+','+((color>>>8)&255)+','+(color&255)+','+a.toFixed(3)+')'};
 function inkCell(cell){const w=Math.max(1,finite(cell.width,140)),h=Math.max(1,finite(cell.height,140)),hanzi=cell.grid==='hanzi',grid=hanzi?'#e3aeb4':'#78c7a6';let guides='<rect x="0.5" y="0.5" width="'+(w-1)+'" height="'+(h-1)+'" fill="white" stroke="'+grid+'" vector-effect="non-scaling-stroke"/>';if(hanzi)guides+='<g stroke="'+grid+'" stroke-opacity=".55" vector-effect="non-scaling-stroke"><path d="M'+w/2+' 0V'+h+'M0 '+h/2+'H'+w+'M0 0L'+w+' '+h+'M0 '+h+'L'+w+' 0"/></g>';else guides+='<g stroke="'+grid+'" vector-effect="non-scaling-stroke"><path d="M0 '+h*.42+'H'+w+'M0 '+h*.72+'H'+w+'"/></g>';const strokes=Array.isArray(cell.strokes)?cell.strokes.map(stroke=>{const points=Array.isArray(stroke.points)?stroke.points.map(p=>[finite(p?.[0])*w,finite(p?.[1])*h]):[];if(!points.length)return '';const color=inkColor(stroke.color),width=Math.max(.5,finite(stroke.width,.01)*h);if(points.length===1)return '<circle cx="'+points[0][0]+'" cy="'+points[0][1]+'" r="'+width/2+'" fill="'+color+'"/>';return '<path d="'+points.map((p,i)=>(i?'L':'M')+p[0]+' '+p[1]).join(' ')+'" fill="none" stroke="'+color+'" stroke-width="'+width+'" stroke-linecap="round" stroke-linejoin="round"/>'}).join(''):'';const displayWidth=Math.min(w,hanzi?140:350);return '<svg class="ink-cell" style="width:'+displayWidth+'px" viewBox="0 0 '+w+' '+h+'" role="img" aria-label="原始书写轨迹">'+guides+strokes+'</svg>'}
-function originalAnswer(record){if(record.direction==='readAloud'){if(record.speechWav)return '<audio class="speech-player" controls preload="none" src="data:audio/wav;base64,'+record.speechWav+'">浏览器不支持音频播放</audio>';return '<span class="muted">'+(record.speechError?'录音无法解码':'录音数据缺失')+'</span>'}const document=record.handwritingDocument;if(!document||!Array.isArray(document.cells))return '<span class="muted">'+(record.handwritingError?'轨迹无法读取':'轨迹数据缺失')+'</span>';return '<div class="ink-document">'+document.cells.map(inkCell).join('')+'</div>'}
+function originalAnswer(record){if(record.direction==='readAloud'||record.direction==='poemReadAloud'){if(record.speechWav)return '<audio class="speech-player" controls preload="none" src="data:audio/wav;base64,'+record.speechWav+'">浏览器不支持音频播放</audio>';return '<span class="muted">'+(record.speechError?'录音无法解码':'录音数据缺失')+'</span>'}const document=record.handwritingDocument;if(!document||!Array.isArray(document.cells))return '<span class="muted">'+(record.handwritingError?'轨迹无法读取':'轨迹数据缺失')+'</span>';return '<div class="ink-document">'+document.cells.map(inkCell).join('')+'</div>'}
 const units=[...new Set(records.map(r=>r.unitName).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'zh-CN'));
 for(const unit of units){const o=document.createElement('option');o.value=unit;o.textContent=unit;unitFilter.append(o)}
 function updateLessons(){const current=lessonFilter.value;lessonFilter.innerHTML='<option value="">全部课文</option>';const lessons=[...new Set(records.filter(r=>!unitFilter.value||r.unitName===unitFilter.value).map(r=>r.lessonName).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'zh-CN'));for(const lesson of lessons){const o=document.createElement('option');o.value=lesson;o.textContent=lesson;lessonFilter.append(o)}if(lessons.includes(current))lessonFilter.value=current;render()}
@@ -410,7 +410,7 @@ function render(){const filtered=records.filter(r=>(!unitFilter.value||r.unitNam
 const sort=questionSort.value;questions.sort((a,b)=>sort==='error-asc'?a.studentErrorRate-b.studentErrorRate:sort==='attempt-error-desc'?b.attemptErrorRate-a.attemptErrorRate:sort==='attempts-desc'?b.attempts.length-a.attempts.length:b.studentErrorRate-a.studentErrorRate);
 const right=filtered.filter(correct).length,wrong=filtered.length-right;byId('stats').innerHTML='<div class="stat"><b>'+filtered.length+'</b>答题记录</div><div class="stat"><b>'+questions.length+'</b>道题</div><div class="stat"><b>'+right+'</b>正确作答</div><div class="stat"><b>'+wrong+'</b>错误作答</div>';byId('resultCount').textContent='当前筛选 '+questions.length+' 道题 · '+filtered.length+' 条记录';
 if(!questions.length){byId('questions').innerHTML='<div class="empty">当前筛选条件下没有答题记录</div>';return}
-byId('questions').innerHTML=questions.map((item,index)=>{const q=item.q;const err=(item.studentErrorRate*100).toFixed(1),attemptErr=(item.attemptErrorRate*100).toFixed(1);const students=[...item.students].sort((a,b)=>studentSort.value==='accuracy-desc'?b.accuracy-a.accuracy:a.accuracy-b.accuracy||a.name.localeCompare(b.name,'zh-CN'));return '<article class="question" id="q'+index+'"><div class="qhead" onclick="this.parentElement.classList.toggle(&#39;open&#39;)"><div><div class="qtitle">'+esc(q.source)+' · '+esc(q.prompt)+'</div><div class="meta">'+esc(q.unitName)+' / '+esc(q.lessonName)+' · '+esc(q.textbookKey)+' · '+esc(q.chapterId)+' · '+esc(q.category)+' · '+esc(q.direction)+'</div></div><span class="badge '+(item.studentErrorRate===0?'low':'')+'">学生错误率 '+err+'%</span></div><div class="qbody"><div class="qdetails"><span class="pill">题目 ID：'+esc(q.questionId)+'</span><span class="pill">题型：'+esc(q.questionKind)+'</span><span class="pill">错误学生：'+item.students.filter(s=>s.rows.some(r=>!correct(r))).length+'/'+item.students.length+'</span><span class="pill">错误作答率：'+attemptErr+'%</span><span class="pill">标准答案：'+esc(q.expectedAnswer)+'</span></div><div class="students">'+students.map(s=>'<section class="student"><div class="student-head"><div><div class="student-name">'+esc(s.name)+'</div><div class="muted">'+esc(s.username)+' · '+s.rows.length+' 次作答</div></div><div class="student-score">正确率 '+(s.accuracy*100).toFixed(1)+'% ('+s.rows.filter(correct).length+'/'+s.rows.length+')</div></div><table class="attempts"><thead><tr><th>结果</th><th>原始作答</th><th>OCR / ASR 识别结果</th><th>作答时间</th><th>记录 ID</th><th>入库时间</th><th>学生 ID</th><th>班级 ID</th></tr></thead><tbody>'+[...s.rows].sort((a,b)=>String(b.occurredAt).localeCompare(String(a.occurredAt))).map(r=>'<tr><td class="'+(correct(r)?'ok':'bad')+'">'+(correct(r)?'正确':'错误')+'</td><td class="original-answer">'+originalAnswer(r)+'</td><td>'+esc(r.studentAnswer)+'</td><td>'+esc(r.occurredAt)+'</td><td>'+esc(r.id)+'</td><td>'+esc(r.createdAt)+'</td><td>'+esc(r.studentId)+'</td><td>'+esc(r.classId)+'</td></tr>').join('')+'</tbody></table></section>').join('')+'</div></div></article>'}).join('')}
+byId('questions').innerHTML=questions.map((item,index)=>{const q=item.q;const err=(item.studentErrorRate*100).toFixed(1),attemptErr=(item.attemptErrorRate*100).toFixed(1);const students=[...item.students].sort((a,b)=>studentSort.value==='accuracy-desc'?b.accuracy-a.accuracy:a.accuracy-b.accuracy||a.name.localeCompare(b.name,'zh-CN'));const poem=q.poemTitle?'<span class="pill">诗词：'+esc(q.poemTitle)+'</span><span class="pill">朝代：'+esc(q.poemDynasty)+'</span><span class="pill">作者：'+esc(q.poemAuthor)+'</span>':'';return '<article class="question" id="q'+index+'"><div class="qhead" onclick="this.parentElement.classList.toggle(&#39;open&#39;)"><div><div class="qtitle">'+esc(q.source)+' · '+esc(q.prompt)+'</div><div class="meta">'+esc(q.unitName)+' / '+esc(q.lessonName)+' · '+esc(q.textbookKey)+' · '+esc(q.chapterId)+' · '+esc(q.category)+' · '+esc(q.direction)+'</div></div><span class="badge '+(item.studentErrorRate===0?'low':'')+'">学生错误率 '+err+'%</span></div><div class="qbody"><div class="qdetails"><span class="pill">题目 ID：'+esc(q.questionId)+'</span><span class="pill">题型：'+esc(q.questionKind)+'</span>'+poem+'<span class="pill">错误学生：'+item.students.filter(s=>s.rows.some(r=>!correct(r))).length+'/'+item.students.length+'</span><span class="pill">错误作答率：'+attemptErr+'%</span><span class="pill">标准答案：'+esc(q.expectedAnswer)+'</span></div><div class="students">'+students.map(s=>'<section class="student"><div class="student-head"><div><div class="student-name">'+esc(s.name)+'</div><div class="muted">'+esc(s.username)+' · '+s.rows.length+' 次作答</div></div><div class="student-score">正确率 '+(s.accuracy*100).toFixed(1)+'% ('+s.rows.filter(correct).length+'/'+s.rows.length+')</div></div><table class="attempts"><thead><tr><th>结果</th><th>原始作答</th><th>OCR / ASR 识别结果</th><th>作答时间</th><th>记录 ID</th><th>入库时间</th><th>学生 ID</th><th>班级 ID</th></tr></thead><tbody>'+[...s.rows].sort((a,b)=>String(b.occurredAt).localeCompare(String(a.occurredAt))).map(r=>'<tr><td class="'+(correct(r)?'ok':'bad')+'">'+(correct(r)?'正确':'错误')+'</td><td class="original-answer">'+originalAnswer(r)+'</td><td>'+esc(r.studentAnswer)+'</td><td>'+esc(r.occurredAt)+'</td><td>'+esc(r.id)+'</td><td>'+esc(r.createdAt)+'</td><td>'+esc(r.studentId)+'</td><td>'+esc(r.classId)+'</td></tr>').join('')+'</tbody></table></section>').join('')+'</div></div></article>'}).join('')}
 unitFilter.addEventListener('change',updateLessons);lessonFilter.addEventListener('change',render);questionSort.addEventListener('change',render);studentSort.addEventListener('change',render);updateLessons();
 </script></body></html>''';
   }
@@ -558,6 +558,11 @@ unitFilter.addEventListener('change',updateLessons);lessonFilter.addEventListene
           '${question['questionKind']} / ${question['category']}',
         ),
         _detail('题目内容', question['prompt']),
+        if (question['poemTitle'] != null && question['poemTitle'] != '')
+          _detail(
+            '诗词 / 朝代 / 作者',
+            '${question['poemTitle']} / ${question['poemDynasty']} / ${question['poemAuthor']}',
+          ),
         _detail('标准答案', question['expectedAnswer']),
         for (final attempt in group.attempts) _buildAttemptTile(attempt),
       ],
@@ -583,7 +588,7 @@ unitFilter.addEventListener('change',updateLessons);lessonFilter.addEventListene
                     : Theme.of(context).colorScheme.error,
               ),
             ),
-            if (record['direction'] == 'readAloud')
+            if (_isSpeechDirection(record['direction']))
               OriginalSpeech(record: record)
             else
               OriginalHandwriting(record: record),
@@ -610,12 +615,17 @@ unitFilter.addEventListener('change',updateLessons);lessonFilter.addEventListene
     'writePinyin' => '看汉字写拼音',
     'listenWriteHanzi' => '听写',
     'readAloud' => '朗读',
+    'poemDictation' => '古诗词默写',
+    'poemReadAloud' => '古诗词朗读',
     _ => '$value',
   };
 
   bool _isCorrect(Map<String, dynamic> record) =>
       record['isCorrect'] == true || record['isCorrect'] == 1;
 }
+
+bool _isSpeechDirection(Object? direction) =>
+    direction == 'readAloud' || direction == 'poemReadAloud';
 
 class _AttemptRecord {
   const _AttemptRecord(this.student, this.record);

@@ -18,6 +18,8 @@ String promptForPracticeDirection(
   PracticeDirection.listenWriteHanzi => question.prompt,
   PracticeDirection.writePinyin ||
   PracticeDirection.readAloud => question.answer,
+  PracticeDirection.poemDictation ||
+  PracticeDirection.poemReadAloud => question.poemPrompt,
 };
 
 /// Expected response is the text the student is asked to produce.
@@ -28,5 +30,7 @@ String expectedAnswerForPracticeDirection(
   PracticeDirection.writePinyin => question.prompt,
   PracticeDirection.writeHanzi ||
   PracticeDirection.listenWriteHanzi ||
-  PracticeDirection.readAloud => question.answer,
+  PracticeDirection.readAloud ||
+  PracticeDirection.poemDictation ||
+  PracticeDirection.poemReadAloud => question.answer,
 };
