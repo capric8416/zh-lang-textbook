@@ -120,7 +120,7 @@ def check_recognition(native, handle, label: str, text: str,
     if status < 0:
         reason = {
             -1: "参数无效", -2: "VAD 推理失败", -3: "未检测到语音",
-            -4: "ASR 推理失败", -5: "原生异常",
+            -4: "ASR 推理失败", -5: "原生异常", -6: "WAV 格式或音量无效",
         }.get(status, "未知错误")
         print(f"[FAIL][{label}] {text!r}: {reason}（错误码 {status}）", flush=True)
         return False

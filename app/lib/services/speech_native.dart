@@ -207,6 +207,7 @@ class SpeechNative {
     try {
       final length = _recognize(handle, path, output, capacity);
       if (length == -3) throw StateError('没有检测到清晰的朗读语音');
+      if (length == -6) throw StateError('录音格式不受支持或录音音量过低');
       if (length < 0) throw StateError('FunASR 识别失败，错误码 $length');
       if (length >= capacity) throw StateError('FunASR 返回内容过长');
       return output.toDartString(length: length);

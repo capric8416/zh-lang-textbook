@@ -135,7 +135,10 @@ void _workerMain((SendPort, InferenceHandlerFactory) startup) {
       }
       parent.send([id, true, null, null]);
     } catch (error, stack) {
-      parent.send([id, false, error.toString(), stack.toString()]);
+      final message = error is StateError
+          ? error.message.toString()
+          : error.toString();
+      parent.send([id, false, message, stack.toString()]);
     } finally {
       if (operation == '__dispose') requests.close();
     }

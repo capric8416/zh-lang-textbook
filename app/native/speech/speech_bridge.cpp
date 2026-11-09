@@ -279,7 +279,7 @@ int32_t zh_speech_asr_recognize_wav(void *handle, const char *wav_path,
     std::lock_guard<std::mutex> lock(speech->mutex);
     std::vector<unsigned char> pcm;
     int sample_rate = 0;
-    if (!read_audible_pcm16(wav_path, pcm, sample_rate)) return -3;
+    if (!read_audible_pcm16(wav_path, pcm, sample_rate)) return -6;
     FUNASR_RESULT vad_result = FsmnVadInferBuffer(
         speech->vad, reinterpret_cast<const char *>(pcm.data()),
         static_cast<int>(pcm.size()), nullptr, true, sample_rate, "pcm");

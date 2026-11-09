@@ -67,7 +67,16 @@ void main() {
   test('transfers pixels and recovers from a failed command', () async {
     final worker = InferenceWorker(createTestHandler);
     addTearDown(worker.close);
-    await expectLater(worker.run('fail', {}), throwsStateError);
+    await expectLater(
+      worker.run('fail', {}),
+      throwsA(
+        isA<StateError>().having(
+          (error) => error.message,
+          'message',
+          'model failed',
+        ),
+      ),
+    );
     expect(
       await worker.run('bytes', {
         'pixels': TransferableTypedData.fromList([
