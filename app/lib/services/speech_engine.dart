@@ -20,6 +20,7 @@ class SpeechEngine {
   static const _asrAsset = 'assets/speech/funasr-paraformer-zh/';
   static const _vadAsset = 'assets/speech/funasr-fsmn-vad/';
   static const _snacAsset = 'assets/speech/snac-24khz/';
+  static const _asrErrorRecordingName = 'zhtextbook_asr_error.wav';
 
   final SoLoud _player = SoLoud.instance;
   final AudioRecorder _recorder = AudioRecorder();
@@ -110,14 +111,29 @@ class SpeechEngine {
     final path = await _recorder.stop() ?? _recordingPath;
     _recordingPath = null;
     if (path == null) throw StateError('没有可检查的录音');
+    var preserveRecording = false;
     try {
-      await _initializeAsr();
-      final text = (await NativeInference.instance.recognizeWav(
-        _asrDirectory!,
-        _vadDirectory!,
-        path,
-      )).trim();
-      if (text.isEmpty) throw StateError('没有识别到朗读内容');
+      late final String text;
+      try {
+        await _initializeAsr();
+        text = (await NativeInference.instance.recognizeWav(
+          _asrDirectory!,
+          _vadDirectory!,
+          path,
+        )).trim();
+        if (text.isEmpty) throw StateError('没有识别到朗读内容');
+      } catch (_) {
+        final recording = File(path);
+        if (await recording.exists()) {
+          final failedRecording = File(
+            '${recording.parent.path}/$_asrErrorRecordingName',
+          );
+          if (await failedRecording.exists()) await failedRecording.delete();
+          await recording.rename(failedRecording.path);
+          preserveRecording = true;
+        }
+        rethrow;
+      }
       final assessment = SpeechAssessment.compare(
         expectedText: expectedText,
         expectedPinyin: expectedPinyin,
@@ -137,7 +153,7 @@ class SpeechEngine {
         encoded.delete().ignore();
       }
     } finally {
-      File(path).delete().ignore();
+      if (!preserveRecording) File(path).delete().ignore();
     }
   }
 
