@@ -106,6 +106,7 @@ bool read_audible_pcm16(const char *path, std::vector<unsigned char> &audio,
   uint16_t format = 0;
   uint16_t channels = 0;
   uint16_t bits_per_sample = 0;
+  bool pcm_format = false;
   uint32_t wav_sample_rate = 0;
   audio.clear();
   while (input) {
@@ -120,6 +121,16 @@ bool read_audible_pcm16(const char *path, std::vector<unsigned char> &audio,
       channels = read_u16(contents.data() + 2);
       wav_sample_rate = read_u32(contents.data() + 4);
       bits_per_sample = read_u16(contents.data() + 14);
+      pcm_format = format == 1;
+      if (format == 0xfffe && size >= 40 && read_u16(contents.data() + 16) >= 22) {
+        // WAVE_FORMAT_EXTENSIBLE stores the actual codec in a 16-byte GUID.
+        // Accept only the standard PCM subformat GUID.
+        static constexpr unsigned char pcm_subformat_guid[] = {
+            0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x10, 0x00,
+            0x80, 0x00, 0x00, 0xaa, 0x00, 0x38, 0x9b, 0x71};
+        pcm_format = std::memcmp(contents.data() + 24, pcm_subformat_guid,
+                                 sizeof(pcm_subformat_guid)) == 0;
+      }
     } else if (std::memcmp(chunk, "data", 4) == 0) {
       audio.resize(size);
       if (!input.read(reinterpret_cast<char *>(audio.data()), size))
@@ -130,7 +141,7 @@ bool read_audible_pcm16(const char *path, std::vector<unsigned char> &audio,
     if ((size & 1U) != 0) input.seekg(1, std::ios::cur);
   }
 
-  if (format != 1 || channels == 0 || bits_per_sample != 16 ||
+  if (!pcm_format || channels == 0 || bits_per_sample != 16 ||
       wav_sample_rate == 0 ||
       audio.size() < wav_sample_rate / 5 * channels * 2) {
     return false;
