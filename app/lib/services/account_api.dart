@@ -18,7 +18,13 @@ class AccountApiException implements Exception {
 class AccountApi {
   AccountApi({HttpClient? client, FlutterSecureStorage? storage})
     : _client = client ?? HttpClient(),
-      _storage = storage ?? const FlutterSecureStorage();
+      _storage =
+          storage ??
+          (Platform.isMacOS
+              ? const FlutterSecureStorage(
+                  mOptions: MacOsOptions(usesDataProtectionKeychain: false),
+                )
+              : const FlutterSecureStorage());
 
   static const apiBaseUrl = String.fromEnvironment('API_BASE_URL');
   static const _tokenKey = 'account_session_token';
