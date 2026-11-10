@@ -110,6 +110,7 @@ std::vector<float> read_wav_24k(const char *path) {
       std::memcmp(bytes.data() + 8, "WAVE", 4))
     throw std::runtime_error("invalid WAV");
   uint16_t format = 0, channels = 0, depth = 0;
+  bool pcm_format = false;
   uint32_t rate = 0;
   size_t data_offset = 0, data_size = 0;
   for (size_t offset = 12; offset + 8 <= bytes.size();) {
@@ -121,13 +122,22 @@ std::vector<float> read_wav_24k(const char *path) {
       channels = u16(bytes.data() + start + 2);
       rate = u32(bytes.data() + start + 4);
       depth = u16(bytes.data() + start + 14);
+      pcm_format = format == 1;
+      if (format == 0xfffe && size >= 40 && u16(bytes.data() + start + 16) >= 22) {
+        static constexpr uint8_t pcm_subformat_guid[] = {
+            0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x10, 0x00,
+            0x80, 0x00, 0x00, 0xaa, 0x00, 0x38, 0x9b, 0x71};
+        pcm_format = std::memcmp(bytes.data() + start + 24,
+                                 pcm_subformat_guid,
+                                 sizeof(pcm_subformat_guid)) == 0;
+      }
     } else if (!std::memcmp(bytes.data() + offset, "data", 4)) {
       data_offset = start;
       data_size = size;
     }
     offset = start + size + (size & 1U);
   }
-  if (format != 1 || channels != 1 || rate != kRate || depth != 16 ||
+  if (!pcm_format || channels != 1 || rate != kRate || depth != 16 ||
       data_size < 2 || data_size / 2 > kRate * kMaxSeconds)
     throw std::runtime_error("SNAC requires mono 24 kHz PCM16 WAV");
   std::vector<float> pcm(data_size / 2);
