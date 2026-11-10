@@ -25,7 +25,8 @@
 namespace {
 
 #ifdef _WIN32
-std::string native_library_path(const char *utf8) {
+std::wstring utf8_to_wide(const char *utf8) {
+  if (utf8 == nullptr) throw std::runtime_error("path is null");
   const int wide_size = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS,
                                              utf8, -1, nullptr, 0);
   if (wide_size <= 0) throw std::runtime_error("invalid UTF-8 path");
@@ -33,20 +34,63 @@ std::string native_library_path(const char *utf8) {
   if (MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, utf8, -1,
                           wide.data(), wide_size) != wide_size)
     throw std::runtime_error("invalid UTF-8 path");
+  wide.resize(wide_size - 1);
+  return wide;
+}
+
+std::string wide_to_active_code_page(const std::wstring &wide) {
+  const UINT code_page = GetACP();
+  if (code_page == CP_UTF8) {
+    const int size = WideCharToMultiByte(CP_UTF8, WC_ERR_INVALID_CHARS,
+                                         wide.c_str(), -1, nullptr, 0, nullptr,
+                                         nullptr);
+    if (size <= 0) return {};
+    std::string utf8(size, '\0');
+    if (WideCharToMultiByte(CP_UTF8, WC_ERR_INVALID_CHARS, wide.c_str(), -1,
+                            utf8.data(), size, nullptr, nullptr) != size)
+      return {};
+    utf8.resize(size - 1);
+    return utf8;
+  }
+
   BOOL used_default = FALSE;
   const int native_size = WideCharToMultiByte(
-      CP_ACP, WC_NO_BEST_FIT_CHARS, wide.c_str(), -1, nullptr, 0, nullptr,
+      code_page, WC_NO_BEST_FIT_CHARS, wide.c_str(), -1, nullptr, 0, nullptr,
       &used_default);
-  if (native_size <= 0 || used_default)
-    throw std::runtime_error("path is not representable in system code page");
+  if (native_size <= 0 || used_default) return {};
   std::string native(native_size, '\0');
-  if (WideCharToMultiByte(CP_ACP, WC_NO_BEST_FIT_CHARS, wide.c_str(), -1,
+  if (WideCharToMultiByte(code_page, WC_NO_BEST_FIT_CHARS, wide.c_str(), -1,
                           native.data(), native_size, nullptr, &used_default) !=
           native_size ||
       used_default)
-    throw std::runtime_error("path is not representable in system code page");
+    return {};
   native.resize(native_size - 1);
   return native;
+}
+
+std::wstring short_path(const std::wstring &path) {
+  const DWORD required = GetShortPathNameW(path.c_str(), nullptr, 0);
+  if (required == 0) return {};
+  std::wstring result(required, L'\0');
+  const DWORD written =
+      GetShortPathNameW(path.c_str(), result.data(), required);
+  if (written == 0 || written >= required) return {};
+  result.resize(written);
+  return result;
+}
+
+std::string native_library_path(const char *utf8) {
+  const std::wstring wide = utf8_to_wide(utf8);
+  std::string native = wide_to_active_code_page(wide);
+  if (!native.empty()) return native;
+
+  const std::wstring shortened = short_path(wide);
+  if (!shortened.empty()) native = wide_to_active_code_page(shortened);
+  if (!native.empty()) return native;
+
+  throw std::runtime_error(
+      "path is not representable in the active code page and has no usable "
+      "short path");
 }
 #else
 std::string native_library_path(const char *utf8) { return utf8; }
